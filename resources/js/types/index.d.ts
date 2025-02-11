@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { Config } from 'ziggy-js';
 
 export interface User {
@@ -15,3 +16,5 @@ export type PageProps<
     };
     ziggy: Config & { location: string };
 };
+
+export type PropsWithChildren<T = unknown> = T & { children: ReactNode };
