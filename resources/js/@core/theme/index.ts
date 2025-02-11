@@ -3,7 +3,7 @@ import overrides from './overrides';
 import typography from './typography';
 
 const theme = createTheme({
-    shape: { borderRadius: 0 },
+    shape: { borderRadius: 8 },
     cssVariables: { colorSchemeSelector: 'class' },
     typography,
     spacing: (factor: number) => `${0.25 * factor}rem`,
