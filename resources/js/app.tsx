@@ -1,10 +1,10 @@
-import '../css/app.css';
-import './bootstrap';
-
 import { createInertiaApp } from '@inertiajs/react';
 import { ReactNode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
+import '../css/app.css';
 import ThemeProvider from './@core/components/ThemeProvider';
+import './bootstrap';
+import './i18n';
 import VerticalLayout from './Layouts/VerticalLayout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -15,9 +15,7 @@ createInertiaApp({
         const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true });
         let page = pages[`./Pages/${name}.tsx`] as any;
 
-        page.default.layout =
-            page.default.layout ||
-            ((page: ReactNode) => <VerticalLayout children={page} />);
+        page.default.layout = page.default.layout || ((page: ReactNode) => <VerticalLayout children={page} />);
 
         return page;
     },

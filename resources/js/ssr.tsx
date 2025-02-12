@@ -5,6 +5,7 @@ import ReactDOMServer from 'react-dom/server';
 import { RouteName } from 'ziggy-js';
 import { route } from '../../vendor/tightenco/ziggy';
 import ThemeProvider from './@core/components/ThemeProvider';
+import './i18n';
 import VerticalLayout from './Layouts/VerticalLayout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -18,9 +19,7 @@ createServer((page) =>
             const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true });
             let page = pages[`./Pages/${name}.tsx`] as any;
 
-            page.default.layout =
-                page.default.layout ||
-                ((page: ReactNode) => <VerticalLayout children={page} />);
+            page.default.layout = page.default.layout || ((page: ReactNode) => <VerticalLayout children={page} />);
 
             return page;
         },
