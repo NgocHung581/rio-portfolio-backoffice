@@ -1,110 +1,107 @@
-import Checkbox from '@/Components/Checkbox';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import AuthLayout from '@/Layouts/AuthLayout';
+import { useForm } from '@inertiajs/react';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Divider from '@mui/material/Divider';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import { ChangeEvent, FormEvent, ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-export default function Login({
-    status,
-    canResetPassword,
-}: {
-    status?: string;
-    canResetPassword: boolean;
-}) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+type LoginPayload = {
+    email: string;
+    password: string;
+};
+
+const LoginPage = () => {
+    const { t } = useTranslation();
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const { data, setData, errors, processing, post } = useForm<LoginPayload>({
         email: '',
         password: '',
-        remember: false as boolean,
     });
 
-    const submit: FormEventHandler = (e) => {
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
+        const name = e.target.name as keyof LoginPayload;
+        const value = e.target.value;
+
+        setData(name, value);
+    };
+
+    const handleLogin = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        post(route('login'), {
-            onFinish: () => reset('password'),
-        });
+        console.log(data);
     };
 
     return (
-        <GuestLayout>
-            <Head title="Log in" />
-
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
-
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData(
-                                    'remember',
-                                    (e.target.checked || false) as false,
-                                )
-                            }
+        <Card sx={{ minWidth: 500, pt: 8, pb: 6, px: 6 }}>
+            <CardHeader
+                title={`${t('welcome')}!`}
+                slotProps={{ title: { textAlign: 'center', fontWeight: 700, variant: 'h1' } }}
+            />
+            <Divider variant="middle" sx={{ mx: 40, borderBottomWidth: 2, mb: 6 }} />
+            <CardContent>
+                <Stack component="form" onSubmit={handleLogin} spacing={5}>
+                    <FormGroup>
+                        <FormLabel>{t('email')}</FormLabel>
+                        <TextField
+                            name="email"
+                            value={data.email}
+                            onChange={handleChangeInput}
+                            error={!!errors.email}
+                            helperText={errors.email}
                         />
-                        <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                            Remember me
-                        </span>
-                    </label>
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                        >
-                            Forgot your password?
-                        </Link>
-                    )}
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+                    </FormGroup>
+                    <FormGroup>
+                        <FormLabel>{t('password')}</FormLabel>
+                        <TextField
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            value={data.password}
+                            onChange={handleChangeInput}
+                            error={!!errors.password}
+                            helperText={errors.password}
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={handleTogglePassword} edge="end">
+                                                {showPassword ? (
+                                                    <VisibilityOffOutlinedIcon />
+                                                ) : (
+                                                    <VisibilityOutlinedIcon />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                        />
+                    </FormGroup>
+                    <Button loading={processing} type="submit">
+                        {t('login')}
+                    </Button>
+                </Stack>
+            </CardContent>
+        </Card>
     );
-}
+};
+
+LoginPage.layout = (page: ReactNode) => <AuthLayout children={page} />;
+
+export default LoginPage;
