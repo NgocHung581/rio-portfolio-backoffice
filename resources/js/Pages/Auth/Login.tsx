@@ -45,7 +45,7 @@ const LoginPage = () => {
     const handleLogin = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log(data);
+        post(route('login'));
     };
 
     return (
@@ -56,7 +56,7 @@ const LoginPage = () => {
             />
             <Divider variant="middle" sx={{ mx: 40, borderBottomWidth: 2, mb: 6 }} />
             <CardContent>
-                <Stack component="form" onSubmit={handleLogin} spacing={5}>
+                <Stack component="form" onSubmit={handleLogin} spacing={4}>
                     <FormGroup>
                         <FormLabel>{t('email')}</FormLabel>
                         <TextField
@@ -65,6 +65,7 @@ const LoginPage = () => {
                             onChange={handleChangeInput}
                             error={!!errors.email}
                             helperText={errors.email}
+                            disabled={processing}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -76,11 +77,12 @@ const LoginPage = () => {
                             onChange={handleChangeInput}
                             error={!!errors.password}
                             helperText={errors.password}
+                            disabled={processing}
                             slotProps={{
                                 input: {
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            <IconButton onClick={handleTogglePassword} edge="end">
+                                            <IconButton disabled={processing} onClick={handleTogglePassword} edge="end">
                                                 {showPassword ? (
                                                     <VisibilityOffOutlinedIcon />
                                                 ) : (
