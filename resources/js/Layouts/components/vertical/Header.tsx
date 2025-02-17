@@ -31,7 +31,7 @@ const Header = () => {
                 bgcolor: trigger
                     ? 'rgb(var(--mui-palette-background-paperChannel) / 0.85) !important'
                     : 'transparent !important',
-                backdropFilter: 'blur(9px)',
+                ...(trigger && { backdropFilter: 'blur(9px)' }),
                 transition: theme.transitions.create(['background-color', 'box-shadow']),
             })}
             elevation={trigger ? undefined : 0}

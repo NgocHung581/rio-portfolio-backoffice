@@ -20,7 +20,7 @@ const StyledPerfectScrollbar = styled(PerfectScrollbar)(({ theme }) => ({
 
 const Menu = ({ isCollapsedNav, isHoveredNav, onScrollMenu }: Props) => {
     return (
-        <StyledPerfectScrollbar onScroll={onScrollMenu}>
+        <StyledPerfectScrollbar options={{ wheelPropagation: false }} onScroll={onScrollMenu}>
             <List>
                 {verticalMenuData.map((item, index) => (
                     <MenuItem key={index} item={item} isCollapsedNav={isCollapsedNav} isHoveredNav={isHoveredNav} />

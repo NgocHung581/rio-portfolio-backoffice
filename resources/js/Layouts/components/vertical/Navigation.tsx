@@ -85,7 +85,6 @@ const Navigation = () => {
                 sx={(theme) => ({
                     display: { xs: 'none', lg: 'block' },
                     width: getNavWrapperWidth(),
-                    maxHeight: '100vh',
                     transition: theme.transitions.create('width'),
                 })}
                 PaperProps={{
@@ -95,6 +94,7 @@ const Navigation = () => {
                         bgcolor: 'background.default',
                         color: 'text.secondary',
                         borderRight: 0,
+                        maxHeight: '100vh',
                         boxShadow: isCollapsedNav && isHoveredNav ? 3 : 0,
                         transition: theme.transitions.create(['width', 'box-shadow']),
                     }),
