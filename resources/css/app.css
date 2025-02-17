@@ -4,11 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html.light:root {
-    /* [Palette]: Background */
-    --mui-palette-background-default: #f7f7f9;
-    --mui-palette-background-defaultChannel: 255 255 255;
-
+html[class]:root,
+[class].dark {
     /* [Palette]: Primary */
     --mui-palette-primary-main: #fbeedd;
     --mui-palette-primary-light: #fbf1e3;
@@ -100,6 +97,12 @@ html.light:root {
     --mui-palette-success-darkerOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.38);
 }
 
+html.light:root {
+    /* [Palette]: Background */
+    --mui-palette-background-default: #f7f7f9;
+    --mui-palette-background-defaultChannel: 255 255 255;
+}
+
 html.dark:root,
 [class].dark {
     /* [Palette]: Background */
@@ -107,96 +110,6 @@ html.dark:root,
     --mui-palette-background-paper: #30334e;
     --mui-palette-background-defaultChannel: 40 42 66;
     --mui-palette-background-paperChannel: 48 51 78;
-
-    /* [Palette]: Primary */
-    --mui-palette-primary-main: #fbeedd;
-    --mui-palette-primary-light: #fbf1e3;
-    --mui-palette-primary-dark: #afa69a;
-    --mui-palette-primary-contrastText: #000;
-    --mui-palette-primary-mainChannel: 251 238 221;
-    --mui-palette-primary-lightChannel: 251 241 227;
-    --mui-palette-primary-darkChannel: 175 166 154;
-    --mui-palette-primary-contrastTextChannel: 0 0 0;
-    --mui-palette-primary-lighterOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.08);
-    --mui-palette-primary-lightOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.16);
-    --mui-palette-primary-mainOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.24);
-    --mui-palette-primary-darkOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.32);
-    --mui-palette-primary-darkerOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.38);
-
-    /* [Palette]: Secondary */
-    --mui-palette-secondary-main: #6d788d;
-    --mui-palette-secondary-light: #8a93a4;
-    --mui-palette-secondary-dark: #626c7f;
-    --mui-palette-secondary-contrastText: #fff;
-    --mui-palette-secondary-mainChannel: 109 120 141;
-    --mui-palette-secondary-lightChannel: 138 147 164;
-    --mui-palette-secondary-darkChannel: 98 108 127;
-    --mui-palette-secondary-contrastTextChannel: 255 255 255;
-    --mui-palette-secondary-lighterOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.08);
-    --mui-palette-secondary-lightOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.16);
-    --mui-palette-secondary-mainOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.24);
-    --mui-palette-secondary-darkOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.32);
-    --mui-palette-secondary-darkerOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.38);
-
-    /* [Palette]: Error */
-    --mui-palette-error-main: #ff4d49;
-    --mui-palette-error-light: #ff716d;
-    --mui-palette-error-dark: #e64542;
-    --mui-palette-error-contrastText: #fff;
-    --mui-palette-error-mainChannel: 255 77 73;
-    --mui-palette-error-lightChannel: 255 113 109;
-    --mui-palette-error-darkChannel: 230 69 66;
-    --mui-palette-error-contrastTextChannel: 255 255 255;
-    --mui-palette-error-lighterOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.08);
-    --mui-palette-error-lightOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.16);
-    --mui-palette-error-mainOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.24);
-    --mui-palette-error-darkOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.32);
-    --mui-palette-error-darkerOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.38);
-
-    /* [Palette]: Warning */
-    --mui-palette-warning-main: #fdb528;
-    --mui-palette-warning-light: #fdc453;
-    --mui-palette-warning-dark: #e4a324;
-    --mui-palette-warning-contrastText: #fff;
-    --mui-palette-warning-mainChannel: 253 181 40;
-    --mui-palette-warning-lightChannel: 253 196 83;
-    --mui-palette-warning-darkChannel: 228 163 36;
-    --mui-palette-warning-contrastTextChannel: 255 255 255;
-    --mui-palette-warning-lighterOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.08);
-    --mui-palette-warning-lightOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.16);
-    --mui-palette-warning-mainOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.24);
-    --mui-palette-warning-darkOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.32);
-    --mui-palette-warning-darkerOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.38);
-
-    /* [Palette]: Info */
-    --mui-palette-info-main: #26c6f9;
-    --mui-palette-info-light: #51d1fa;
-    --mui-palette-info-dark: #22b3e1;
-    --mui-palette-info-contrastText: #fff;
-    --mui-palette-info-mainChannel: 38 198 249;
-    --mui-palette-info-lightChannel: 81 209 250;
-    --mui-palette-info-darkChannel: 34 179 225;
-    --mui-palette-info-contrastTextChannel: 255 255 255;
-    --mui-palette-info-lighterOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.08);
-    --mui-palette-info-lightOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.16);
-    --mui-palette-info-mainOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.24);
-    --mui-palette-info-darkOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.32);
-    --mui-palette-info-darkerOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.38);
-
-    /* [Palette]: Success */
-    --mui-palette-success-main: #72e128;
-    --mui-palette-success-light: #8ee753;
-    --mui-palette-success-dark: #67cb24;
-    --mui-palette-success-contrastText: #fff;
-    --mui-palette-success-mainChannel: 114 225 40;
-    --mui-palette-success-lightChannel: 142 231 83;
-    --mui-palette-success-darkChannel: 103 203 36;
-    --mui-palette-success-contrastTextChannel: 255 255 255;
-    --mui-palette-success-lighterOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.08);
-    --mui-palette-success-lightOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.16);
-    --mui-palette-success-mainOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.24);
-    --mui-palette-success-darkOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.32);
-    --mui-palette-success-darkerOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.38);
 
     /* [Palette]: Text */
     --mui-palette-text-primary: #fff;
@@ -226,4 +139,26 @@ img {
     width: 100%;
     height: auto;
     object-fit: cover;
+}
+
+.ps__rail-y {
+    width: 12px !important;
+    & .ps__thumb-y {
+        background-color: var(--mui-palette-action-selected);
+        width: 4px !important;
+        &:hover,
+        &:focus {
+            background-color: var(--mui-palette-action-disabled) !important;
+            width: 6px !important;
+        }
+    }
+    &:hover,
+    &:focus,
+    &.ps--clicking {
+        background-color: transparent !important;
+        & .ps__thumb-y {
+            width: 6px !important;
+            background-color: var(--mui-palette-action-disabled) !important;
+        }
+    }
 }
