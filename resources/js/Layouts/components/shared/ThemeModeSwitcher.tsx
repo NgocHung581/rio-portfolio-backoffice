@@ -1,0 +1,72 @@
+import { ThemeMode } from '@/enums/themeMode';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
+import { useColorScheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { Fragment, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+const ThemeModeSwitcher = () => {
+    const { t } = useTranslation();
+    const { mode, setMode } = useColorScheme();
+
+    const containerRef = useRef<HTMLButtonElement>(null);
+
+    const [openMenu, setOpenMenu] = useState(false);
+
+    const handleOpenMenu = () => {
+        setOpenMenu(true);
+    };
+
+    const handleCloseMenu = () => {
+        setOpenMenu(false);
+    };
+
+    const handleChangeMode = (selectedMode: ThemeMode) => () => {
+        if (mode !== selectedMode) {
+            setMode(selectedMode);
+        }
+
+        handleCloseMenu();
+    };
+
+    return (
+        <Fragment>
+            <IconButton ref={containerRef} sx={{ color: 'text.primary' }} onClick={handleOpenMenu}>
+                {mode === ThemeMode.Light ? (
+                    <LightModeOutlinedIcon fontSize="small" />
+                ) : (
+                    <DarkModeOutlinedIcon fontSize="small" />
+                )}
+            </IconButton>
+            <Menu
+                anchorEl={containerRef.current}
+                open={openMenu}
+                onClose={handleCloseMenu}
+                disableScrollLock
+                slotProps={{ paper: { sx: { mt: 4 } } }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+                <MenuItem selected={mode === ThemeMode.Light} onClick={handleChangeMode(ThemeMode.Light)}>
+                    <Stack direction="row" alignItems="center" gap={3}>
+                        <LightModeOutlinedIcon />
+                        <Typography color="inherit">{t('light')}</Typography>
+                    </Stack>
+                </MenuItem>
+                <MenuItem selected={mode === ThemeMode.Dark} onClick={handleChangeMode(ThemeMode.Dark)}>
+                    <Stack direction="row" alignItems="center" gap={3}>
+                        <DarkModeOutlinedIcon />
+                        <Typography color="inherit">{t('dark')}</Typography>
+                    </Stack>
+                </MenuItem>
+            </Menu>
+        </Fragment>
+    );
+};
+
+export default ThemeModeSwitcher;

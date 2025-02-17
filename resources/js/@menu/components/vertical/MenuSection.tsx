@@ -1,0 +1,21 @@
+import StyledListItem from '@/@menu/styles/vertical/StyledListItem';
+import { VerticalMenuSection } from '@/types/menu';
+import Divider from '@mui/material/Divider';
+
+type Props = {
+    item: VerticalMenuSection;
+    isCollapsedNav: boolean;
+    isHoveredNav: boolean;
+};
+
+const MenuSection = ({ item, isCollapsedNav, isHoveredNav }: Props) => {
+    return (
+        <StyledListItem sx={{ mb: 2, py: !!item.label ? 1.375 : 3.875 }}>
+            <Divider textAlign="left" sx={{ width: 1, fontSize: 14, textTransform: 'uppercase' }}>
+                {(!isCollapsedNav || (isCollapsedNav && isHoveredNav)) && item.label}
+            </Divider>
+        </StyledListItem>
+    );
+};
+
+export default MenuSection;

@@ -2,5 +2,11 @@
     "welcome": "Welcome",
     "login": "Login",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "english": "English",
+    "vietnamese": "Vietnamese",
+    "light": "Light",
+    "dark": "Dark"
 }

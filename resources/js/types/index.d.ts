@@ -8,9 +8,7 @@ export interface User {
     email_verified_at?: string;
 }
 
-export type PageProps<
-    T extends Record<string, unknown> = Record<string, unknown>,
-> = T & {
+export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
         user: User;
     };
@@ -18,3 +16,8 @@ export type PageProps<
 };
 
 export type PropsWithChildren<T = unknown> = T & { children: ReactNode };
+
+export type Option<TValue = number> = {
+    label: string;
+    value: TValue;
+};
