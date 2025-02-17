@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SettingAboutPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -20,4 +22,14 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Album
+    Route::controller(AlbumController::class)->prefix('/albums')->name('albums.')->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
+    // Setting about page
+    Route::controller(SettingAboutPageController::class)->prefix('/setting-about-page')->name('settingAboutPage.')->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
 });

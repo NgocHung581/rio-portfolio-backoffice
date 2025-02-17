@@ -8,5 +8,9 @@
     "english": "English",
     "vietnamese": "Vietnamese",
     "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark",
+    "data_management": "Data Management",
+    "list_of_albums": "List of albums",
+    "setting_pages": "Setting pages",
+    "setting_about_page": "Setting about page"
 }
