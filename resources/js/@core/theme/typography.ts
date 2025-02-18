@@ -1,13 +1,10 @@
-import { Palette } from '@mui/material/styles';
 import { TypographyOptions } from '@mui/material/styles/createTypography';
 
-type Typography = TypographyOptions | ((palette: Palette) => TypographyOptions);
-
-const typography: Typography = (palette) => ({
+const typography: TypographyOptions = {
     fontFamily: '"Roboto", sans-serif',
     allVariants: {
         lineHeight: 1.5,
-        color: palette.text.primary,
+        color: 'var(--mui-palette-text-primary)',
     },
     h1: {
         fontSize: '2.25rem',
@@ -33,6 +30,6 @@ const typography: Typography = (palette) => ({
         fontSize: '1rem',
         fontWeight: 500,
     },
-});
+};
 
 export default typography;

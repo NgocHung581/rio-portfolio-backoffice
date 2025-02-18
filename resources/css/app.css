@@ -10,11 +10,11 @@ html[class]:root,
     --mui-palette-primary-main: #fbeedd;
     --mui-palette-primary-light: #fbf1e3;
     --mui-palette-primary-dark: #afa69a;
-    --mui-palette-primary-contrastText: #000;
+    --mui-palette-primary-contrastText: #881d1d;
     --mui-palette-primary-mainChannel: 251 238 221;
     --mui-palette-primary-lightChannel: 251 241 227;
     --mui-palette-primary-darkChannel: 175 166 154;
-    --mui-palette-primary-contrastTextChannel: 0 0 0;
+    --mui-palette-primary-contrastTextChannel: 136 29 29;
     --mui-palette-primary-lighterOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.08);
     --mui-palette-primary-lightOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.16);
     --mui-palette-primary-mainOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.24);
@@ -95,6 +95,9 @@ html[class]:root,
     --mui-palette-success-mainOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.24);
     --mui-palette-success-darkOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.32);
     --mui-palette-success-darkerOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.38);
+
+    /* [Palette]: Text */
+    --mui-palette-text-content: #a85626;
 }
 
 html.light:root {
