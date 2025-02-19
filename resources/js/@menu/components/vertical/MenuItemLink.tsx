@@ -6,6 +6,7 @@ import { VerticalMenuItemLink } from '@/types/menu';
 import { Link } from '@inertiajs/react';
 import CircleIcon from '@mui/icons-material/Circle';
 import { MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
     item: VerticalMenuItemLink;
@@ -22,6 +23,8 @@ const MenuItemLink = ({
     isDeeperSubmenu,
     onClick,
 }: Props) => {
+    const { t } = useTranslation();
+
     const isActiveHref = item.href === window.location.pathname;
 
     const handleClickItem = (e: MouseEvent<Element>) => {
@@ -47,7 +50,7 @@ const MenuItemLink = ({
                 <StyledListItemText
                     isCollapsedNav={isCollapsedNav}
                     isHoveredNav={isHoveredNav}
-                    primary={item.label}
+                    primary={t(item.label)}
                     slotProps={{ primary: { noWrap: true } }}
                 />
             </StyledListItemButton>

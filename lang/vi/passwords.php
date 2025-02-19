@@ -13,9 +13,9 @@ return [
     | outcome such as failure due to an invalid password / reset token.
     |
     */
-    'reset'     => 'Your password has been reset.',
-    'sent'      => 'We have emailed your password reset link.',
-    'throttled' => 'Please wait before retrying.',
-    'token'     => 'This password reset token is invalid.',
-    'user'      => "We can't find a user with that email address.",
+    'reset'     => 'Mật khẩu mới đã được cập nhật!',
+    'sent'      => 'Hướng dẫn cấp lại mật khẩu đã được gửi!',
+    'throttled' => 'Vui lòng đợi trước khi thử lại.',
+    'token'     => 'Mã khôi phục mật khẩu không hợp lệ.',
+    'user'      => 'Không tìm thấy người dùng với địa chỉ email này.',
 ];

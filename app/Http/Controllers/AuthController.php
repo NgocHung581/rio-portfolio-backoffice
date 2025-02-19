@@ -27,7 +27,6 @@ class AuthController extends Controller
     public function authenticate(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
         return redirect()->intended();
@@ -38,11 +37,13 @@ class AuthController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        $locale = session('locale');
+
+        Auth::logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
+        $request->session()->put('locale', $locale);
 
         return to_route('login');
     }

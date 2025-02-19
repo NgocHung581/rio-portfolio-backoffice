@@ -10,7 +10,7 @@ import VerticalLayout from './Layouts/VerticalLayout';
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => `${title} | ${appName}`,
     resolve: (name) => {
         const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true });
         let page = pages[`./Pages/${name}.tsx`] as any;

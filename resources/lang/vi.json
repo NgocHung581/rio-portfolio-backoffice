@@ -1,0 +1,18 @@
+{
+    "welcome": "Xin chào",
+    "login": "Đăng nhập",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "dashboard": "Bảng điều khiển",
+    "logout": "Đăng xuất",
+    "english": "Tiếng Anh",
+    "vietnamese": "Tiếng Việt",
+    "light": "Sáng",
+    "dark": "Tối",
+    "data_management": "Quản lý dữ liệu",
+    "list_of_albums": "Danh sách album",
+    "setting_pages": "Cài đặt trang",
+    "setting_about_page": "Cài đặt trang giới thiệu",
+    "language": "Ngôn ngữ",
+    "mode": "Chế độ"
+}

@@ -1,5 +1,5 @@
 import AuthLayout from '@/Layouts/AuthLayout';
-import { useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import Button from '@mui/material/Button';
@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { ChangeEvent, FormEvent, ReactNode, useState } from 'react';
+import { ChangeEvent, FormEvent, Fragment, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type LoginPayload = {
@@ -49,58 +49,66 @@ const LoginPage = () => {
     };
 
     return (
-        <Card sx={{ minWidth: 500, pt: 8, pb: 6, px: 6 }}>
-            <CardHeader
-                title={`${t('welcome')}!`}
-                slotProps={{ title: { textAlign: 'center', fontWeight: 700, variant: 'h1' } }}
-            />
-            <Divider variant="middle" sx={{ mx: 40, borderBottomWidth: 2, mb: 6 }} />
-            <CardContent>
-                <Stack component="form" onSubmit={handleLogin} spacing={4}>
-                    <FormGroup>
-                        <FormLabel>{t('email')}</FormLabel>
-                        <TextField
-                            name="email"
-                            value={data.email}
-                            onChange={handleChangeInput}
-                            error={!!errors.email}
-                            helperText={errors.email}
-                            disabled={processing}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <FormLabel>{t('password')}</FormLabel>
-                        <TextField
-                            type={showPassword ? 'text' : 'password'}
-                            name="password"
-                            value={data.password}
-                            onChange={handleChangeInput}
-                            error={!!errors.password}
-                            helperText={errors.password}
-                            disabled={processing}
-                            slotProps={{
-                                input: {
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton disabled={processing} onClick={handleTogglePassword} edge="end">
-                                                {showPassword ? (
-                                                    <VisibilityOffOutlinedIcon />
-                                                ) : (
-                                                    <VisibilityOutlinedIcon />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
-                        />
-                    </FormGroup>
-                    <Button loading={processing} type="submit">
-                        {t('login')}
-                    </Button>
-                </Stack>
-            </CardContent>
-        </Card>
+        <Fragment>
+            <Head title={t('login')} />
+
+            <Card sx={{ minWidth: 500, pt: 8, pb: 6, px: 6 }}>
+                <CardHeader
+                    title={`${t('welcome')}!`}
+                    slotProps={{ title: { textAlign: 'center', fontWeight: 700, variant: 'h1' } }}
+                />
+                <Divider variant="middle" sx={{ mx: 40, borderBottomWidth: 2, mb: 6 }} />
+                <CardContent>
+                    <Stack component="form" onSubmit={handleLogin} spacing={4}>
+                        <FormGroup>
+                            <FormLabel>{t('email')}</FormLabel>
+                            <TextField
+                                name="email"
+                                value={data.email}
+                                onChange={handleChangeInput}
+                                error={!!errors.email}
+                                helperText={errors.email}
+                                disabled={processing}
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>{t('password')}</FormLabel>
+                            <TextField
+                                type={showPassword ? 'text' : 'password'}
+                                name="password"
+                                value={data.password}
+                                onChange={handleChangeInput}
+                                error={!!errors.password}
+                                helperText={errors.password}
+                                disabled={processing}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    disabled={processing}
+                                                    onClick={handleTogglePassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? (
+                                                        <VisibilityOffOutlinedIcon />
+                                                    ) : (
+                                                        <VisibilityOutlinedIcon />
+                                                    )}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                }}
+                            />
+                        </FormGroup>
+                        <Button loading={processing} type="submit">
+                            {t('login')}
+                        </Button>
+                    </Stack>
+                </CardContent>
+            </Card>
+        </Fragment>
     );
 };
 

@@ -25,5 +25,7 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
 
         Model::preventLazyLoading(!app()->isProduction());
+
+        $this->loadTranslationsFrom(base_path('lang'));
     }
 }

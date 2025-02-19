@@ -9,6 +9,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import MenuItem from './MenuItem';
 
 type Props = {
@@ -20,6 +21,8 @@ type Props = {
 };
 
 const SubMenu = ({ item, isCollapsedNav, isHoveredNav, isDeeperSubmenu, onClickNavLink }: Props) => {
+    const { t } = useTranslation();
+
     const [isOpenSubmenu, setIsOpenSubmenu] = useState(false);
     const [isActiveSubmenu, setIsActiveSubmenu] = useState(false);
 
@@ -78,7 +81,7 @@ const SubMenu = ({ item, isCollapsedNav, isHoveredNav, isDeeperSubmenu, onClickN
                 <StyledListItemText
                     isCollapsedNav={isCollapsedNav}
                     isHoveredNav={isHoveredNav}
-                    primary={item.label}
+                    primary={t(item.label)}
                     slotProps={{ primary: { noWrap: true } }}
                 />
 

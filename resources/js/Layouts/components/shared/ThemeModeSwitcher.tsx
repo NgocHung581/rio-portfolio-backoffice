@@ -6,6 +6,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import { useColorScheme } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { Fragment, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,13 +37,15 @@ const ThemeModeSwitcher = () => {
 
     return (
         <Fragment>
-            <IconButton ref={containerRef} sx={{ color: 'text.primary' }} onClick={handleOpenMenu}>
-                {mode === ThemeMode.Light ? (
-                    <LightModeOutlinedIcon fontSize="small" />
-                ) : (
-                    <DarkModeOutlinedIcon fontSize="small" />
-                )}
-            </IconButton>
+            <Tooltip title={t('mode')}>
+                <IconButton ref={containerRef} sx={{ color: 'text.primary' }} onClick={handleOpenMenu}>
+                    {mode === ThemeMode.Light ? (
+                        <LightModeOutlinedIcon fontSize="small" />
+                    ) : (
+                        <DarkModeOutlinedIcon fontSize="small" />
+                    )}
+                </IconButton>
+            </Tooltip>
             <Menu
                 anchorEl={containerRef.current}
                 open={openMenu}
