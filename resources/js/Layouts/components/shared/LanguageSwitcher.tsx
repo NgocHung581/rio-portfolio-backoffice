@@ -33,7 +33,7 @@ const LanguageSwitcher = () => {
             router.put(
                 route('locale.update'),
                 { locale: selectedLang },
-                { onSuccess: () => changeLanguage(selectedLang) },
+                { onSuccess: () => changeLanguage(selectedLang), preserveScroll: true },
             );
         }
 
