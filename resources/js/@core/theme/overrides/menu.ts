@@ -11,17 +11,30 @@ const menu: Theme['components'] = {
     },
     MuiMenuItem: {
         styleOverrides: {
-            root: ({ theme }) => ({
-                paddingTop: theme.spacing(2),
-                paddingBottom: theme.spacing(2),
-                '&.Mui-selected': {
-                    backgroundColor: 'rgb(var(--mui-palette-primary-lightChannel) / 0.8)',
-                    color: 'var(--mui-palette-primary-contrastText)',
-                    ':hover': {
-                        backgroundColor: 'var(--mui-palette-primary-light)',
-                    },
+            root: ({ theme }) => [
+                {
+                    paddingTop: theme.spacing(2),
+                    paddingBottom: theme.spacing(2),
                 },
-            }),
+                theme.applyStyles('light', {
+                    '&.Mui-selected': {
+                        backgroundColor: 'var(--mui-palette-primary-darkOpacity)',
+                        color: 'var(--mui-palette-primary-main)',
+                        ':hover': {
+                            backgroundColor: 'var(--mui-palette-primary-darkerOpacity)',
+                        },
+                    },
+                }),
+                theme.applyStyles('dark', {
+                    '&.Mui-selected': {
+                        backgroundColor: 'var(--mui-palette-primary-lighterOpacity)',
+                        color: 'var(--mui-palette-primary-main)',
+                        ':hover': {
+                            backgroundColor: 'var(--mui-palette-primary-lightOpacity)',
+                        },
+                    },
+                }),
+            ],
         },
     },
 };

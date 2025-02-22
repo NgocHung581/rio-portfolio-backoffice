@@ -12,7 +12,22 @@ const input: Theme['components'] = {
             root: ({ theme }) => ({
                 fontWeight: 500,
                 marginBottom: theme.spacing(1),
-                color: theme.palette.text.primary,
+                color: theme.palette.text.secondary,
+            }),
+            asterisk: {
+                color: 'red',
+            },
+        },
+    },
+    MuiFormControl: {
+        defaultProps: {
+            fullWidth: true,
+        },
+    },
+    MuiFormHelperText: {
+        styleOverrides: {
+            root: ({ theme }) => ({
+                margin: theme.spacing(1, 3.5, 0),
             }),
         },
     },

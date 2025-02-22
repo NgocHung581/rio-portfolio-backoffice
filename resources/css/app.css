@@ -6,15 +6,18 @@
 
 html[class]:root,
 [class].dark {
+    /* [Palette]: Background */
+    --mui-palette-background-lighterMain: #fbeedd;
+
     /* [Palette]: Primary */
-    --mui-palette-primary-main: #fbeedd;
-    --mui-palette-primary-light: #fbf1e3;
-    --mui-palette-primary-dark: #afa69a;
-    --mui-palette-primary-contrastText: #881d1d;
-    --mui-palette-primary-mainChannel: 251 238 221;
-    --mui-palette-primary-lightChannel: 251 241 227;
-    --mui-palette-primary-darkChannel: 175 166 154;
-    --mui-palette-primary-contrastTextChannel: 136 29 29;
+    --mui-palette-primary-main: #a85626;
+    --mui-palette-primary-light: #b97751;
+    --mui-palette-primary-dark: #753c1a;
+    --mui-palette-primary-contrastText: #fff;
+    --mui-palette-primary-mainChannel: 168 86 38;
+    --mui-palette-primary-lightChannel: 185 119 81;
+    --mui-palette-primary-darkChannel: 117 60 26;
+    --mui-palette-primary-contrastTextChannel: 255 255 255;
     --mui-palette-primary-lighterOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.08);
     --mui-palette-primary-lightOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.16);
     --mui-palette-primary-mainOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.24);
@@ -95,9 +98,6 @@ html[class]:root,
     --mui-palette-success-mainOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.24);
     --mui-palette-success-darkOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.32);
     --mui-palette-success-darkerOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.38);
-
-    /* [Palette]: Text */
-    --mui-palette-text-content: #a85626;
 }
 
 html.light:root {
