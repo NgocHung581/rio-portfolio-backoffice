@@ -1,3 +1,4 @@
+import Backdrop from '@mui/material/Backdrop';
 import FormHelperText from '@mui/material/FormHelperText';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -29,11 +30,12 @@ type Props = {
     error?: boolean;
     helperText?: string;
     height?: number;
+    disabled?: boolean;
 };
 
 const TiptapEditor = forwardRef(
     (
-        { value, onChange, onBlur, characterLimit, error, helperText, height = 200 }: Props,
+        { value, onChange, onBlur, characterLimit, error, helperText, height = 200, disabled }: Props,
         ref: ForwardedRef<HTMLDivElement>,
     ) => {
         const editor = useEditor({
@@ -57,7 +59,14 @@ const TiptapEditor = forwardRef(
 
         return (
             <Fragment>
-                <TiptapWrapper height={height} error={error}>
+                <TiptapWrapper height={height} error={error} disabled={disabled}>
+                    <Backdrop
+                        open={!!disabled}
+                        mountOnEnter
+                        unmountOnExit
+                        sx={{ position: 'absolute', zIndex: 2, bgcolor: 'action.hover' }}
+                    />
+
                     <Paper elevation={0} square sx={{ px: 3.5, py: 4 }}>
                         <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
                             <FormatBoldAction editor={editor} />

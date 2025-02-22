@@ -5,9 +5,10 @@ import Stack from '@mui/material/Stack';
 type Props = {
     error?: boolean;
     height?: number | string;
+    disabled?: boolean;
 };
 
-const TiptapWrapper = ({ children, error, height }: PropsWithChildren<Props>) => {
+const TiptapWrapper = ({ children, error, height, disabled }: PropsWithChildren<Props>) => {
     return (
         <Stack
             sx={(theme) => ({
@@ -15,9 +16,12 @@ const TiptapWrapper = ({ children, error, height }: PropsWithChildren<Props>) =>
                 borderColor: error ? 'var(--mui-palette-error-main)' : 'var(--mui-palette-action-disabled)',
                 borderRadius: theme.spacing(2),
                 overflow: 'hidden',
-                ':hover': {
-                    borderColor: error ? 'var(--mui-palette-error-main)' : 'var(--mui-palette-text-primary)',
-                },
+                position: 'relative',
+                ...(!disabled && {
+                    ':hover': {
+                        borderColor: error ? 'var(--mui-palette-error-main)' : 'var(--mui-palette-text-primary)',
+                    },
+                }),
                 ':focus-within': {
                     borderColor: error ? 'var(--mui-palette-error-main)' : 'var(--mui-palette-primary-main)',
                     boxShadow: `0 0 0 1px ${error ? 'var(--mui-palette-error-main)' : 'var(--mui-palette-primary-main)'}`,
