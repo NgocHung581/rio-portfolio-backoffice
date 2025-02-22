@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     // Album
     Route::controller(AlbumController::class)->prefix('/albums')->name('albums.')->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
     });
 
     // Setting about page

@@ -16,4 +16,12 @@ class AlbumController extends Controller
     {
         return inertia('Album/List');
     }
+
+    /**
+     * Display the album create view.
+     */
+    public function create(): Response|ResponseFactory
+    {
+        return inertia('Album/Create');
+    }
 }
