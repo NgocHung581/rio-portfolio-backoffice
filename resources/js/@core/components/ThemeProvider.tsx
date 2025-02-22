@@ -9,7 +9,7 @@ const ThemeProvider = ({ children }: PropsWithChildren) => {
     return (
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <ToastContainer />
+            <ToastContainer autoClose={3000} />
             <ScrollToTopButton />
             {children}
         </MuiThemeProvider>
