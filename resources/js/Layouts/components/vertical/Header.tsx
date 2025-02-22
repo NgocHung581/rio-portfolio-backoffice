@@ -48,7 +48,7 @@ const Header = () => {
                         onClick={handleOpenMobileNav}
                         sx={{ p: 0, display: { lg: 'none' } }}
                     >
-                        <MenuIcon />
+                        <MenuIcon color="action" />
                     </IconButton>
                 </Box>
                 <Stack direction="row" alignItems="center" gap={2}>
