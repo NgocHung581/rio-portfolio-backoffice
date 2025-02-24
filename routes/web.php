@@ -28,9 +28,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Album
-    Route::controller(AlbumController::class)->prefix('/albums')->name('albums.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
+    Route::prefix('/albums')->name('albums.')->group(function () {
+        Route::controller(AlbumController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/{album}/edit', 'edit')->name('edit');
+            Route::post('/{album}/update', 'update')->name('update');
+            Route::patch('/{album}/delete', 'deleteAlbum')->name('deleteAlbum');
+            Route::patch('/{album}/restore', 'restoreAlbum')->name('restoreAlbum')->withTrashed();
+            Route::delete('/{album}/destroy', 'destroyAlbum')->name('destroyAlbum')->withTrashed();
+        });
     });
 
     // Setting about page

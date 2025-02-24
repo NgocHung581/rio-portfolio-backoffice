@@ -73,11 +73,11 @@ const ImageDropzone = ({
         if (fileRejections.length > 0 && onError) {
             switch (fileRejections[0].errors[0].code) {
                 case ErrorCode.FileTooLarge:
-                    return onError(t('error_message_file_too_large', { max: bytesToKilobytes(maxSize) }));
+                    return onError(t('messages.file_too_large', { max: bytesToKilobytes(maxSize) }));
                 case ErrorCode.FileInvalidType:
-                    return onError(t('error_message_invalid_mine_types', { mine_types: ['jpeg', 'png'].join(', ') }));
+                    return onError(t('messages.invalid_mine_types', { mine_types: ['jpeg', 'png'].join(', ') }));
                 default:
-                    return onError(t('error_message_file_upload_failed'));
+                    return onError(t('messages.file_upload_failed'));
             }
         }
 

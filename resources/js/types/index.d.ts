@@ -13,6 +13,7 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
         user: User;
     };
     ziggy: Config & { location: string };
+    message: string;
 };
 
 export type PropsWithChildren<T = unknown> = T & { children: ReactNode };
@@ -20,4 +21,24 @@ export type PropsWithChildren<T = unknown> = T & { children: ReactNode };
 export type Option<TValue = number> = {
     label: string;
     value: TValue;
+};
+
+type PaginatedDataLinks = {
+    first: string;
+    last: string;
+};
+
+type PaginatedDataMeta = {
+    current_page: number;
+    from: number;
+    last_page: number;
+    per_page: number;
+    to: number;
+    total: number;
+};
+
+export type PaginatedData<T> = {
+    data: T[];
+    links: PaginatedDataLinks;
+    meta: PaginatedDataMeta;
 };

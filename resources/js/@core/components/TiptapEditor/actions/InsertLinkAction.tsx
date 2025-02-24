@@ -45,7 +45,7 @@ const InsertLinkAction = ({ editor }: Props) => {
         const isValidLink = urlRegex.test(link);
 
         if (!isValidLink) {
-            setErrorMessage(t('error_message_invalid_link'));
+            setErrorMessage(t('messages.invalid_link'));
 
             return;
         }

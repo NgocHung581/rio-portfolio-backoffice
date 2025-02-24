@@ -38,6 +38,7 @@ const TiptapWrapper = ({ children, error, height, disabled }: PropsWithChildren<
                         minHeight: 1,
                         px: 3.5,
                         py: 2.125,
+                        fontFamily: theme.typography.fontFamily,
                         a: {
                             color: 'var(--mui-palette-primary-main)',
                             textDecoration: 'underline',

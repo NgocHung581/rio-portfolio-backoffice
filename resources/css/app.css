@@ -98,6 +98,9 @@ html[class]:root,
     --mui-palette-success-mainOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.24);
     --mui-palette-success-darkOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.32);
     --mui-palette-success-darkerOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.38);
+
+    /* [Palette]: Switch */
+    --mui-palette-Switch-primaryDisabledColor: var(--mui-palette-primary-light);
 }
 
 html.light:root {

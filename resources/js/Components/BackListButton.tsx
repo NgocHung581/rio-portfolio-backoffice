@@ -1,12 +1,8 @@
 import { router } from '@inertiajs/react';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ConfirmationModal from './ConfirmationModal';
 
 type Props = {
     href: string;
@@ -16,6 +12,7 @@ const BackListButton = ({ href }: Props) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOpenModal = () => {
         setOpenModal(true);
@@ -26,7 +23,10 @@ const BackListButton = ({ href }: Props) => {
     };
 
     const handleBackList = () => {
-        router.get(href);
+        router.get(href, undefined, {
+            onStart: () => setIsLoading(true),
+            onFinish: () => setIsLoading(false),
+        });
     };
 
     return (
@@ -35,18 +35,13 @@ const BackListButton = ({ href }: Props) => {
                 {t('list')}
             </Button>
 
-            <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
-                <DialogTitle variant="h5">{t('confirmation')}</DialogTitle>
-                <DialogContent dividers>
-                    <DialogContentText>{t('leave_page_confirmation')}</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="outlined" color="secondary" onClick={handleCloseModal}>
-                        {t('cancel')}
-                    </Button>
-                    <Button onClick={handleBackList}>OK</Button>
-                </DialogActions>
-            </Dialog>
+            <ConfirmationModal
+                open={openModal}
+                onClose={handleCloseModal}
+                onConfirm={handleBackList}
+                content={t('leave_page_confirmation')}
+                isLoading={isLoading}
+            />
         </Fragment>
     );
 };
