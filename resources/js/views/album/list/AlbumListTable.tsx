@@ -1,5 +1,6 @@
 import DebouncedInput from '@/Components/DebouncedInput';
 import Pagination from '@/Components/Pagination';
+import { AlbumListPageProps } from '@/Pages/Album/List';
 import { PageProps } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,17 +11,16 @@ import Typography from '@mui/material/Typography';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlbumListPageProps } from '../List';
-import useAlbumColumns from '../hooks/useAlbumColumns';
+import useAlbumColumns from './hooks/useAlbumColumns';
 
 const AlbumListTable = () => {
     const { t } = useTranslation();
     const { albums, initSearchForm, errors: initErrors } = usePage<PageProps<AlbumListPageProps>>().props;
-    const columns = useAlbumColumns();
 
     const [errors, setErrors] = useState(initErrors);
     const [isLoading, setIsLoading] = useState(false);
 
+    const columns = useAlbumColumns();
     const table = useMaterialReactTable({
         columns,
         data: albums.data,
@@ -36,6 +36,16 @@ const AlbumListTable = () => {
         renderBottomToolbar,
         mrtTheme: {
             baseBackgroundColor: 'rgb(var(--mui-palette-background-paperChannel))',
+        },
+        displayColumnDefOptions: {
+            'mrt-row-numbers': {
+                muiTableHeadCellProps: {
+                    align: 'center',
+                },
+                muiTableBodyCellProps: {
+                    align: 'center',
+                },
+            },
         },
         renderEmptyRowsFallback: () => (
             <Typography textAlign="center" color="error" py={4}>
@@ -75,6 +85,7 @@ const AlbumListTable = () => {
                     from={albums.meta.from}
                     to={albums.meta.to}
                     total={albums.meta.total}
+                    disabled={isLoading}
                 />
             </Stack>
         );

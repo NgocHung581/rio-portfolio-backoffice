@@ -25,7 +25,8 @@ type Props = {
 
 const AlbumForm = ({ album }: Props) => {
     const { t } = useTranslation();
-    const { data, setData, errors, setError, clearErrors, post, processing, reset, setDefaults } =
+
+    const { data, setData, errors, setError, clearErrors, post, processing, reset, setDefaults, wasSuccessful } =
         useForm<AlbumFormPayload>({
             title_en: album?.title_en ?? '',
             title_vi: album?.title_vi ?? '',
@@ -193,6 +194,7 @@ const AlbumForm = ({ album }: Props) => {
                                 error={!!errors.thumbnail_file}
                                 helperText={errors.thumbnail_file}
                                 disabled={processing}
+                                shouldReset={wasSuccessful}
                                 {...(!!album && {
                                     initImage: {
                                         url: album.thumbnail.url,

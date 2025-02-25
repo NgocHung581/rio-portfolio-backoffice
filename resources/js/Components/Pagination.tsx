@@ -10,9 +10,10 @@ type Props = {
     from: number;
     to: number;
     total: number;
+    disabled?: boolean;
 };
 
-const Pagination = ({ from, to, total, onChange, page, total_pages }: Props) => {
+const Pagination = ({ from, to, total, onChange, page, total_pages, disabled }: Props) => {
     const { t } = useTranslation();
 
     const handleChangePage = (selectedPage: number) => {
@@ -33,6 +34,7 @@ const Pagination = ({ from, to, total, onChange, page, total_pages }: Props) => 
                 color="primary"
                 showFirstButton
                 showLastButton
+                disabled={disabled}
             />
         </Stack>
     );

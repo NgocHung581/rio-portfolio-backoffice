@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import AlbumForm from './Partials/AlbumForm';
+import AlbumForm from '../../views/album/shared/AlbumForm';
 
 const CreateAlbumPage = () => {
     const { t } = useTranslation();

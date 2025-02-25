@@ -1,20 +1,18 @@
-import { PageProps, PaginatedData } from '@/types';
+import { PaginatedData } from '@/types';
 import { Album } from '@/types/album';
+import AlbumListTable from '@/views/album/list/AlbumListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import AlbumListTable from './Partials/AlbumListTable';
 
 export type AlbumListPageProps = {
     albums: PaginatedData<Album>;
     initSearchForm: { keyword: string };
 };
 
-const AlbumListPage = (props: PageProps<AlbumListPageProps>) => {
+const AlbumListPage = () => {
     const { t } = useTranslation();
-
-    console.log(props);
 
     return (
         <Stack spacing={6}>

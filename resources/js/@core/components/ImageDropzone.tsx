@@ -39,6 +39,7 @@ type Props = (SingleFileProps | MultipleFileProps) & {
     maxSize?: number;
     onDeleteImage?: (url: string) => void;
     onError?: (errorMessage: string) => void;
+    shouldReset?: boolean;
 };
 
 const ImageDropzone = ({
@@ -49,6 +50,7 @@ const ImageDropzone = ({
     maxSize,
     onDeleteImage,
     onError,
+    shouldReset,
     ...props
 }: Props) => {
     const { t } = useTranslation();
@@ -68,6 +70,12 @@ const ImageDropzone = ({
             selectedImages.forEach((image) => URL.revokeObjectURL(image.url));
         };
     }, [selectedImages.length]);
+
+    useEffect(() => {
+        if (shouldReset) {
+            setSelectedImages(getInitImages);
+        }
+    }, [shouldReset]);
 
     function handleDropFile(acceptedFiles: File[], fileRejections: FileRejection[]) {
         if (fileRejections.length > 0 && onError) {
