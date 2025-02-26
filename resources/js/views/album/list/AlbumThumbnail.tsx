@@ -44,7 +44,7 @@ const AlbumThumbnailInTable = ({ src, alt }: Props) => {
                     },
                     ':hover': {
                         '::before': {
-                            bgcolor: 'var(--mui-palette-action-selected)',
+                            bgcolor: 'var(--mui-palette-primary-darkerOpacity)',
                         },
                     },
                     img: { borderRadius: 0.5, height: 1 },

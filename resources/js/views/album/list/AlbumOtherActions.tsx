@@ -3,9 +3,9 @@ import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import { Fragment, useRef, useState } from 'react';
-import AlbumDeleteAction from './AlbumDeleteAction';
-import AlbumDisableAction from './AlbumDisableAction';
-import AlbumRestoreAction from './AlbumRestoreAction';
+import AlbumDeleteAction from '../shared/AlbumDeleteAction';
+import AlbumDisableAction from '../shared/AlbumDisableAction';
+import AlbumRestoreAction from '../shared/AlbumRestoreAction';
 
 type Props = {
     album: Album;
@@ -13,7 +13,7 @@ type Props = {
 
 export type AlbumActionProps<T = unknown> = T & {
     album: Album;
-    onCloseMenu: () => void;
+    onCloseMenu?: () => void;
 };
 
 const AlbumOtherActions = ({ album }: Props) => {

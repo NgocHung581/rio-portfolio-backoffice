@@ -3,6 +3,8 @@ import TiptapEditor from '@/@core/components/TiptapEditor';
 import BackListButton from '@/Components/BackListButton';
 import { Album, AlbumFormPayload } from '@/types/album';
 import { useForm } from '@inertiajs/react';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -15,9 +17,13 @@ import Grid from '@mui/material/Grid2';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
-import { ChangeEvent, FormEvent } from 'react';
+import Typography from '@mui/material/Typography';
+import { ChangeEvent, FormEvent, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import AlbumDeleteAction from './AlbumDeleteAction';
+import AlbumDisableAction from './AlbumDisableAction';
+import AlbumRestoreAction from './AlbumRestoreAction';
 
 type Props = {
     album?: Album;
@@ -40,6 +46,8 @@ const AlbumForm = ({ album }: Props) => {
             is_highlight: album?.is_highlight ?? false,
             ...(!!album && { is_thumbnail_deleted: false }),
         });
+
+    const isDisabledForm = processing || !!album?.deleted_at;
 
     const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name as keyof AlbumFormPayload;
@@ -69,8 +77,27 @@ const AlbumForm = ({ album }: Props) => {
             <CardHeader
                 disableTypography
                 title={
-                    <Stack direction="row" alignItems="center" justifyContent="end">
-                        <BackListButton href={route('albums.index')} />
+                    <Stack direction="row" alignItems="center" gap={4} flexWrap="wrap">
+                        <Box flex={1}>
+                            {!!album?.deleted_at && (
+                                <Alert severity="warning">
+                                    <Typography variant="h6">{t('data_disabled_alert')}</Typography>
+                                </Alert>
+                            )}
+                        </Box>
+                        <Stack direction="row" alignItems="center" justifyContent="end" gap={2} flexWrap="wrap">
+                            <BackListButton href={route('albums.index')} />
+                            {!!album && (
+                                <Fragment>
+                                    {!!album.deleted_at ? (
+                                        <AlbumRestoreAction album={album} />
+                                    ) : (
+                                        <AlbumDisableAction album={album} />
+                                    )}
+                                    <AlbumDeleteAction album={album} />
+                                </Fragment>
+                            )}
+                        </Stack>
                     </Stack>
                 }
             />
@@ -84,7 +111,7 @@ const AlbumForm = ({ album }: Props) => {
                             name="title_en"
                             value={data.title_en}
                             onChange={handleChangeInput}
-                            disabled={processing}
+                            disabled={isDisabledForm}
                             error={!!errors.title_en}
                             helperText={errors.title_en}
                         />
@@ -96,7 +123,7 @@ const AlbumForm = ({ album }: Props) => {
                             name="title_vi"
                             value={data.title_vi}
                             onChange={handleChangeInput}
-                            disabled={processing}
+                            disabled={isDisabledForm}
                             error={!!errors.title_vi}
                             helperText={errors.title_vi}
                         />
@@ -108,7 +135,7 @@ const AlbumForm = ({ album }: Props) => {
                             name="name_en"
                             value={data.name_en}
                             onChange={handleChangeInput}
-                            disabled={processing}
+                            disabled={isDisabledForm}
                             error={!!errors.name_en}
                             helperText={errors.name_en}
                         />
@@ -120,7 +147,7 @@ const AlbumForm = ({ album }: Props) => {
                             name="name_vi"
                             value={data.name_vi}
                             onChange={handleChangeInput}
-                            disabled={processing}
+                            disabled={isDisabledForm}
                             error={!!errors.name_vi}
                             helperText={errors.name_vi}
                         />
@@ -132,7 +159,7 @@ const AlbumForm = ({ album }: Props) => {
                                 characterLimit={5000}
                                 value={data.description_en}
                                 onChange={(content) => setData('description_en', content)}
-                                disabled={processing}
+                                disabled={isDisabledForm}
                                 error={!!errors.description_en}
                                 helperText={errors.description_en}
                             />
@@ -145,7 +172,7 @@ const AlbumForm = ({ album }: Props) => {
                                 characterLimit={5000}
                                 value={data.description_vi}
                                 onChange={(content) => setData('description_vi', content)}
-                                disabled={processing}
+                                disabled={isDisabledForm}
                                 error={!!errors.description_vi}
                                 helperText={errors.description_vi}
                             />
@@ -158,7 +185,7 @@ const AlbumForm = ({ album }: Props) => {
                                 characterLimit={5000}
                                 value={data.summary_en}
                                 onChange={(content) => setData('summary_en', content)}
-                                disabled={processing}
+                                disabled={isDisabledForm}
                                 error={!!errors.summary_en}
                                 helperText={errors.summary_en}
                             />
@@ -171,7 +198,7 @@ const AlbumForm = ({ album }: Props) => {
                                 characterLimit={5000}
                                 value={data.summary_vi}
                                 onChange={(content) => setData('summary_vi', content)}
-                                disabled={processing}
+                                disabled={isDisabledForm}
                                 error={!!errors.summary_vi}
                                 helperText={errors.summary_vi}
                             />
@@ -193,7 +220,7 @@ const AlbumForm = ({ album }: Props) => {
                                 onError={(errorMessage) => setError('thumbnail_file', errorMessage)}
                                 error={!!errors.thumbnail_file}
                                 helperText={errors.thumbnail_file}
-                                disabled={processing}
+                                disabled={isDisabledForm}
                                 shouldReset={wasSuccessful}
                                 {...(!!album && {
                                     initImage: {
@@ -209,7 +236,7 @@ const AlbumForm = ({ album }: Props) => {
                         <Stack direction="row" alignItems="center" gap={4}>
                             <FormLabel sx={{ mb: 0 }}>{t('highlight')}</FormLabel>
                             <Switch
-                                disabled={processing}
+                                disabled={isDisabledForm}
                                 checked={data.is_highlight}
                                 onChange={(_, isChecked) => setData('is_highlight', isChecked)}
                             />
@@ -217,12 +244,16 @@ const AlbumForm = ({ album }: Props) => {
                     </Grid>
                 </Grid>
             </CardContent>
-            <Divider />
-            <CardActions sx={{ justifyContent: 'center' }}>
-                <Button type="submit" loading={processing}>
-                    {!album ? t('add') : t('save')}
-                </Button>
-            </CardActions>
+            {!album?.deleted_at && (
+                <Fragment>
+                    <Divider />
+                    <CardActions sx={{ justifyContent: 'center' }}>
+                        <Button type="submit" loading={processing}>
+                            {!album ? t('add') : t('save')}
+                        </Button>
+                    </CardActions>
+                </Fragment>
+            )}
         </Card>
     );
 };

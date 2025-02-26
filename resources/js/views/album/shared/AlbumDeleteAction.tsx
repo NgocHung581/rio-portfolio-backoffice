@@ -1,6 +1,7 @@
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import { router } from '@inertiajs/react';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -8,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { AlbumActionProps } from './AlbumOtherActions';
+import { AlbumActionProps } from '../list/AlbumOtherActions';
 
 const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
     const { t } = useTranslation();
@@ -31,7 +32,7 @@ const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
             onFinish: () => setIsLoading(false),
             onSuccess: ({ props: { message } }) => {
                 toast.success(message);
-                onCloseMenu();
+                onCloseMenu && onCloseMenu();
             },
             onError: (error) => toast.error(error.message),
         });
@@ -39,14 +40,22 @@ const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
 
     return (
         <Fragment>
-            <Divider />
-            <MenuItem onClick={handleOpenModal}>
-                <ListItemIcon>
-                    <DeleteOutlinedIcon color="error" />
-                </ListItemIcon>
-                <ListItemText primary={t('delete')} slotProps={{ primary: { color: 'error' } }} />
-            </MenuItem>
-
+            {route().current('albums.index') && (
+                <Fragment>
+                    <Divider />
+                    <MenuItem onClick={handleOpenModal}>
+                        <ListItemIcon>
+                            <DeleteOutlinedIcon color="error" />
+                        </ListItemIcon>
+                        <ListItemText primary={t('delete')} slotProps={{ primary: { color: 'error' } }} />
+                    </MenuItem>
+                </Fragment>
+            )}
+            {route().current('albums.edit', album) && (
+                <Button color="error" onClick={handleOpenModal}>
+                    {t('delete')}
+                </Button>
+            )}
             <ConfirmationModal
                 open={openModal}
                 onClose={handleCloseModal}

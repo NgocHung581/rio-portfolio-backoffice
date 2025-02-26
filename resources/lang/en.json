@@ -68,6 +68,7 @@
     "edit_album": "Edit album",
     "save": "Save",
     "media_of_album": "Media of album",
+    "data_disabled_alert": "The data has been disabled. Please restore if you want to edit the data.",
     "messages": {
         "invalid_link": "The link is invalid.",
         "file_too_large": "The file must not be greater than {{max}} KB.",

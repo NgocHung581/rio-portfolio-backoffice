@@ -1,10 +1,10 @@
 import { PageProps } from '@/types';
 import { Album } from '@/types/album';
+import AlbumMediaListTable from '@/views/album/edit/AlbumMediaListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import AlbumMediaBlock from '../../views/album/edit/AlbumMediaBlock';
 import AlbumForm from '../../views/album/shared/AlbumForm';
 
 export type EditAlbumPageProps = {
@@ -19,7 +19,7 @@ const EditAlbumPage = ({ album }: PageProps<EditAlbumPageProps>) => {
             <Head title={t('edit_album')} />
             <Typography variant="h2">{t('edit_album')}</Typography>
             <AlbumForm album={album} />
-            <AlbumMediaBlock />
+            <AlbumMediaListTable />
         </Stack>
     );
 };

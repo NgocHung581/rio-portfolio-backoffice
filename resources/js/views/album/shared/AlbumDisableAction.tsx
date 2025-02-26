@@ -1,15 +1,16 @@
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import { router } from '@inertiajs/react';
-import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
+import NotInterestedOutlinedIcon from '@mui/icons-material/NotInterestedOutlined';
+import Button from '@mui/material/Button';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { AlbumActionProps } from './AlbumOtherActions';
+import { AlbumActionProps } from '../list/AlbumOtherActions';
 
-const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
+const AlbumDisableAction = ({ album, onCloseMenu }: AlbumActionProps) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -23,14 +24,14 @@ const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
         setOpenModal(false);
     };
 
-    const handleRestoreAlbum = () => {
-        router.patch(route('albums.restoreAlbum', album), undefined, {
+    const handleDisableAlbum = () => {
+        router.patch(route('albums.deleteAlbum', album), undefined, {
             preserveScroll: true,
             onStart: () => setIsLoading(true),
             onFinish: () => setIsLoading(false),
             onSuccess: ({ props: { message } }) => {
                 toast.success(message);
-                onCloseMenu();
+                onCloseMenu && onCloseMenu();
             },
             onError: (error) => toast.error(error.message),
         });
@@ -38,22 +39,28 @@ const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
 
     return (
         <Fragment>
-            <MenuItem onClick={handleOpenModal}>
-                <ListItemIcon>
-                    <RestoreOutlinedIcon />
-                </ListItemIcon>
-                <ListItemText>{t('restore')}</ListItemText>
-            </MenuItem>
-
+            {route().current('albums.index') && (
+                <MenuItem onClick={handleOpenModal}>
+                    <ListItemIcon>
+                        <NotInterestedOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText>{t('disable')}</ListItemText>
+                </MenuItem>
+            )}
+            {route().current('albums.edit', album) && (
+                <Button color="warning" onClick={handleOpenModal}>
+                    {t('disable')}
+                </Button>
+            )}
             <ConfirmationModal
                 open={openModal}
                 onClose={handleCloseModal}
-                onConfirm={handleRestoreAlbum}
-                content={t('restore_confirmation')}
+                onConfirm={handleDisableAlbum}
+                content={t('disable_confirmation')}
                 isLoading={isLoading}
             />
         </Fragment>
     );
 };
 
-export default AlbumRestoreAction;
+export default AlbumDisableAction;

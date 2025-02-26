@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
-            Route::get('/{album}/edit', 'edit')->name('edit');
+            Route::get('/{album}/edit', 'edit')->name('edit')->withTrashed();
             Route::post('/{album}/update', 'update')->name('update');
             Route::patch('/{album}/delete', 'deleteAlbum')->name('deleteAlbum');
             Route::patch('/{album}/restore', 'restoreAlbum')->name('restoreAlbum')->withTrashed();

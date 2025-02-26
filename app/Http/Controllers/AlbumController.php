@@ -16,6 +16,7 @@ use App\Services\Album\ListAlbumsService;
 use App\Services\Album\RestoreAlbumService;
 use App\Services\Album\UpdateAlbumService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\URL;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 
@@ -106,7 +107,7 @@ class AlbumController extends Controller
             return back()->withErrors(['message' => $result['message']]);
         }
 
-        return to_route('albums.index')->with('message', $result['message']);
+        return back()->with('message', $result['message']);
     }
 
     /**
@@ -122,7 +123,7 @@ class AlbumController extends Controller
             return back()->withErrors(['message' => $result['message']]);
         }
 
-        return to_route('albums.index')->with('message', $result['message']);
+        return back()->with('message', $result['message']);
     }
 
     /**
@@ -138,6 +139,12 @@ class AlbumController extends Controller
             return back()->withErrors(['message' => $result['message']]);
         }
 
-        return to_route('albums.index')->with('message', $result['message']);
+        if (URL::previousPath() === route('albums.index', absolute: false)) {
+            $redirect = back();
+        } else {
+            $redirect = to_route('albums.index');
+        }
+
+        return $redirect->with('message', $result['message']);
     }
 }
