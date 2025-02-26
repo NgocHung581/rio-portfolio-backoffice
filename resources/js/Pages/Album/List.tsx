@@ -1,6 +1,6 @@
 import { PaginatedData } from '@/types';
 import { Album } from '@/types/album';
-import AlbumListTable from '@/views/album/list/AlbumListTable';
+import AlbumListTable from '@/views/Album/list/AlbumListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';

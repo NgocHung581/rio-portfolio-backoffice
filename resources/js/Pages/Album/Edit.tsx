@@ -1,11 +1,11 @@
 import { PageProps } from '@/types';
 import { Album } from '@/types/album';
-import AlbumMediaListTable from '@/views/album/edit/AlbumMediaListTable';
+import AlbumMediaListTable from '@/views/Album/edit/AlbumMediaListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import AlbumForm from '../../views/album/shared/AlbumForm';
+import AlbumForm from '../../views/Album/shared/AlbumForm';
 
 export type EditAlbumPageProps = {
     album: Album;
