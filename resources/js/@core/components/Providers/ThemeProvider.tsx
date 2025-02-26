@@ -3,7 +3,7 @@ import { PropsWithChildren } from '@/types';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiThemeProvider from '@mui/material/styles/ThemeProvider';
 import { ToastContainer } from 'react-toastify';
-import theme from '../theme';
+import theme from '../../theme';
 
 const ThemeProvider = ({ children }: PropsWithChildren) => {
     return (

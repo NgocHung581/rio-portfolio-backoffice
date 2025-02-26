@@ -2,7 +2,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { ReactNode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import '../css/app.css';
-import ThemeProvider from './@core/components/ThemeProvider';
+import Providers from './@core/components/Providers';
 import './bootstrap';
 import './i18n';
 import VerticalLayout from './Layouts/VerticalLayout';
@@ -23,17 +23,17 @@ createInertiaApp({
         if (import.meta.env.SSR) {
             hydrateRoot(
                 el,
-                <ThemeProvider>
+                <Providers>
                     <App {...props} />
-                </ThemeProvider>,
+                </Providers>,
             );
             return;
         }
 
         createRoot(el).render(
-            <ThemeProvider>
+            <Providers>
                 <App {...props} />
-            </ThemeProvider>,
+            </Providers>,
         );
     },
     progress: {
