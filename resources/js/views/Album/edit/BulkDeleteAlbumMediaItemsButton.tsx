@@ -7,7 +7,7 @@ type Props = {
     selectedAlbumMediaIds: number[];
 };
 
-const DeleteMultipleAlbumMediaButton = ({ selectedAlbumMediaIds }: Props) => {
+const BulkDeleteAlbumMediaItemsButton = ({ selectedAlbumMediaIds }: Props) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -28,7 +28,7 @@ const DeleteMultipleAlbumMediaButton = ({ selectedAlbumMediaIds }: Props) => {
     return (
         <Fragment>
             <Button color="error" onClick={handleOpenModal} disabled={selectedAlbumMediaIds.length === 0}>
-                {t('delete')}
+                {t('bulk_delete')}
             </Button>
             <ConfirmationModal
                 open={openModal}
@@ -41,4 +41,4 @@ const DeleteMultipleAlbumMediaButton = ({ selectedAlbumMediaIds }: Props) => {
     );
 };
 
-export default DeleteMultipleAlbumMediaButton;
+export default BulkDeleteAlbumMediaItemsButton;

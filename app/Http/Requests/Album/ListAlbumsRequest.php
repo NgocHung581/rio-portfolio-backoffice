@@ -39,7 +39,7 @@ class ListAlbumsRequest extends FormRequest
     /**
      * Handle data after passed validation.
      */
-    protected function passedValidation()
+    protected function passedValidation(): void
     {
         $this->merge([
             'per_page' => isset($this->per_page) ? (int) $this->per_page : PerPage::DEFAULT,

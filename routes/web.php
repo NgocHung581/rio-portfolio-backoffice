@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AlbumController;
-use App\Http\Controllers\AlbumMediaController;
+use App\Http\Controllers\AlbumMediaItemController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Route;
 // Update locale.
 Route::put('/locale', [LocaleController::class, 'update'])->name('locale.update');
 
-Route::middleware('guest')->group(function () {
+Route::middleware('guest')->group(function(): void {
     // Auth.
-    Route::controller(AuthController::class)->group(function () {
+    Route::controller(AuthController::class)->group(function(): void {
         Route::get('/login', 'login')->name('login');
         Route::post('/login', 'authenticate')->name('authenticate');
     });
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function(): void {
     // Auth.
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -29,8 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Album.
-    Route::prefix('/albums')->name('albums.')->group(function () {
-        Route::controller(AlbumController::class)->group(function () {
+    Route::prefix('/albums')->name('albums.')->group(function(): void {
+        Route::controller(AlbumController::class)->group(function(): void {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
@@ -42,16 +42,18 @@ Route::middleware('auth')->group(function () {
         });
 
         // Album media.
-        Route::prefix('/{album}')->controller(AlbumMediaController::class)->name('media.')
-            ->group(function () {
+        Route::prefix('/{album}/media')->controller(AlbumMediaItemController::class)->name('media.')
+            ->group(function(): void {
                 Route::get('/upload', 'create')->name('create');
                 Route::post('/upload', 'store')->name('store');
+                Route::patch('/{albumMedia}/bulk-delete', 'deleteAlbumMediaItems')->name('deleteAlbumMediaItems');
+                Route::delete('/{albumMedia}/delete', 'deleteAlbumMediaItem')->name('deleteAlbumMediaItem');
             });
     });
 
     // Setting about page.
     Route::controller(SettingAboutPageController::class)->prefix('/setting-about-page')->name('settingAboutPage.')
-        ->group(function () {
+        ->group(function(): void {
             Route::get('/', 'index')->name('index');
         });
 });

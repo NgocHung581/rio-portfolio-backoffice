@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Album;
 
+use App\Models\Album;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
@@ -30,7 +31,7 @@ class CommonAlbumRequest extends FormRequest
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('App\Models\Album', 'name_en')
+                Rule::unique(Album::class, 'name_en')
                     ->withoutTrashed()
                     ->ignore($this->album?->id),
             ],
@@ -38,7 +39,7 @@ class CommonAlbumRequest extends FormRequest
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('App\Models\Album', 'name_vi')
+                Rule::unique(Album::class, 'name_vi')
                     ->withoutTrashed()
                     ->ignore($this->album?->id),
             ],
@@ -75,23 +76,23 @@ class CommonAlbumRequest extends FormRequest
     public function attributes()
     {
         return [
-            'title_en'       => __('title_en'),
-            'title_vi'       => __('title_vi'),
-            'name_en'        => __('name_en'),
-            'name_vi'        => __('name_vi'),
+            'title_en' => __('title_en'),
+            'title_vi' => __('title_vi'),
+            'name_en' => __('name_en'),
+            'name_vi' => __('name_vi'),
             'description_en' => __('description_en'),
             'description_vi' => __('description_vi'),
-            'summary_en'     => __('summary_en'),
-            'summary_vi'     => __('summary_vi'),
+            'summary_en' => __('summary_en'),
+            'summary_vi' => __('summary_vi'),
             'thumbnail_file' => __('thumbnail'),
-            'is_highlight'   => __('highlight'),
+            'is_highlight' => __('highlight'),
         ];
     }
 
     /**
      * Handle data after passed validation.
      */
-    protected function passedValidation()
+    protected function passedValidation(): void
     {
         $this->merge([
             'is_highlight' => is_bool($this->is_highlight) ? $this->is_highlight : (bool) $this->is_highlight,

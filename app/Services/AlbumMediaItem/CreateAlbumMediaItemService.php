@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\AlbumMedia;
 
 use App\Constants\MediaFolderNamePrefix;
-use App\Enums\MediaType;
-use App\Repositories\AlbumMediaRepository;
+use App\Enums\FileType;
+use App\Repositories\AlbumMediaItemRepository;
 use App\Traits\MediaHelper;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class CreateAlbumMediaService
+class CreateAlbumMediaItemService
 {
     use MediaHelper;
 
-    public function __construct(private readonly AlbumMediaRepository $albumMediaRepository)
+    public function __construct(private readonly AlbumMediaItemRepository $albumMediaItemRepository)
     {
     }
 
@@ -38,14 +38,14 @@ class CreateAlbumMediaService
                 $folderName = 'media/';
 
                 match ($type) {
-                    MediaType::Image->value => $folderName .= MediaFolderNamePrefix::IMAGES,
-                    MediaType::Video->value => $folderName .= MediaFolderNamePrefix::VIDEOS,
+                    FileType::Image->value => $folderName .= MediaFolderNamePrefix::IMAGES,
+                    FileType::Video->value => $folderName .= MediaFolderNamePrefix::VIDEOS,
                 };
 
                 $folderName .= "/album_{$albumId}";
 
                 // Create album media.
-                $albumMedia = $this->albumMediaRepository->create(
+                $albumMedia = $this->albumMediaItemRepository->create(
                     $albumId,
                     $columnSpan,
                     $isDisplayedOnBanner
@@ -70,7 +70,7 @@ class CreateAlbumMediaService
 
                 // Create album media item.
                 $albumMedia->albumMediaFile()->create([
-                    'type' => $type,
+                    'file_type' => $type,
                     'file_path' => $filePath,
                     'file_name' => $fileName,
                     'file_size' => $file->getSize(),

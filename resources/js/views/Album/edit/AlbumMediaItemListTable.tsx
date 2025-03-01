@@ -13,20 +13,20 @@ import { MRT_Localization_VI } from 'material-react-table/locales/vi';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EditAlbumPageProps } from '../../../Pages/Album/Edit';
-import useAlbumMediaColumns from '../hooks/useAlbumMediaColumns';
-import DeleteMultipleAlbumMediaButton from './DeleteMultipleAlbumMediaButton';
+import useAlbumMediaItemColumns from '../hooks/useAlbumMediaItemColumns';
+import BulkDeleteAlbumMediaItemsButton from './BulkDeleteAlbumMediaItemsButton';
 
-const AlbumMediaListTable = () => {
+const AlbumMediaItemListTable = () => {
     const { t, i18n } = useTranslation();
     const { album } = usePage<PageProps<EditAlbumPageProps>>().props;
 
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState<MRT_RowSelectionState>({});
 
-    const columns = useAlbumMediaColumns();
+    const columns = useAlbumMediaItemColumns();
     const table = useMaterialReactTable({
         columns,
-        data: album.media,
+        data: album.media_items,
         enablePagination: false,
         enableSorting: false,
         enableColumnActions: false,
@@ -79,7 +79,7 @@ const AlbumMediaListTable = () => {
                 <CardHeader title={t('media_of_album')} />
                 <Stack direction="row" alignItems="center" justifyContent="space-between" gap={4} flexWrap="wrap" p={4}>
                     <Stack direction="row" alignItems="center" gap={2}>
-                        <DeleteMultipleAlbumMediaButton
+                        <BulkDeleteAlbumMediaItemsButton
                             selectedAlbumMediaIds={Object.keys(selectedRows).map((key) => Number(key))}
                         />
                     </Stack>
@@ -99,4 +99,4 @@ const AlbumMediaListTable = () => {
     return <MaterialReactTable table={table} />;
 };
 
-export default AlbumMediaListTable;
+export default AlbumMediaItemListTable;

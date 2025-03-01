@@ -1,10 +1,10 @@
 import { MediaType } from '@/enums/mediaType';
-import { Media } from './media';
+import { MediaFile } from './mediaFile';
 
-export type AlbumMedia = {
+export type AlbumMediaItem = {
     id: number;
     album_id: number;
-    type: MediaType;
+    file_type: MediaType;
     file_path: string;
     file_name: string;
     file_size: number;
@@ -25,8 +25,8 @@ export type Album = {
     summary_en: string;
     summary_vi: string;
     is_highlight: boolean;
-    thumbnail: Media;
-    media: AlbumMedia[];
+    thumbnail: MediaFile;
+    media_items: AlbumMediaItem[];
     created_at: string;
     updated_at: string;
     deleted_at: string | null;

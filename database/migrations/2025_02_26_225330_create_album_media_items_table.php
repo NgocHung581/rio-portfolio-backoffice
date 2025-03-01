@@ -13,7 +13,7 @@ return new class() extends Migration {
      */
     public function up(): void
     {
-        Schema::create('album_media', function (Blueprint $table) {
+        Schema::create('album_media_items', function(Blueprint $table): void {
             $table->id();
             $table->foreignIdFor(Album::class)->constrained();
             $table->unsignedTinyInteger('column_span');
@@ -28,6 +28,6 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('album_media');
+        Schema::dropIfExists('album_media_items');
     }
 };

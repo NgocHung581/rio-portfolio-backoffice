@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Album;
 
 use App\Constants\MediaFolderNamePrefix;
-use App\Enums\MediaType;
+use App\Enums\FileType;
 use App\Repositories\AlbumRepository;
 use App\Traits\MediaHelper;
 use Exception;
@@ -63,7 +63,7 @@ class CreateAlbumService
 
             // Create album thumbnail.
             $album->thumbnail()->create([
-                'type' => MediaType::Image->value,
+                'file_type' => FileType::Image->value,
                 'file_path' => $thumbnailFilePath,
                 'file_name' => $thumbnailFileName,
                 'file_size' => $thumbnailFile->getSize(),

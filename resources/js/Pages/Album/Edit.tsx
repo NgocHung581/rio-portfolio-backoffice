@@ -1,6 +1,6 @@
 import { Option, PageProps } from '@/types';
 import { Album } from '@/types/album';
-import AlbumMediaListTable from '@/views/Album/edit/AlbumMediaListTable';
+import AlbumMediaItemListTable from '@/views/Album/edit/AlbumMediaItemListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -9,8 +9,8 @@ import AlbumForm from '../../views/Album/shared/AlbumForm';
 
 export type EditAlbumPageProps = {
     album: Album;
-    albumMediaColumnSpanOptions: Option[];
-    mediaTypeOptions: Option[];
+    columnSpanOptions: Option[];
+    fileTypeOptions: Option[];
 };
 
 const EditAlbumPage = ({ album }: PageProps<EditAlbumPageProps>) => {
@@ -21,7 +21,7 @@ const EditAlbumPage = ({ album }: PageProps<EditAlbumPageProps>) => {
             <Head title={t('edit_album')} />
             <Typography variant="h2">{t('edit_album')}</Typography>
             <AlbumForm album={album} />
-            <AlbumMediaListTable />
+            <AlbumMediaItemListTable />
         </Stack>
     );
 };

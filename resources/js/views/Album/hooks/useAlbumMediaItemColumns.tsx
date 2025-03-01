@@ -2,7 +2,7 @@ import ImageInTable from '@/Components/ImageInTable';
 import { MediaType } from '@/enums/mediaType';
 import { EditAlbumPageProps } from '@/Pages/Album/Edit';
 import { PageProps } from '@/types';
-import { AlbumMedia } from '@/types/album';
+import { AlbumMediaItem } from '@/types/album';
 import { convertBytes } from '@/utils/fileHelper';
 import { usePage } from '@inertiajs/react';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -14,13 +14,13 @@ import Typography from '@mui/material/Typography';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import AlbumMediaRowActions from '../edit/AlbumMediaRowActions';
+import AlbumMediaItemRowActions from '../edit/AlbumMediaItemRowActions';
 
-const useAlbumMediaColumns = () => {
+const useAlbumMediaItemColumns = () => {
     const { t, i18n } = useTranslation();
-    const { albumMediaColumnSpanOptions, mediaTypeOptions } = usePage<PageProps<EditAlbumPageProps>>().props;
+    const { columnSpanOptions, fileTypeOptions } = usePage<PageProps<EditAlbumPageProps>>().props;
 
-    const columns = useMemo<MRT_ColumnDef<AlbumMedia>[]>(
+    const columns = useMemo<MRT_ColumnDef<AlbumMediaItem>[]>(
         () => [
             {
                 accessorFn: (row) => (
@@ -31,7 +31,7 @@ const useAlbumMediaColumns = () => {
                                 {row.file_name}
                             </Typography>
                             <Typography variant="caption" color="textSecondary">
-                                {row.type === MediaType.Image
+                                {row.file_type === MediaType.Image
                                     ? `${convertBytes(row.file_size)} KB`
                                     : `${convertBytes(row.file_size, 'GB')} GB`}
                             </Typography>
@@ -44,8 +44,8 @@ const useAlbumMediaColumns = () => {
                 accessorFn: (row) => (
                     <Chip
                         size="small"
-                        color={row.type === MediaType.Image ? 'info' : 'warning'}
-                        label={mediaTypeOptions.find((option) => option.value === row.type)?.label}
+                        color={row.file_type === MediaType.Image ? 'info' : 'warning'}
+                        label={fileTypeOptions.find((option) => option.value === row.file_type)?.label}
                     />
                 ),
                 header: t('type'),
@@ -54,7 +54,7 @@ const useAlbumMediaColumns = () => {
             {
                 accessorFn: (row) => (
                     <Typography variant="body2">
-                        {albumMediaColumnSpanOptions.find((option) => option.value === row.column_span)?.label}
+                        {columnSpanOptions.find((option) => option.value === row.column_span)?.label}
                     </Typography>
                 ),
                 header: t('column_width'),
@@ -71,7 +71,7 @@ const useAlbumMediaColumns = () => {
                 size: 130,
             },
             {
-                accessorFn: (row) => <AlbumMediaRowActions albumMedia={row} />,
+                accessorFn: (row) => <AlbumMediaItemRowActions albumMediaItem={row} />,
                 header: t('actions'),
 
                 muiTableHeadCellProps: { align: 'center' },
@@ -83,4 +83,4 @@ const useAlbumMediaColumns = () => {
     return columns;
 };
 
-export default useAlbumMediaColumns;
+export default useAlbumMediaItemColumns;

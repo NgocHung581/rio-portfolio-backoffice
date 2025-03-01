@@ -1,15 +1,15 @@
 import ConfirmationModal from '@/Components/ConfirmationModal';
-import { AlbumMedia } from '@/types/album';
+import { AlbumMediaItem } from '@/types/album';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import IconButton from '@mui/material/IconButton';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
-    albumMedia: AlbumMedia;
+    albumMediaItem: AlbumMediaItem;
 };
 
-const AlbumMediaDeleteAction = ({ albumMedia }: Props) => {
+const AlbumMediaItemDeleteAction = ({ albumMediaItem }: Props) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -24,7 +24,7 @@ const AlbumMediaDeleteAction = ({ albumMedia }: Props) => {
     };
 
     const handleDeleteAlbumMedia = () => {
-        console.log('DELETING...', albumMedia);
+        console.log('DELETING...', albumMediaItem);
     };
 
     return (
@@ -43,4 +43,4 @@ const AlbumMediaDeleteAction = ({ albumMedia }: Props) => {
     );
 };
 
-export default AlbumMediaDeleteAction;
+export default AlbumMediaItemDeleteAction;

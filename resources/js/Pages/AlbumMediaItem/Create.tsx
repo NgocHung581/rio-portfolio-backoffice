@@ -30,7 +30,7 @@ import { toast } from 'react-toastify';
 
 type Props = {
     album: Album;
-    mediaTypeOptions: Option[];
+    fileTypeOptions: Option[];
     columnSpanOptions: Option[];
     imagesCountLimitPerUpload: number;
     videosCountLimitPerUpload: number;
@@ -50,7 +50,7 @@ type FormPayload = {
 
 const CreateAlbumMediaPage = ({
     album,
-    mediaTypeOptions,
+    fileTypeOptions,
     columnSpanOptions,
     imagesCountLimitPerUpload,
     videosCountLimitPerUpload,
@@ -135,7 +135,7 @@ const CreateAlbumMediaPage = ({
                                 helperText={errors.media_type}
                                 disabled={processing}
                             >
-                                {mediaTypeOptions.map((option) => (
+                                {fileTypeOptions.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
                                         {option.label}
                                     </MenuItem>

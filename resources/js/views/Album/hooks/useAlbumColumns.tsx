@@ -42,7 +42,7 @@ const useAlbumColumns = () => {
                 size: 200,
             },
             {
-                accessorFn: (row) => row.media.length,
+                accessorFn: (row) => row.media_items.length,
                 header: t('number_of_media'),
                 size: isVietnamese ? 125 : 50,
             },

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 class AlbumRepository
 {
     /**
-     * Find all albums.
+     * Find albums.
      */
     public function findAlbums(
         int $perPage,
@@ -26,7 +26,7 @@ class AlbumRepository
             ->withTrashed($withTrashed)
             ->when(
                 isset($keyword),
-                function (Builder $query) use ($keyword) {
+                function(Builder $query) use ($keyword): void {
                     $query->whereLike('title_en', "%{$keyword}%")
                         ->orWhereLike('title_vi', "%{$keyword}%")
                         ->orWhereLike('name_en', "%{$keyword}%")
@@ -54,15 +54,15 @@ class AlbumRepository
         bool $isHighlight
     ): Album {
         $album = Album::query()->create([
-            'title_en'       => $titleEn,
-            'title_vi'       => $titleVi,
-            'name_en'        => $nameEn,
-            'name_vi'        => $nameVi,
+            'title_en' => $titleEn,
+            'title_vi' => $titleVi,
+            'name_en' => $nameEn,
+            'name_vi' => $nameVi,
             'description_en' => $descriptionEn,
             'description_vi' => $descriptionVi,
-            'summary_en'     => $summaryEn,
-            'summary_vi'     => $summaryVi,
-            'is_highlight'   => $isHighlight,
+            'summary_en' => $summaryEn,
+            'summary_vi' => $summaryVi,
+            'is_highlight' => $isHighlight,
         ]);
 
         return $album;
@@ -84,15 +84,15 @@ class AlbumRepository
         bool $isHighlight
     ): bool {
         $updatedCount = Album::query()->where('id', $id)->update([
-            'title_en'       => $titleEn,
-            'title_vi'       => $titleVi,
-            'name_en'        => $nameEn,
-            'name_vi'        => $nameVi,
+            'title_en' => $titleEn,
+            'title_vi' => $titleVi,
+            'name_en' => $nameEn,
+            'name_vi' => $nameVi,
             'description_en' => $descriptionEn,
             'description_vi' => $descriptionVi,
-            'summary_en'     => $summaryEn,
-            'summary_vi'     => $summaryVi,
-            'is_highlight'   => $isHighlight,
+            'summary_en' => $summaryEn,
+            'summary_vi' => $summaryVi,
+            'is_highlight' => $isHighlight,
         ]);
 
         return $updatedCount === 1;

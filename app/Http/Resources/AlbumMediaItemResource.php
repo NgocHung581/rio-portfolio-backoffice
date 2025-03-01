@@ -7,7 +7,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AlbumMediaResource extends JsonResource
+class AlbumMediaItemResource extends JsonResource
 {
     public static $wrap;
 
@@ -16,15 +16,15 @@ class AlbumMediaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $this->loadMissing('albumMediaFile');
+        $this->loadMissing('mediaFile');
 
         return [
             'id' => $this->id,
             'album_id' => $this->album_id,
-            'type' => $this->albumMediaFile->type,
-            'file_path' => asset($this->albumMediaFile->file_path),
-            'file_size' => $this->albumMediaFile->file_size,
-            'file_name' => $this->albumMediaFile->file_name,
+            'file_type' => $this->mediaFile->file_type,
+            'file_path' => asset($this->mediaFile->file_path),
+            'file_size' => $this->mediaFile->file_size,
+            'file_name' => $this->mediaFile->file_name,
             'column_span' => $this->column_span,
             'is_displayed_on_banner' => $this->is_displayed_on_banner,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),

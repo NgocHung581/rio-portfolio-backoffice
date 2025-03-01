@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum MediaType: int
+enum FileType: int
 {
-    /** @var int Media type: Image. */
+    /** @var int File type: Image. */
     case Image = 1;
 
-    /** @var int Media type: Video. */
+    /** @var int File type: Video. */
     case Video = 2;
 
     /**
-     * Get the label of the media type.
+     * Get the label of the file type.
      */
     public function label(): string
     {
@@ -24,12 +24,12 @@ enum MediaType: int
     }
 
     /**
-     * Returns an array of all media types.
+     * Returns an array of all file types.
      */
     public static function toArray(): array
     {
         return array_map(
-            fn (self $case): array => ['value' => $case->value, 'label' => $case->label()],
+            fn(self $case): array => ['value' => $case->value, 'label' => $case->label()],
             self::cases()
         );
     }
