@@ -15,7 +15,7 @@ const VerticalLayout = ({ children }: PropsWithChildren) => {
                     <Container sx={{ height: 1, px: { xs: 6 } }}>
                         <Stack height={1}>
                             <Header />
-                            <Box component="main" flex={1} py={6}>
+                            <Box component="main" flex={1} pt={6} pb={10}>
                                 {children}
                             </Box>
                         </Stack>
