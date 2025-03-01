@@ -1,3 +1,4 @@
+import ImageInTable from '@/Components/ImageInTable';
 import { Language } from '@/enums/language';
 import { Album } from '@/types/album';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -8,8 +9,7 @@ import Typography from '@mui/material/Typography';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import AlbumRowActions from '../AlbumRowActions';
-import AlbumThumbnail from '../AlbumThumbnail';
+import AlbumRowActions from '../list/AlbumRowActions';
 
 const useAlbumColumns = () => {
     const { t, i18n } = useTranslation();
@@ -26,7 +26,7 @@ const useAlbumColumns = () => {
 
                     return (
                         <Stack direction="row" alignItems="center" gap={3}>
-                            <AlbumThumbnail src={row.thumbnail.url} alt={name} />
+                            <ImageInTable src={row.thumbnail.url} alt={name} aspectRatio={4 / 5} />
                             <Stack flex={1} overflow="hidden">
                                 <Typography variant="body2" fontWeight={500}>
                                     {name}
@@ -39,11 +39,12 @@ const useAlbumColumns = () => {
                     );
                 },
                 header: t('album'),
-                size: 300,
+                size: 200,
             },
             {
+                accessorFn: (row) => row.media.length,
                 header: t('number_of_media'),
-                size: isVietnamese ? 150 : 50,
+                size: isVietnamese ? 125 : 50,
             },
             {
                 accessorFn: (row) =>
@@ -53,7 +54,7 @@ const useAlbumColumns = () => {
                         <CancelOutlinedIcon color="error" />
                     ),
                 header: t('highlight'),
-                size: 50,
+                size: 75,
             },
             {
                 accessorFn: (row) => (

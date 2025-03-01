@@ -1,13 +1,15 @@
 import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
+import { Property } from 'csstype';
 import { Fragment, useState } from 'react';
 
 type Props = {
     src: string;
     alt: string;
+    aspectRatio?: Property.AspectRatio;
 };
 
-const AlbumThumbnailInTable = ({ src, alt }: Props) => {
+const ImageInTable = ({ src, alt, aspectRatio }: Props) => {
     const [openModal, setOpenModal] = useState(false);
 
     const handleOpenModal = () => {
@@ -31,7 +33,7 @@ const AlbumThumbnailInTable = ({ src, alt }: Props) => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                sx={{
+                sx={(theme) => ({
                     cursor: 'pointer',
                     position: 'relative',
                     '::before': {
@@ -40,15 +42,22 @@ const AlbumThumbnailInTable = ({ src, alt }: Props) => {
                         position: 'absolute',
                         inset: 0,
                         bgcolor: 'transparent',
-                        transition: (theme) => theme.transitions.create('background-color'),
+                        transition: theme.transitions.create('background-color'),
                     },
                     ':hover': {
                         '::before': {
-                            bgcolor: 'var(--mui-palette-primary-darkerOpacity)',
+                            bgcolor: 'var(--mui-palette-action-selected)',
+                        },
+                        img: {
+                            opacity: 0.5,
                         },
                     },
-                    img: { borderRadius: 0.5, height: 1 },
-                }}
+                    img: {
+                        borderRadius: 0.5,
+                        height: 1,
+                        transition: theme.transitions.create('opacity'),
+                    },
+                })}
                 onClick={handleOpenModal}
             >
                 <img src={src} alt={alt} />
@@ -58,10 +67,10 @@ const AlbumThumbnailInTable = ({ src, alt }: Props) => {
                 onClose={handleCloseModal}
                 slotProps={{ paper: { sx: { bgcolor: 'transparent' } } }}
             >
-                <Box component="img" src={src} alt={alt} sx={{ aspectRatio: 4 / 5 }} />
+                <Box component="img" src={src} alt={alt} sx={{ aspectRatio }} />
             </Dialog>
         </Fragment>
     );
 };
 
-export default AlbumThumbnailInTable;
+export default ImageInTable;

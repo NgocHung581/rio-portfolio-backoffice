@@ -1,4 +1,4 @@
-import { PageProps } from '@/types';
+import { Option, PageProps } from '@/types';
 import { Album } from '@/types/album';
 import AlbumMediaListTable from '@/views/Album/edit/AlbumMediaListTable';
 import { Head } from '@inertiajs/react';
@@ -9,6 +9,8 @@ import AlbumForm from '../../views/Album/shared/AlbumForm';
 
 export type EditAlbumPageProps = {
     album: Album;
+    albumMediaColumnSpanOptions: Option[];
+    mediaTypeOptions: Option[];
 };
 
 const EditAlbumPage = ({ album }: PageProps<EditAlbumPageProps>) => {

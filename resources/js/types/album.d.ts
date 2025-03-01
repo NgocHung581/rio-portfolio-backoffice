@@ -1,14 +1,17 @@
 import { MediaType } from '@/enums/mediaType';
+import { Media } from './media';
 
-export type Media = {
+export type AlbumMedia = {
     id: number;
+    album_id: number;
     type: MediaType;
-    url: string;
+    file_path: string;
     file_name: string;
     file_size: number;
+    column_span: number;
+    is_displayed_on_banner: boolean;
     created_at: string;
     updated_at: string;
-    deleted_at: string | null;
 };
 
 export type Album = {
@@ -23,6 +26,7 @@ export type Album = {
     summary_vi: string;
     is_highlight: boolean;
     thumbnail: Media;
+    media: AlbumMedia[];
     created_at: string;
     updated_at: string;
     deleted_at: string | null;

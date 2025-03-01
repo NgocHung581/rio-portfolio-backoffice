@@ -1,6 +1,7 @@
 import ImageDropzone from '@/@core/components/ImageDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
 import BackListButton from '@/Components/BackListButton';
+import { MaxFileSize } from '@/enums/maxFileSize';
 import { Album, AlbumFormPayload } from '@/types/album';
 import { useForm } from '@inertiajs/react';
 import Alert from '@mui/material/Alert';
@@ -101,7 +102,7 @@ const AlbumForm = ({ album }: Props) => {
                     </Stack>
                 }
             />
-            <Divider />
+            <Divider sx={{ mb: 4 }} />
             <CardContent>
                 <Grid container spacing={4}>
                     <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
@@ -208,7 +209,7 @@ const AlbumForm = ({ album }: Props) => {
                         <FormControl required>
                             <FormLabel>{t('thumbnail')}</FormLabel>
                             <ImageDropzone
-                                maxSize={31457280} // NOTE: 30MB
+                                maxSize={MaxFileSize.Image}
                                 onChange={(file) => setData('thumbnail_file', file)}
                                 onDeleteImage={() =>
                                     setData((prev) => ({
@@ -246,7 +247,7 @@ const AlbumForm = ({ album }: Props) => {
             </CardContent>
             {!album?.deleted_at && (
                 <Fragment>
-                    <Divider />
+                    <Divider sx={{ mt: 4 }} />
                     <CardActions sx={{ justifyContent: 'center' }}>
                         <Button type="submit" loading={processing}>
                             {!album ? t('add') : t('save')}

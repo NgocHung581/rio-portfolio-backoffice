@@ -15,7 +15,6 @@ class Media extends Model
 
     protected $primaryKey = 'id';
 
-
     protected $fillable = [
         'type',
         'file_path',

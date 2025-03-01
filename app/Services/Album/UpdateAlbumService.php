@@ -24,6 +24,8 @@ class UpdateAlbumService
 
     public function execute(Album $album, array $data): array
     {
+        $uploadedFilePath = '';
+
         try {
             DB::beginTransaction();
 
@@ -46,7 +48,7 @@ class UpdateAlbumService
 
                 return [
                     'is_success' => false,
-                    'message'    => __('messages')['data_updated_failed'],
+                    'message' => __('messages')['data_updated_failed'],
                 ];
             }
 
@@ -55,9 +57,23 @@ class UpdateAlbumService
 
             if (isset($newThumbnailFile)) {
                 $oldThumbnailFilePath = $album->thumbnail->file_path;
-                $thumbnailFolderName = 'media/' . MediaFolderNamePrefix::THUMBNAILS;
+                $thumbnailFolderName = 'media/' . MediaFolderNamePrefix::THUMBNAILS . '/album';
                 $newThumbnailFileName = $this->generateMediaFileName($newThumbnailFile);
-                $newThumbnailFilePath = "/storage/{$thumbnailFolderName}/{$newThumbnailFileName}";
+
+                // Upload new album thumbnail.
+                $result = Storage::disk('public')->putFileAs($thumbnailFolderName, $newThumbnailFile, $newThumbnailFileName);
+
+                if ($result === false) {
+                    DB::rollBack();
+
+                    return [
+                        'is_success' => false,
+                        'message' => __('messages')['file_upload_failed'],
+                    ];
+                }
+
+                $newThumbnailFilePath = "/storage/{$result}";
+                $uploadedFilePath = $newThumbnailFilePath;
 
                 // Save new album thumbnail.
                 $updatedCount = $album->thumbnail()->update([
@@ -68,22 +84,11 @@ class UpdateAlbumService
 
                 if ($updatedCount !== 1) {
                     DB::rollBack();
+                    unlink(public_path($uploadedFilePath));
 
                     return [
                         'is_success' => false,
-                        'message'    => __('messages')['data_updated_failed'],
-                    ];
-                }
-
-                // Upload new album thumbnail.
-                $result = Storage::disk('public')->putFileAs($thumbnailFolderName, $newThumbnailFile, $newThumbnailFileName);
-
-                if ($result === false) {
-                    DB::rollBack();
-
-                    return [
-                        'is_success' => false,
-                        'message'    => __('messages')['file_upload_failed'],
+                        'message' => __('messages')['data_updated_failed'],
                     ];
                 }
 
@@ -95,15 +100,16 @@ class UpdateAlbumService
 
             return [
                 'is_success' => true,
-                'message'    => __('messages')['data_updated_successfully'],
+                'message' => __('messages')['data_updated_successfully'],
             ];
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
+            unlink(public_path($uploadedFilePath));
 
             return [
                 'is_success' => false,
-                'message'    => __('messages')['internal_server_error'],
+                'message' => __('messages')['internal_server_error'],
             ];
         }
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\AlbumMediaColumnSpan;
+use App\Enums\MediaType;
 use App\Http\Requests\Album\CreateAlbumRequest;
 use App\Http\Requests\Album\ListAlbumsRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
@@ -68,6 +70,8 @@ class AlbumController extends Controller
     {
         return inertia('Album/Edit', [
             'album' => new AlbumResource($album),
+            'albumMediaColumnSpanOptions' => AlbumMediaColumnSpan::toArray(),
+            'mediaTypeOptions' => MediaType::toArray(),
         ]);
     }
 

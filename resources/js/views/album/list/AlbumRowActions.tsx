@@ -12,7 +12,7 @@ type Props = {
 const AlbumRowActions = ({ album }: Props) => {
     return (
         <Stack direction="row" alignItems="center" justifyContent="center">
-            <IconButton size="small" LinkComponent={Link} href={route('albums.edit', album)}>
+            <IconButton color="info" size="small" LinkComponent={Link} href={route('albums.edit', album)}>
                 <EditOutlinedIcon />
             </IconButton>
             <AlbumOtherActions album={album} />

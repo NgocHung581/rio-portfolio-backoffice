@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useAlbumColumns from './hooks/useAlbumColumns';
+import useAlbumColumns from '../hooks/useAlbumColumns';
 
 const AlbumListTable = () => {
     const { t } = useTranslation();

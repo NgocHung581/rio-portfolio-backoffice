@@ -24,6 +24,8 @@ class CreateAlbumService
 
     public function execute(array $data): array
     {
+        $uploadedFilePath = '';
+
         try {
             DB::beginTransaction();
 
@@ -40,17 +42,9 @@ class CreateAlbumService
                 $data['is_highlight']
             );
 
-            // Create album thumbnail.
             $thumbnailFile = $data['thumbnail_file'];
             $thumbnailFileName = $this->generateMediaFileName($thumbnailFile);
-            $thumbnailFolderName = 'media/' . MediaFolderNamePrefix::THUMBNAILS;
-
-            $album->thumbnail()->create([
-                'type'      => MediaType::Image->value,
-                'file_path' => "/storage/{$thumbnailFolderName}/{$thumbnailFileName}",
-                'file_name' => $thumbnailFileName,
-                'file_size' => $thumbnailFile->getSize(),
-            ]);
+            $thumbnailFolderName = 'media/' . MediaFolderNamePrefix::THUMBNAILS . '/album';
 
             // Upload album thumbnail file.
             $result = Storage::disk('public')->putFileAs($thumbnailFolderName, $thumbnailFile, $thumbnailFileName);
@@ -60,24 +54,36 @@ class CreateAlbumService
 
                 return [
                     'is_success' => false,
-                    'message'    => __('messages')['file_upload_failed'],
+                    'message' => __('messages')['file_upload_failed'],
                 ];
             }
+
+            $thumbnailFilePath = "/storage/{$result}";
+            $uploadedFilePath = $thumbnailFilePath;
+
+            // Create album thumbnail.
+            $album->thumbnail()->create([
+                'type' => MediaType::Image->value,
+                'file_path' => $thumbnailFilePath,
+                'file_name' => $thumbnailFileName,
+                'file_size' => $thumbnailFile->getSize(),
+            ]);
 
             DB::commit();
 
             return [
                 'is_success' => true,
-                'message'    => __('messages')['data_created_successfully'],
-                'album'      => $album,
+                'message' => __('messages')['data_created_successfully'],
+                'album' => $album,
             ];
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
+            unlink(public_path($uploadedFilePath));
 
             return [
                 'is_success' => false,
-                'message'    => __('messages')['internal_server_error'],
+                'message' => __('messages')['internal_server_error'],
             ];
         }
     }
