@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\AlbumMedia;
+namespace App\Services\AlbumMediaItem;
 
 use App\Models\AlbumMediaItem;
 use App\Repositories\AlbumMediaItemRepository;
@@ -11,7 +11,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class DeleteAlbumMediaItemService
+class DestroyAlbumMediaItemService
 {
     public function __construct(private readonly AlbumMediaItemRepository $albumMediaItemRepository)
     {

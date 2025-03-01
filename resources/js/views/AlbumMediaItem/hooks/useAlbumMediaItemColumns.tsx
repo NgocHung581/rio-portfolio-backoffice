@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import AlbumMediaItemRowActions from '../edit/AlbumMediaItemRowActions';
+import AlbumMediaItemRowActions from '../list/AlbumMediaItemRowActions';
 
 const useAlbumMediaItemColumns = () => {
     const { t, i18n } = useTranslation();

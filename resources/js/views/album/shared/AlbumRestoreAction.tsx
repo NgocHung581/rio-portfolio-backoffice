@@ -25,7 +25,7 @@ const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
     };
 
     const handleRestoreAlbum = () => {
-        router.patch(route('albums.restoreAlbum', album), undefined, {
+        router.patch(route('albums.restore', album), undefined, {
             preserveScroll: true,
             onStart: () => setIsLoading(true),
             onFinish: () => setIsLoading(false),

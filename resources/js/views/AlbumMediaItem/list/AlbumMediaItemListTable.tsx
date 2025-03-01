@@ -20,7 +20,6 @@ const AlbumMediaItemListTable = () => {
     const { t, i18n } = useTranslation();
     const { album } = usePage<PageProps<EditAlbumPageProps>>().props;
 
-    const [isLoading, setIsLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState<MRT_RowSelectionState>({});
 
     const columns = useAlbumMediaItemColumns();
@@ -56,7 +55,7 @@ const AlbumMediaItemListTable = () => {
                 {t('no_data_available')}
             </Typography>
         ),
-        state: { isLoading, rowSelection: selectedRows },
+        state: { rowSelection: selectedRows },
         onRowSelectionChange: setSelectedRows,
         getRowId: (originalRow) => originalRow.id.toString(),
         localization: getTableLocalization(),

@@ -101,7 +101,7 @@ class AlbumController extends Controller
     /**
      * Delete (soft) the album.
      */
-    public function deleteAlbum(
+    public function delete(
         Album $album,
         DeleteAlbumService $service
     ): RedirectResponse {
@@ -117,7 +117,7 @@ class AlbumController extends Controller
     /**
      * Restore the album.
      */
-    public function restoreAlbum(
+    public function restore(
         Album $album,
         RestoreAlbumService $service
     ): RedirectResponse {
@@ -133,7 +133,7 @@ class AlbumController extends Controller
     /**
      * Delete (force) the album.
      */
-    public function destroyAlbum(
+    public function destroy(
         Album $album,
         DestroyAlbumService $service
     ): RedirectResponse {

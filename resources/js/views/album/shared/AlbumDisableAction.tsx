@@ -25,7 +25,7 @@ const AlbumDisableAction = ({ album, onCloseMenu }: AlbumActionProps) => {
     };
 
     const handleDisableAlbum = () => {
-        router.patch(route('albums.deleteAlbum', album), undefined, {
+        router.patch(route('albums.delete', album), undefined, {
             preserveScroll: true,
             onStart: () => setIsLoading(true),
             onFinish: () => setIsLoading(false),

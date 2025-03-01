@@ -9,7 +9,7 @@ use App\Models\MediaFile;
 class MediaFileRepository
 {
     /**
-     * Bulk destroy media by IDs.
+     * Bulk destroy media files by IDs.
      */
     public function bulkDestroyByIds(array $ids): bool
     {

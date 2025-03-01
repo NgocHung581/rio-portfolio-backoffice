@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\AlbumMedia;
+namespace App\Services\AlbumMediaItem;
 
 use App\Constants\MediaFolderNamePrefix;
 use App\Enums\FileType;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class CreateAlbumMediaItemService
+class CreateAlbumMediaItemsService
 {
     use MediaHelper;
 
@@ -35,17 +35,15 @@ class CreateAlbumMediaItemService
                 $isDisplayedOnBanner = $item['is_displayed_on_banner'];
                 $file = $item['file'];
                 $fileName = $this->generateMediaFileName($file);
-                $folderName = 'media/';
+                $folderName = "media/album_{$albumId}/";
 
                 match ($type) {
                     FileType::Image->value => $folderName .= MediaFolderNamePrefix::IMAGES,
                     FileType::Video->value => $folderName .= MediaFolderNamePrefix::VIDEOS,
                 };
 
-                $folderName .= "/album_{$albumId}";
-
                 // Create album media.
-                $albumMedia = $this->albumMediaItemRepository->create(
+                $albumMediaItem = $this->albumMediaItemRepository->create(
                     $albumId,
                     $columnSpan,
                     $isDisplayedOnBanner
@@ -69,7 +67,7 @@ class CreateAlbumMediaItemService
                 $uploadedFilePaths[] = $filePath;
 
                 // Create album media item.
-                $albumMedia->albumMediaFile()->create([
+                $albumMediaItem->mediaFile()->create([
                     'file_type' => $type,
                     'file_path' => $filePath,
                     'file_name' => $fileName,

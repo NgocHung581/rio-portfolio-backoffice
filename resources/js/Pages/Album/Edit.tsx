@@ -1,6 +1,6 @@
 import { Option, PageProps } from '@/types';
 import { Album } from '@/types/album';
-import AlbumMediaItemListTable from '@/views/Album/edit/AlbumMediaItemListTable';
+import AlbumMediaItemListTable from '@/views/AlbumMediaItem/list/AlbumMediaItemListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';

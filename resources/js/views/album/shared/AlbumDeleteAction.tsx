@@ -26,7 +26,7 @@ const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
     };
 
     const handleDeleteAlbum = () => {
-        router.delete(route('albums.destroyAlbum', album), {
+        router.delete(route('albums.destroy', album), {
             preserveScroll: true,
             onStart: () => setIsLoading(true),
             onFinish: () => setIsLoading(false),

@@ -36,9 +36,9 @@ Route::middleware('auth')->group(function(): void {
             Route::post('/store', 'store')->name('store');
             Route::get('/{album}/edit', 'edit')->name('edit')->withTrashed();
             Route::post('/{album}/update', 'update')->name('update');
-            Route::patch('/{album}/delete', 'deleteAlbum')->name('deleteAlbum');
-            Route::patch('/{album}/restore', 'restoreAlbum')->name('restoreAlbum')->withTrashed();
-            Route::delete('/{album}/destroy', 'destroyAlbum')->name('destroyAlbum')->withTrashed();
+            Route::patch('/{album}/delete', 'delete')->name('delete');
+            Route::patch('/{album}/restore', 'restore')->name('restore')->withTrashed();
+            Route::delete('/{album}/destroy', 'destroy')->name('destroy')->withTrashed();
         });
 
         // Album media.
@@ -46,8 +46,8 @@ Route::middleware('auth')->group(function(): void {
             ->group(function(): void {
                 Route::get('/upload', 'create')->name('create');
                 Route::post('/upload', 'store')->name('store');
-                Route::patch('/{albumMedia}/bulk-delete', 'deleteAlbumMediaItems')->name('deleteAlbumMediaItems');
-                Route::delete('/{albumMedia}/delete', 'deleteAlbumMediaItem')->name('deleteAlbumMediaItem');
+                Route::patch('/bulk-delete', 'bulkDestroy')->name('bulkDestroy');
+                Route::delete('/{albumMediaItem}/delete', 'destroy')->name('destroy');
             });
     });
 
