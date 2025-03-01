@@ -1,3 +1,4 @@
+import { convertBytes } from '@/utils/fileHelper';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import Box from '@mui/material/Box';
@@ -81,7 +82,7 @@ const ImageDropzone = ({
         if (fileRejections.length > 0 && onError) {
             switch (fileRejections[0].errors[0].code) {
                 case ErrorCode.FileTooLarge:
-                    return onError(t('messages.file_too_large', { max: bytesToKilobytes(maxSize) }));
+                    return onError(t('messages.file_too_large', { max: convertBytes(maxSize) }));
                 case ErrorCode.FileInvalidType:
                     return onError(t('messages.invalid_mine_types', { mine_types: ['jpeg', 'png'].join(', ') }));
                 default:
@@ -130,14 +131,6 @@ const ImageDropzone = ({
             return props.initImage ? [props.initImage] : [];
         }
     }
-
-    const bytesToKilobytes = (bytes?: number) => {
-        if (!bytes) return 0;
-
-        const kb = bytes / 1024;
-
-        return Number(kb % 1 === 0 ? kb.toFixed(0) : kb.toFixed(1));
-    };
 
     const handleDeleteAllImages = () => {
         selectedImages.forEach((image) => URL.revokeObjectURL(image.url));
@@ -232,7 +225,7 @@ const ImageDropzone = ({
                                             {selectedImage.file_name}
                                         </Typography>
                                         <Typography variant="caption" color="textSecondary">
-                                            {bytesToKilobytes(selectedImage.file_size)} KB
+                                            {convertBytes(selectedImage.file_size)} KB
                                         </Typography>
                                     </Stack>
                                 </Stack>

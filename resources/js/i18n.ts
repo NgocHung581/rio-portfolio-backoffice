@@ -17,6 +17,9 @@ i18n.use(Backend)
         debug: true,
         interpolation: {
             escapeValue: false,
+            defaultVariables: {
+                fileSizeUnit: 'KB',
+            },
         },
         react: {
             useSuspense: true,

@@ -3,17 +3,18 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\AlbumMediaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SettingAboutPageController;
 use Illuminate\Support\Facades\Route;
 
-// Update locale
+// Update locale.
 Route::put('/locale', [LocaleController::class, 'update'])->name('locale.update');
 
 Route::middleware('guest')->group(function () {
-    // Auth
+    // Auth.
     Route::controller(AuthController::class)->group(function () {
         Route::get('/login', 'login')->name('login');
         Route::post('/login', 'authenticate')->name('authenticate');
@@ -21,13 +22,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // Auth
+    // Auth.
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Dashboard
+    // Dashboard.
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Album
+    // Album.
     Route::prefix('/albums')->name('albums.')->group(function () {
         Route::controller(AlbumController::class)->group(function () {
             Route::get('/', 'index')->name('index');
@@ -39,10 +40,18 @@ Route::middleware('auth')->group(function () {
             Route::patch('/{album}/restore', 'restoreAlbum')->name('restoreAlbum')->withTrashed();
             Route::delete('/{album}/destroy', 'destroyAlbum')->name('destroyAlbum')->withTrashed();
         });
+
+        // Album media.
+        Route::prefix('/{album}')->controller(AlbumMediaController::class)->name('media.')
+            ->group(function () {
+                Route::get('/upload', 'create')->name('create');
+                Route::post('/upload', 'store')->name('store');
+            });
     });
 
-    // Setting about page
-    Route::controller(SettingAboutPageController::class)->prefix('/setting-about-page')->name('settingAboutPage.')->group(function () {
-        Route::get('/', 'index')->name('index');
-    });
+    // Setting about page.
+    Route::controller(SettingAboutPageController::class)->prefix('/setting-about-page')->name('settingAboutPage.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+        });
 });

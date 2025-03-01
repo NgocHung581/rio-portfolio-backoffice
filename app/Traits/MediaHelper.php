@@ -13,6 +13,6 @@ trait MediaHelper
      */
     public function generateMediaFileName(UploadedFile $file): string
     {
-        return 'media_' . time() . '.' . $file->extension();
+        return 'media_' . str_replace('.', '', (string) microtime(true)) . '.' . $file->extension();
     }
 }

@@ -32,7 +32,7 @@ class AlbumController extends Controller
         $albums = $service->execute($request->per_page, $request->keyword);
 
         return inertia('Album/List', [
-            'albums'         => AlbumResource::collection($albums),
+            'albums' => AlbumResource::collection($albums),
             'initSearchForm' => ['keyword' => $request->keyword ?? ''],
         ]);
     }
