@@ -35,7 +35,7 @@ class DestroyAlbumMediaItemService
 
                 return [
                     'is_success' => false,
-                    'message' => __('messages')['data_bulk_deleted_failed'],
+                    'message' => __('messages')['data_deleted_failed'],
                 ];
             }
 

@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/react';
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
 import Button from '@mui/material/Button';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +32,7 @@ const BackListButton = ({ href }: Props) => {
 
     return (
         <Fragment>
-            <Button color="secondary" onClick={handleOpenModal}>
+            <Button color="secondary" startIcon={<FormatListBulletedOutlinedIcon />} onClick={handleOpenModal}>
                 {t('list')}
             </Button>
 

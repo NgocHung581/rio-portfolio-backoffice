@@ -4,6 +4,7 @@ import BackListButton from '@/Components/BackListButton';
 import { MaxFileSize } from '@/enums/maxFileSize';
 import { Album, AlbumFormPayload } from '@/types/album';
 import { useForm } from '@inertiajs/react';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -78,15 +79,25 @@ const AlbumForm = ({ album }: Props) => {
             <CardHeader
                 disableTypography
                 title={
-                    <Stack direction="row" alignItems="center" gap={4} flexWrap="wrap">
-                        <Box flex={1}>
-                            {!!album?.deleted_at && (
-                                <Alert severity="warning">
-                                    <Typography variant="h6">{t('data_disabled_alert')}</Typography>
-                                </Alert>
-                            )}
+                    <Stack direction="row" alignItems="center" justifyContent="space-between" gap={4} flexWrap="wrap">
+                        <Box>
+                            {!!album &&
+                                (!!album.deleted_at ? (
+                                    <Alert severity="warning">
+                                        <Typography variant="h6">{t('data_disabled_alert')}</Typography>
+                                    </Alert>
+                                ) : (
+                                    <Button
+                                        component="a"
+                                        href="#media"
+                                        color="info"
+                                        startIcon={<VisibilityOutlinedIcon />}
+                                    >
+                                        {t('view_media')}
+                                    </Button>
+                                ))}
                         </Box>
-                        <Stack direction="row" alignItems="center" justifyContent="end" gap={2} flexWrap="wrap">
+                        <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
                             <BackListButton href={route('albums.index')} />
                             {!!album && (
                                 <Fragment>

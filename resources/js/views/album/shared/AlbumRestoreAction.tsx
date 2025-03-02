@@ -48,7 +48,7 @@ const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
                 </MenuItem>
             )}
             {route().current('albums.edit', album) && (
-                <Button color="success" onClick={handleOpenModal}>
+                <Button color="success" startIcon={<RestoreOutlinedIcon />} onClick={handleOpenModal}>
                     {t('restore')}
                 </Button>
             )}

@@ -1,5 +1,6 @@
 import ImageDropzone from '@/@core/components/ImageDropzone';
 import VideoField from '@/@core/components/VideoField';
+import BackListButton from '@/Components/BackListButton';
 import { Language } from '@/enums/language';
 import { MaxFileSize } from '@/enums/maxFileSize';
 import { MediaType } from '@/enums/mediaType';
@@ -106,7 +107,7 @@ const CreateAlbumMediaPage = ({
         e.preventDefault();
         clearErrors();
 
-        post(route('albums.media.store', album), {
+        post(route('albums.media.bulkStore', album), {
             onSuccess: ({ props: { message } }) => toast.success(message),
             onError: (error) => toast.error(error.message),
         });
@@ -118,8 +119,20 @@ const CreateAlbumMediaPage = ({
             <Typography variant="h1">{t('upload_album_media')}</Typography>
             <Card component="form" onSubmit={handleSubmit}>
                 <CardHeader
-                    title={`${t('album')}: ${i18n.language === Language.Vietnamese ? album.name_vi : album.name_en}`}
-                    slotProps={{ content: { sx: { wordBreak: 'break-word' } }, title: { color: 'primary' } }}
+                    title={
+                        <Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            gap={4}
+                            flexWrap="wrap"
+                        >
+                            <Typography variant="h5" color="primary">
+                                {`${t('album')}: ${i18n.language === Language.Vietnamese ? album.name_vi : album.name_en}`}
+                            </Typography>
+                            <BackListButton href={`${route('albums.edit', album)}#media`} />
+                        </Stack>
+                    }
                 />
                 <Divider sx={{ mb: 4 }} />
                 <CardContent>

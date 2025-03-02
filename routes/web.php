@@ -44,8 +44,9 @@ Route::middleware('auth')->group(function(): void {
         // Album media.
         Route::prefix('/{album}/media')->controller(AlbumMediaItemController::class)->name('media.')
             ->group(function(): void {
-                Route::get('/upload', 'create')->name('create');
-                Route::post('/upload', 'store')->name('store');
+                Route::get('/upload', 'bulkCreate')->name('bulkCreate');
+                Route::post('/upload', 'bulkStore')->name('bulkStore');
+                Route::put('/bulk-update', 'bulkUpdate')->name('bulkUpdate');
                 Route::patch('/bulk-delete', 'bulkDestroy')->name('bulkDestroy');
                 Route::delete('/{albumMediaItem}/delete', 'destroy')->name('destroy');
             });

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Constants\PerPage;
 use App\Enums\ColumnSpan;
 use App\Enums\FileType;
 use App\Http\Requests\Album\CreateAlbumRequest;
 use App\Http\Requests\Album\ListAlbumsRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
+use App\Http\Resources\AlbumMediaItemResource;
 use App\Http\Resources\AlbumResource;
 use App\Models\Album;
 use App\Services\Album\CreateAlbumService;
@@ -68,8 +70,11 @@ class AlbumController extends Controller
 
     public function edit(Album $album): Response|ResponseFactory
     {
+        $albumMediaItems = $album->mediaItems()->with('mediaFile')->paginate(PerPage::DEFAULT, pageName: 'album_media_page');
+
         return inertia('Album/Edit', [
             'album' => new AlbumResource($album),
+            'albumMediaItems' => AlbumMediaItemResource::collection($albumMediaItems),
             'columnSpanOptions' => ColumnSpan::toArray(),
             'fileTypeOptions' => FileType::toArray(),
         ]);

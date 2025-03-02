@@ -85,6 +85,9 @@
     "media": "Phương tiện truyền thông",
     "type": "Loại",
     "bulk_delete": "Xóa hàng loạt",
+    "edit": "Chỉnh sửa",
+    "view_media": "Xem phương tiện truyền thông",
+    "action": "Hành động",
     "messages": {
         "invalid_link": "Đường dẫn này không hợp lệ.",
         "file_too_large": "Tệp không được lớn hơn {{max}} {{fileSizeUnit}}.",
@@ -97,12 +100,10 @@
         "data_restored_successfully": "Dữ liệu đã được khôi phục thành công.",
         "data_deleted_successfully": "Dữ liệu đã được xóa thành công.",
         "data_uploaded_successfully": "Dữ liệu đã được tải lên thành công.",
-        "data_bulk_deleted_successfully": "Dữ liệu đã được xóa hàng loạt thành công.",
         "data_created_failed": "Thêm dữ liệu không thành công.",
         "data_updated_failed": "Chỉnh sửa dữ liệu không thành công.",
         "data_disabled_failed": "Vô hiệu hóa dữ liệu không thành công.",
         "data_restored_failed": "Khôi phục dữ liệu không thành công.",
-        "data_deleted_failed": "Xóa dữ liệu không thành công.",
-        "data_bulk_deleted_failed": "Xóa hàng loạt dữ liệu không thành công."
+        "data_deleted_failed": "Xóa dữ liệu không thành công."
     }
 }

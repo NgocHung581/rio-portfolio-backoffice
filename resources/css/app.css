@@ -131,6 +131,10 @@ html.dark:root,
     --mui-palette-dividerChannel: 255 255 255;
 }
 
+* {
+    scroll-behavior: smooth;
+}
+
 a {
     display: inline-block;
     color: inherit;

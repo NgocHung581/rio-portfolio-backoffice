@@ -33,6 +33,19 @@ class AlbumMediaItemRepository
     }
 
     /**
+     * Update an album media item.
+     */
+    public function update(int $id, int $columnSpan, bool $isDisplayedOnBanner): bool
+    {
+        $updatedCount = AlbumMediaItem::query()->where('id', $id)->update([
+            'column_span' => $columnSpan,
+            'is_displayed_on_banner' => $isDisplayedOnBanner,
+        ]);
+
+        return $updatedCount === 1;
+    }
+
+    /**
      * Destroy an album media item by ID.
      */
     public function destroyById(int $id): bool

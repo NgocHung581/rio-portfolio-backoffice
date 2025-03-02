@@ -40,7 +40,7 @@ const AlbumMediaItemDeleteAction = ({ albumMediaItem }: Props) => {
 
     return (
         <Fragment>
-            <IconButton size="small" color="error" onClick={handleOpenModal}>
+            <IconButton size="small" color="error" onClick={handleOpenModal} disabled={!!album.deleted_at}>
                 <DeleteOutlinedIcon />
             </IconButton>
             <ConfirmationModal

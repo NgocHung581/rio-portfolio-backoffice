@@ -41,7 +41,7 @@ class BulkDestroyAlbumMediaItemsService
 
                 return [
                     'is_success' => false,
-                    'message' => __('messages')['data_bulk_deleted_failed'],
+                    'message' => __('messages')['data_deleted_failed'],
                 ];
             }
 
@@ -53,7 +53,7 @@ class BulkDestroyAlbumMediaItemsService
 
                 return [
                     'is_success' => false,
-                    'message' => __('messages')['data_bulk_deleted_failed'],
+                    'message' => __('messages')['data_deleted_failed'],
                 ];
             }
 
@@ -66,7 +66,7 @@ class BulkDestroyAlbumMediaItemsService
 
             return [
                 'is_success' => true,
-                'message' => __('messages')['data_bulk_deleted_successfully'],
+                'message' => __('messages')['data_deleted_successfully'],
             ];
         } catch (Exception|QueryException $e) {
             Log::error($e);

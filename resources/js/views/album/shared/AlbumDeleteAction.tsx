@@ -52,7 +52,7 @@ const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
                 </Fragment>
             )}
             {route().current('albums.edit', album) && (
-                <Button color="error" onClick={handleOpenModal}>
+                <Button color="error" startIcon={<DeleteOutlinedIcon />} onClick={handleOpenModal}>
                     {t('delete')}
                 </Button>
             )}

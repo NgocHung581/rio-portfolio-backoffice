@@ -7,7 +7,7 @@ const LanguageProvider = ({ children }: PropsWithChildren) => {
     const { i18n } = useTranslation();
 
     useEffect(() => {
-        router.put(route('locale.update'), { locale: i18n.language });
+        router.put(route('locale.update'), { locale: i18n.language }, { preserveScroll: true });
     }, []);
 
     return children;

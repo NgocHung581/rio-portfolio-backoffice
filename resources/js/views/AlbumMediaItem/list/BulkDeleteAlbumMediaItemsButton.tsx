@@ -2,6 +2,7 @@ import ConfirmationModal from '@/Components/ConfirmationModal';
 import { EditAlbumPageProps } from '@/Pages/Album/Edit';
 import { PageProps } from '@/types';
 import { router, usePage } from '@inertiajs/react';
+import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
 import Button from '@mui/material/Button';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +46,12 @@ const BulkDeleteAlbumMediaItemsButton = ({ selectedAlbumMediaIds }: Props) => {
 
     return (
         <Fragment>
-            <Button color="error" onClick={handleOpenModal} disabled={selectedAlbumMediaIds.length === 0}>
+            <Button
+                color="error"
+                startIcon={<DeleteSweepOutlinedIcon />}
+                onClick={handleOpenModal}
+                disabled={selectedAlbumMediaIds.length === 0}
+            >
                 {t('bulk_delete')}
             </Button>
             <ConfirmationModal

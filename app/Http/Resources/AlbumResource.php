@@ -16,7 +16,7 @@ class AlbumResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $this->loadMissing(['thumbnail', 'mediaItems']);
+        $this->loadMissing(['thumbnail', 'mediaItems.mediaFile']);
 
         $data = [
             'id' => $this->id,

@@ -1,5 +1,5 @@
-import { Option, PageProps } from '@/types';
-import { Album } from '@/types/album';
+import { Option, PageProps, PaginatedData } from '@/types';
+import { Album, AlbumMediaItem } from '@/types/album';
 import AlbumMediaItemListTable from '@/views/AlbumMediaItem/list/AlbumMediaItemListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';
@@ -9,6 +9,7 @@ import AlbumForm from '../../views/Album/shared/AlbumForm';
 
 export type EditAlbumPageProps = {
     album: Album;
+    albumMediaItems: PaginatedData<AlbumMediaItem>;
     columnSpanOptions: Option[];
     fileTypeOptions: Option[];
 };
