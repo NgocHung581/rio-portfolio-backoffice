@@ -22,7 +22,6 @@ class RestoreAlbumService
         try {
             DB::beginTransaction();
 
-            // TODO: Restore media of album
             $isCompleted = $this->albumRepository->restoreAlbumById($album->id);
 
             if (!$isCompleted) {
@@ -30,7 +29,7 @@ class RestoreAlbumService
 
                 return [
                     'is_success' => false,
-                    'message'    => __('messages')['data_restored_failed'],
+                    'message' => __('messages')['data_restored_failed'],
                 ];
             }
 
@@ -38,7 +37,7 @@ class RestoreAlbumService
 
             return [
                 'is_success' => true,
-                'message'    => __('messages')['data_restored_successfully'],
+                'message' => __('messages')['data_restored_successfully'],
             ];
         } catch (Exception|QueryException $e) {
             Log::error($e);
@@ -46,7 +45,7 @@ class RestoreAlbumService
 
             return [
                 'is_success' => false,
-                'message'    => __('messages')['internal_server_error'],
+                'message' => __('messages')['internal_server_error'],
             ];
         }
     }

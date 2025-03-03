@@ -98,7 +98,7 @@ const AlbumForm = ({ album }: Props) => {
                                 ))}
                         </Box>
                         <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
-                            <BackListButton href={route('albums.index')} />
+                            <BackListButton href={route('albums.index')} disabled={processing} />
                             {!!album && (
                                 <Fragment>
                                     {!!album.deleted_at ? (

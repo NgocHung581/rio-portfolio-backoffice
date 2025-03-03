@@ -12,6 +12,7 @@ export type EditAlbumPageProps = {
     albumMediaItems: PaginatedData<AlbumMediaItem>;
     columnSpanOptions: Option[];
     fileTypeOptions: Option[];
+    fileType: Record<string, number>;
 };
 
 const EditAlbumPage = ({ album }: PageProps<EditAlbumPageProps>) => {

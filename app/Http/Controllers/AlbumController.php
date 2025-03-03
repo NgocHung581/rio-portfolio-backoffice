@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\PerPage;
 use App\Enums\ColumnSpan;
-use App\Enums\FileType;
+use App\Enums\MediaType;
 use App\Http\Requests\Album\CreateAlbumRequest;
 use App\Http\Requests\Album\ListAlbumsRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
@@ -56,10 +56,7 @@ class AlbumController extends Controller
         CreateAlbumRequest $request,
         CreateAlbumService $service
     ): RedirectResponse {
-        $result = $service->execute([
-            ...$request->input(),
-            'thumbnail_file' => $request->thumbnail_file,
-        ]);
+        $result = $service->execute($request->all());
 
         if (!$result['is_success']) {
             return back()->withErrors(['message' => $result['message']]);
@@ -70,13 +67,16 @@ class AlbumController extends Controller
 
     public function edit(Album $album): Response|ResponseFactory
     {
-        $albumMediaItems = $album->mediaItems()->with('mediaFile')->paginate(PerPage::DEFAULT, pageName: 'album_media_page');
+        $albumMediaItems = $album->mediaItems()
+            ->with(['mediaFile', 'videoThumbnailFile'])
+            ->paginate(PerPage::DEFAULT, pageName: 'album_media_page');
 
         return inertia('Album/Edit', [
-            'album' => new AlbumResource($album),
+            'album' => new AlbumResource($album->loadCount('mediaItems')),
             'albumMediaItems' => AlbumMediaItemResource::collection($albumMediaItems),
             'columnSpanOptions' => ColumnSpan::toArray(),
-            'fileTypeOptions' => FileType::toArray(),
+            'fileTypeOptions' => MediaType::toFileTypeOptions(),
+            'fileType' => MediaType::toFileTypeArray(),
         ]);
     }
 
@@ -88,13 +88,7 @@ class AlbumController extends Controller
         UpdateAlbumRequest $request,
         UpdateAlbumService $service
     ): RedirectResponse {
-        $result = $service->execute(
-            $album,
-            [
-                ...$request->input(),
-                'thumbnail_file' => $request->thumbnail_file,
-            ]
-        );
+        $result = $service->execute($album, $request->all());
 
         if (!$result['is_success']) {
             return back()->withErrors(['message' => $result['message']]);
@@ -142,7 +136,7 @@ class AlbumController extends Controller
         Album $album,
         DestroyAlbumService $service
     ): RedirectResponse {
-        $result = $service->execute($album);
+        $result = $service->execute($album->loadMissing(['thumbnail', 'mediaItems.mediaFile']));
 
         if (!$result['is_success']) {
             return back()->withErrors(['message' => $result['message']]);

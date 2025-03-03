@@ -173,6 +173,7 @@ const AlbumMediaItemListTable = () => {
                 <Stack direction="row" alignItems="center" justifyContent="space-between" gap={4} flexWrap="wrap" p={4}>
                     <BulkDeleteAlbumMediaItemsButton
                         selectedAlbumMediaIds={Object.keys(selectedRows).map((key) => Number(key))}
+                        onSuccess={() => setSelectedRows({})}
                     />
                     <Stack direction="row" alignItems="center" gap={2}>
                         {hasAlbumMediaItems &&

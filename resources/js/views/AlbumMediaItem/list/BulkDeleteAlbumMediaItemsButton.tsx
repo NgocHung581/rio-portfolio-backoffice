@@ -10,9 +10,10 @@ import { toast } from 'react-toastify';
 
 type Props = {
     selectedAlbumMediaIds: number[];
+    onSuccess: () => void;
 };
 
-const BulkDeleteAlbumMediaItemsButton = ({ selectedAlbumMediaIds }: Props) => {
+const BulkDeleteAlbumMediaItemsButton = ({ selectedAlbumMediaIds, onSuccess }: Props) => {
     const { t } = useTranslation();
     const { album } = usePage<PageProps<EditAlbumPageProps>>().props;
 
@@ -27,7 +28,7 @@ const BulkDeleteAlbumMediaItemsButton = ({ selectedAlbumMediaIds }: Props) => {
         setOpenModal(false);
     };
 
-    const handleDeleteMultipleAlbumMedia = () => {
+    const handleBulkDeleteAlbumMediaItems = () => {
         router.patch(
             route('albums.media.bulkDestroy', { album }),
             { ids: selectedAlbumMediaIds },
@@ -38,6 +39,7 @@ const BulkDeleteAlbumMediaItemsButton = ({ selectedAlbumMediaIds }: Props) => {
                 onSuccess: ({ props: { message } }) => {
                     toast.success(message);
                     handleCloseModal();
+                    onSuccess();
                 },
                 onError: (error) => toast.error(error.message),
             },
@@ -57,7 +59,7 @@ const BulkDeleteAlbumMediaItemsButton = ({ selectedAlbumMediaIds }: Props) => {
             <ConfirmationModal
                 open={openModal}
                 onClose={handleCloseModal}
-                onConfirm={handleDeleteMultipleAlbumMedia}
+                onConfirm={handleBulkDeleteAlbumMediaItems}
                 content={t('delete_confirmation')}
                 isLoading={isLoading}
             />

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Album;
 
-use App\Constants\MediaFolderNamePrefix;
+use App\Constants\MediaFolderName;
+use App\Constants\PublicStorageFolderPathPrefix;
 use App\Models\Album;
 use App\Repositories\AlbumRepository;
 use App\Traits\MediaHelper;
@@ -24,7 +25,8 @@ class UpdateAlbumService
 
     public function execute(Album $album, array $data): array
     {
-        $uploadedFilePath = '';
+        $newThumbnailFilePath = '';
+        $albumMediaFolderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $album->id;
 
         try {
             DB::beginTransaction();
@@ -57,13 +59,13 @@ class UpdateAlbumService
 
             if (isset($newThumbnailFile)) {
                 $oldThumbnailFilePath = $album->thumbnail->file_path;
-                $thumbnailFolderName = 'media/' . MediaFolderNamePrefix::THUMBNAILS . '/album';
+                $thumbnailFolderPath = $albumMediaFolderPath . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
                 $newThumbnailFileName = $this->generateMediaFileName($newThumbnailFile);
 
                 // Upload new album thumbnail.
-                $result = Storage::disk('public')->putFileAs($thumbnailFolderName, $newThumbnailFile, $newThumbnailFileName);
+                $newThumbnailFilePath = Storage::disk('public')->putFileAs($thumbnailFolderPath, $newThumbnailFile, $newThumbnailFileName);
 
-                if ($result === false) {
+                if ($newThumbnailFilePath === false) {
                     DB::rollBack();
 
                     return [
@@ -71,9 +73,6 @@ class UpdateAlbumService
                         'message' => __('messages')['file_upload_failed'],
                     ];
                 }
-
-                $newThumbnailFilePath = "/storage/{$result}";
-                $uploadedFilePath = $newThumbnailFilePath;
 
                 // Save new album thumbnail.
                 $updatedCount = $album->thumbnail()->update([
@@ -84,7 +83,7 @@ class UpdateAlbumService
 
                 if ($updatedCount !== 1) {
                     DB::rollBack();
-                    unlink(public_path($uploadedFilePath));
+                    Storage::disk('public')->delete($newThumbnailFilePath);
 
                     return [
                         'is_success' => false,
@@ -93,7 +92,7 @@ class UpdateAlbumService
                 }
 
                 // Delete old album thumbnail.
-                unlink(public_path($oldThumbnailFilePath));
+                Storage::disk('public')->delete($oldThumbnailFilePath);
             }
 
             DB::commit();
@@ -105,7 +104,7 @@ class UpdateAlbumService
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
-            unlink(public_path($uploadedFilePath));
+            Storage::disk('public')->delete($newThumbnailFilePath);
 
             return [
                 'is_success' => false,

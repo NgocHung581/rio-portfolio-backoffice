@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DestroyAlbumMediaItemService
 {
@@ -22,10 +23,18 @@ class DestroyAlbumMediaItemService
         try {
             DB::beginTransaction();
 
-            $albumMediaFilePath = $albumMediaItem->mediaFile->file_path;
 
             // Delete media file.
+            $uploadedFilePaths[] = $albumMediaItem->mediaFile->file_path;
+
             $albumMediaItem->mediaFile()->delete();
+
+            // Delete video thumbnail file.
+            if (isset($albumMediaItem->videoThumbnailFile)) {
+                $uploadedFilePaths[] = $albumMediaItem->videoThumbnailFile->file_path;
+
+                $albumMediaItem->videoThumbnailFile()->delete();
+            }
 
             // Delete album media item.
             $isCompleted = $this->albumMediaItemRepository->destroyById($albumMediaItem->id);
@@ -39,8 +48,8 @@ class DestroyAlbumMediaItemService
                 ];
             }
 
-            // Delete album media file.
-            unlink(public_path($albumMediaFilePath));
+            // Delete uploaded file.
+            Storage::disk('public')->delete($uploadedFilePaths);
 
             DB::commit();
 

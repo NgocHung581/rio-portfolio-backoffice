@@ -1,5 +1,4 @@
-import ImageInTable from '@/Components/ImageInTable';
-import { MediaType } from '@/enums/mediaType';
+import MediaInTable from '@/Components/MediaInTable';
 import { EditAlbumPageProps } from '@/Pages/Album/Edit';
 import { PageProps } from '@/types';
 import { AlbumMediaItem } from '@/types/album';
@@ -41,8 +40,8 @@ const useAlbumMediaItemColumns = ({
     errors,
     isUpdating,
 }: Props) => {
-    const { t, i18n } = useTranslation();
-    const { columnSpanOptions, fileTypeOptions } = usePage<PageProps<EditAlbumPageProps>>().props;
+    const { t } = useTranslation();
+    const { columnSpanOptions, fileTypeOptions, fileType } = usePage<PageProps<EditAlbumPageProps>>().props;
 
     const editingAlbumMediaItemIds = Object.keys(editingAlbumMediaItems).map((albumMediaItemId) =>
         Number(albumMediaItemId),
@@ -57,15 +56,19 @@ const useAlbumMediaItemColumns = ({
             accessorKey: 'media',
             accessorFn: (row) => (
                 <Stack direction="row" alignItems="center" gap={3}>
-                    <ImageInTable src={row.file_path} alt="" />
+                    <MediaInTable
+                        src={row.video_thumbnail_url ?? row.url}
+                        alt=""
+                        isVideo={row.type === fileType.video}
+                        videoSrc={row.url}
+                    />
                     <Box flex={1} overflow="hidden">
                         <Typography variant="body2" fontWeight={500} noWrap>
                             {row.file_name}
                         </Typography>
                         <Typography variant="caption" color="textSecondary">
-                            {row.file_type === MediaType.Image
-                                ? `${convertBytes(row.file_size)} KB`
-                                : `${convertBytes(row.file_size, 'GB')} GB`}
+                            {row.type === fileType.image && `${convertBytes(row.file_size)} KB`}
+                            {row.type === fileType.video && `${convertBytes(row.file_size, 'MB')} MB`}
                         </Typography>
                     </Box>
                 </Stack>
@@ -73,12 +76,12 @@ const useAlbumMediaItemColumns = ({
             header: t('media'),
         },
         {
-            accessorKey: 'file_type',
+            accessorKey: 'type',
             accessorFn: (row) => (
                 <Chip
                     size="small"
-                    color={row.file_type === MediaType.Image ? 'info' : 'warning'}
-                    label={fileTypeOptions.find((option) => option.value === row.file_type)?.label}
+                    color={row.type === fileType.image ? 'info' : 'warning'}
+                    label={fileTypeOptions.find((option) => option.value === row.type)?.label}
                 />
             ),
             header: t('type'),

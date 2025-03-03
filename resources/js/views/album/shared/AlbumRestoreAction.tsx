@@ -31,6 +31,7 @@ const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
             onFinish: () => setIsLoading(false),
             onSuccess: ({ props: { message } }) => {
                 toast.success(message);
+                handleCloseModal();
                 onCloseMenu && onCloseMenu();
             },
             onError: (error) => toast.error(error.message),
