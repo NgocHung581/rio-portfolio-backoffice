@@ -5,7 +5,6 @@ import { Fragment, useState } from 'react';
 
 type ImageProps = {
     isVideo?: false;
-    aspectRatio?: Property.AspectRatio;
 };
 
 type VideoProps = {
@@ -16,6 +15,7 @@ type VideoProps = {
 type Props = (ImageProps | VideoProps) & {
     src: string;
     alt: string;
+    aspectRatio?: Property.AspectRatio;
 };
 
 const MediaInTable = ({ src, alt, ...props }: Props) => {
@@ -74,9 +74,8 @@ const MediaInTable = ({ src, alt, ...props }: Props) => {
             <Dialog
                 open={openModal}
                 onClose={handleCloseModal}
-                fullWidth
-                maxWidth="md"
-                slotProps={{ paper: { sx: { bgcolor: 'transparent' } } }}
+                {...(props.isVideo && { fullWidth: true, maxWidth: 'lg' })}
+                slotProps={{ paper: { sx: { bgcolor: 'transparent' }, elevation: 0 } }}
             >
                 {props.isVideo ? (
                     <Box component="video" src={props.videoSrc} controls />
