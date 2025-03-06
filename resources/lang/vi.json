@@ -88,6 +88,8 @@
     "edit": "Chỉnh sửa",
     "view_media": "Xem phương tiện truyền thông",
     "action": "Hành động",
+    "partner_logos": "Logo đối tác",
+    "description": "Mô tả",
     "messages": {
         "invalid_link": "Đường dẫn này không hợp lệ.",
         "file_too_large": "Tệp không được lớn hơn {{max}} {{fileSizeUnit}}.",
@@ -100,10 +102,13 @@
         "data_restored_successfully": "Dữ liệu đã được khôi phục thành công.",
         "data_deleted_successfully": "Dữ liệu đã được xóa thành công.",
         "data_uploaded_successfully": "Dữ liệu đã được tải lên thành công.",
+        "data_saved_successfully": "Dữ liệu đã được lưu thành công.",
         "data_created_failed": "Thêm dữ liệu không thành công.",
         "data_updated_failed": "Chỉnh sửa dữ liệu không thành công.",
         "data_disabled_failed": "Vô hiệu hóa dữ liệu không thành công.",
         "data_restored_failed": "Khôi phục dữ liệu không thành công.",
-        "data_deleted_failed": "Xóa dữ liệu không thành công."
+        "data_deleted_failed": "Xóa dữ liệu không thành công.",
+        "data_saved_failed": "Lưu dữ liệu không thành công.",
+        "too_many_files": "Vui lòng tải lên không quá {{max}} tệp."
     }
 }

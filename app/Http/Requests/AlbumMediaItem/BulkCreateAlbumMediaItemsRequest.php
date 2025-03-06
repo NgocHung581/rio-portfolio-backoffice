@@ -43,7 +43,7 @@ class BulkCreateAlbumMediaItemsRequest extends FormRequest
                 'required',
                 Rule::when(
                     $this->media_type === MediaType::Image->value,
-                    [File::image()->types(['jpg', 'jpeg', 'png'])->max('30mb')]
+                    [File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb')]
                 ),
                 Rule::when(
                     $this->media_type === MediaType::Video->value,
@@ -52,7 +52,7 @@ class BulkCreateAlbumMediaItemsRequest extends FormRequest
             ],
             'media.*.video_thumbnail_file' => [
                 Rule::requiredIf($this->media_type === MediaType::Video->value),
-                File::image()->types(['jpg', 'jpeg', 'png'])->max('30mb'),
+                File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb'),
             ],
         ];
     }

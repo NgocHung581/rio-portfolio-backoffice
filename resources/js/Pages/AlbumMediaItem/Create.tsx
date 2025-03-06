@@ -231,8 +231,10 @@ const CreateAlbumMediaPage = ({
                                                         <FormLabel>{t('image')}</FormLabel>
                                                         <ImageDropzone
                                                             maxSize={MaxFileSize.Image}
-                                                            onChange={(file) =>
-                                                                handleUpdateMediaInfo(mediaKey, { file })
+                                                            onChange={(selectedImage) =>
+                                                                handleUpdateMediaInfo(mediaKey, {
+                                                                    file: selectedImage?.file,
+                                                                })
                                                             }
                                                             onDeleteImage={() =>
                                                                 handleUpdateMediaInfo(mediaKey, { file: undefined })
@@ -273,9 +275,9 @@ const CreateAlbumMediaPage = ({
                                                                 <FormLabel>{t('thumbnail')}</FormLabel>
                                                                 <ImageDropzone
                                                                     maxSize={MaxFileSize.Image}
-                                                                    onChange={(file) =>
+                                                                    onChange={(selectedImage) =>
                                                                         handleUpdateMediaInfo(mediaKey, {
-                                                                            video_thumbnail_file: file,
+                                                                            video_thumbnail_file: selectedImage?.file,
                                                                         })
                                                                     }
                                                                     onDeleteImage={() =>

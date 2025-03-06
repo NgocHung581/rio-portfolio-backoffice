@@ -221,7 +221,7 @@ const AlbumForm = ({ album }: Props) => {
                             <FormLabel>{t('thumbnail')}</FormLabel>
                             <ImageDropzone
                                 maxSize={MaxFileSize.Image}
-                                onChange={(file) => setData('thumbnail_file', file)}
+                                onChange={(selectedImage) => setData('thumbnail_file', selectedImage?.file)}
                                 onDeleteImage={() =>
                                     setData((prev) => ({
                                         ...prev,
