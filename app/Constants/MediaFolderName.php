@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Constants;
 
-class MediaFolderNamePrefix
+class MediaFolderName
 {
     /** @var string The folder name prefix for thumbnails */
     public const THUMBNAILS = 'thumbnails';

@@ -6,10 +6,10 @@ namespace App\Http\Controllers;
 
 use App\Constants\AlbumMediaItemSetting;
 use App\Enums\ColumnSpan;
-use App\Enums\FileType;
+use App\Enums\MediaType;
+use App\Http\Requests\AlbumMediaItem\BulkCreateAlbumMediaItemsRequest;
 use App\Http\Requests\AlbumMediaItem\BulkDestroyAlbumMediaItemsRequest;
 use App\Http\Requests\AlbumMediaItem\BulkUpdateAlbumMediaItemsRequest;
-use App\Http\Requests\AlbumMediaItem\CreateAlbumMediaItemRequest;
 use App\Http\Resources\AlbumResource;
 use App\Models\Album;
 use App\Models\AlbumMediaItem;
@@ -30,10 +30,11 @@ class AlbumMediaItemController extends Controller
     {
         return inertia('AlbumMediaItem/Create', [
             'album' => new AlbumResource($album),
-            'fileTypeOptions' => FileType::toArray(),
+            'fileTypeOptions' => MediaType::toFileTypeOptions(),
             'imagesCountLimitPerUpload' => AlbumMediaItemSetting::IMAGES_COUNT_LIMIT_PER_UPLOAD,
             'videosCountLimitPerUpload' => AlbumMediaItemSetting::VIDEOS_COUNT_LIMIT_PER_UPLOAD,
             'columnSpanOptions' => ColumnSpan::toArray(),
+            'fileType' => MediaType::toFileTypeArray(),
         ]);
     }
 
@@ -42,7 +43,7 @@ class AlbumMediaItemController extends Controller
      */
     public function bulkStore(
         Album $album,
-        CreateAlbumMediaItemRequest $request,
+        BulkCreateAlbumMediaItemsRequest $request,
         BulkCreateAlbumMediaItemsService $service
     ): RedirectResponse {
         $result = $service->execute($album->id, $request->media);

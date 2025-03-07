@@ -3,13 +3,22 @@ import Dialog from '@mui/material/Dialog';
 import { Property } from 'csstype';
 import { Fragment, useState } from 'react';
 
-type Props = {
+type ImageProps = {
+    isVideo?: false;
+};
+
+type VideoProps = {
+    isVideo: true;
+    videoSrc: string;
+};
+
+type Props = (ImageProps | VideoProps) & {
     src: string;
     alt: string;
     aspectRatio?: Property.AspectRatio;
 };
 
-const ImageInTable = ({ src, alt, aspectRatio }: Props) => {
+const MediaInTable = ({ src, alt, ...props }: Props) => {
     const [openModal, setOpenModal] = useState(false);
 
     const handleOpenModal = () => {
@@ -65,12 +74,17 @@ const ImageInTable = ({ src, alt, aspectRatio }: Props) => {
             <Dialog
                 open={openModal}
                 onClose={handleCloseModal}
-                slotProps={{ paper: { sx: { bgcolor: 'transparent' } } }}
+                {...(props.isVideo && { fullWidth: true, maxWidth: 'lg' })}
+                slotProps={{ paper: { sx: { bgcolor: 'transparent' }, elevation: 0 } }}
             >
-                <Box component="img" src={src} alt={alt} sx={{ aspectRatio }} />
+                {props.isVideo ? (
+                    <Box component="video" src={props.videoSrc} controls />
+                ) : (
+                    <Box component="img" src={src} alt={alt} sx={{ aspectRatio: props.aspectRatio }} />
+                )}
             </Dialog>
         </Fragment>
     );
 };
 
-export default ImageInTable;
+export default MediaInTable;

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\AlbumMediaItem;
 
-use App\Constants\MediaFolderNamePrefix;
-use App\Enums\FileType;
+use App\Constants\MediaFolderName;
+use App\Constants\PublicStorageFolderPathPrefix;
+use App\Enums\MediaType;
 use App\Repositories\AlbumMediaItemRepository;
 use App\Traits\MediaHelper;
 use Exception;
@@ -35,11 +36,11 @@ class BulkCreateAlbumMediaItemsService
                 $isDisplayedOnBanner = $item['is_displayed_on_banner'];
                 $file = $item['file'];
                 $fileName = $this->generateMediaFileName($file);
-                $folderName = "media/album_{$albumId}/";
+                $folderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $albumId . DIRECTORY_SEPARATOR;
 
                 match ($type) {
-                    FileType::Image->value => $folderName .= MediaFolderNamePrefix::IMAGES,
-                    FileType::Video->value => $folderName .= MediaFolderNamePrefix::VIDEOS,
+                    MediaType::Image->value => $folderPath .= MediaFolderName::IMAGES,
+                    MediaType::Video->value => $folderPath .= MediaFolderName::VIDEOS,
                 };
 
                 // Create album media.
@@ -50,11 +51,11 @@ class BulkCreateAlbumMediaItemsService
                 );
 
                 // Upload album media file.
-                $result = Storage::disk('public')->putFileAs($folderName, $file, $fileName);
+                $mediaFilePath = Storage::disk('public')->putFileAs($folderPath, $file, $fileName);
 
-                if ($result === false) {
+                if ($mediaFilePath === false) {
                     DB::rollBack();
-                    $this->deleteFiles($uploadedFilePaths);
+                    Storage::disk('public')->delete($uploadedFilePaths);
 
                     return [
                         'is_success' => false,
@@ -62,17 +63,44 @@ class BulkCreateAlbumMediaItemsService
                     ];
                 }
 
-                $filePath = "/storage/{$result}";
-
-                $uploadedFilePaths[] = $filePath;
+                $uploadedFilePaths[] = $mediaFilePath;
 
                 // Create album media item.
                 $albumMediaItem->mediaFile()->create([
-                    'file_type' => $type,
-                    'file_path' => $filePath,
+                    'type' => $type,
+                    'file_path' => $mediaFilePath,
                     'file_name' => $fileName,
                     'file_size' => $file->getSize(),
                 ]);
+
+                // Create and upload video thumbnail.
+                if ($type === MediaType::Video->value) {
+                    $videoThumbnailFile = $item['video_thumbnail_file'];
+                    $videoThumbnailFileName = $this->generateMediaFileName($videoThumbnailFile);
+                    $videoThumbnailFolderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $albumId . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
+
+                    $videoThumbnailFilePath = Storage::disk('public')
+                        ->putFileAs($videoThumbnailFolderPath, $videoThumbnailFile, $videoThumbnailFileName);
+
+                    if ($videoThumbnailFilePath === false) {
+                        DB::rollBack();
+                        Storage::disk('public')->delete($uploadedFilePaths);
+
+                        return [
+                            'is_success' => false,
+                            'message' => __('messages')['file_upload_failed'],
+                        ];
+                    }
+
+                    $uploadedFilePaths[] = $videoThumbnailFilePath;
+
+                    $albumMediaItem->videoThumbnailFile()->create([
+                        'type' => MediaType::Thumbnail->value,
+                        'file_path' => $videoThumbnailFilePath,
+                        'file_name' => $videoThumbnailFileName,
+                        'file_size' => $videoThumbnailFile->getSize(),
+                    ]);
+                }
             }
 
             DB::commit();
@@ -84,22 +112,12 @@ class BulkCreateAlbumMediaItemsService
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
-            $this->deleteFiles($uploadedFilePaths);
+            Storage::disk('public')->delete($uploadedFilePaths);
 
             return [
                 'is_success' => false,
                 'message' => __('messages')['internal_server_error'],
             ];
-        }
-    }
-
-    /**
-     * Delete files in the given file paths.
-     */
-    private function deleteFiles(array $filePaths): void
-    {
-        foreach ($filePaths as $filePath) {
-            unlink(public_path($filePath));
         }
     }
 }

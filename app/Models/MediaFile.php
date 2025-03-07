@@ -14,7 +14,7 @@ class MediaFile extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'file_type',
+        'type',
         'file_path',
         'file_name',
         'file_size',

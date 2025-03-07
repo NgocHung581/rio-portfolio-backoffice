@@ -16,19 +16,21 @@ class AlbumMediaItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $this->loadMissing('mediaFile');
-
-        return [
+        $data = [
             'id' => $this->id,
             'album_id' => $this->album_id,
-            'file_type' => $this->mediaFile->file_type,
-            'file_path' => asset($this->mediaFile->file_path),
+            'type' => $this->mediaFile->type,
+            'url' => asset("/storage/{$this->mediaFile->file_path}"),
             'file_size' => $this->mediaFile->file_size,
             'file_name' => $this->mediaFile->file_name,
             'column_span' => $this->column_span,
             'is_displayed_on_banner' => $this->is_displayed_on_banner,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
+
+        if (isset($this->videoThumbnailFile)) {
+            $data['video_thumbnail_url'] = asset("/storage/{$this->videoThumbnailFile->file_path}");
+        }
+
+        return $data;
     }
 }

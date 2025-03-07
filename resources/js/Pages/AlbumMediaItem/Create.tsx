@@ -3,7 +3,6 @@ import VideoField from '@/@core/components/VideoField';
 import BackListButton from '@/Components/BackListButton';
 import { Language } from '@/enums/language';
 import { MaxFileSize } from '@/enums/maxFileSize';
-import { MediaType } from '@/enums/mediaType';
 import { Option, PageProps } from '@/types';
 import { Album } from '@/types/album';
 import { Head, useForm } from '@inertiajs/react';
@@ -35,12 +34,14 @@ type Props = {
     columnSpanOptions: Option[];
     imagesCountLimitPerUpload: number;
     videosCountLimitPerUpload: number;
+    fileType: Record<string, number>;
 };
 
 type Media = {
     file: File | undefined;
     column_span: number | null;
     is_displayed_on_banner: boolean;
+    video_thumbnail_file?: File;
 };
 
 type FormPayload = {
@@ -55,6 +56,7 @@ const CreateAlbumMediaPage = ({
     columnSpanOptions,
     imagesCountLimitPerUpload,
     videosCountLimitPerUpload,
+    fileType,
 }: PageProps<Props>) => {
     const { t, i18n } = useTranslation();
 
@@ -70,11 +72,11 @@ const CreateAlbumMediaPage = ({
     const handleSelectMediaType = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const value = Number(e.target.value);
 
-        if (value === MediaType.Image) {
+        if (value === fileType.image) {
             setMediaCountLimitPerUpload(imagesCountLimitPerUpload);
         }
 
-        if (value === MediaType.Video) {
+        if (value === fileType.video) {
             setMediaCountLimitPerUpload(videosCountLimitPerUpload);
         }
 
@@ -130,7 +132,7 @@ const CreateAlbumMediaPage = ({
                             <Typography variant="h5" color="primary">
                                 {`${t('album')}: ${i18n.language === Language.Vietnamese ? album.name_vi : album.name_en}`}
                             </Typography>
-                            <BackListButton href={`${route('albums.edit', album)}#media`} />
+                            <BackListButton href={`${route('albums.edit', album)}#media`} disabled={processing} />
                         </Stack>
                     }
                 />
@@ -224,13 +226,15 @@ const CreateAlbumMediaPage = ({
                                                 </Grid>
                                             </Grid>
                                             <Grid size={{ xs: 12 }}>
-                                                {data.media_type === MediaType.Image ? (
+                                                {data.media_type === fileType.image ? (
                                                     <FormControl required>
                                                         <FormLabel>{t('image')}</FormLabel>
                                                         <ImageDropzone
                                                             maxSize={MaxFileSize.Image}
-                                                            onChange={(file) =>
-                                                                handleUpdateMediaInfo(mediaKey, { file })
+                                                            onChange={(selectedImage) =>
+                                                                handleUpdateMediaInfo(mediaKey, {
+                                                                    file: selectedImage?.file,
+                                                                })
                                                             }
                                                             onDeleteImage={() =>
                                                                 handleUpdateMediaInfo(mediaKey, { file: undefined })
@@ -265,6 +269,39 @@ const CreateAlbumMediaPage = ({
                                                                 maxSize={MaxFileSize.Video}
                                                                 disabled={processing}
                                                             />
+                                                        </Grid>
+                                                        <Grid size={{ xs: 12 }}>
+                                                            <FormControl required>
+                                                                <FormLabel>{t('thumbnail')}</FormLabel>
+                                                                <ImageDropzone
+                                                                    maxSize={MaxFileSize.Image}
+                                                                    onChange={(selectedImage) =>
+                                                                        handleUpdateMediaInfo(mediaKey, {
+                                                                            video_thumbnail_file: selectedImage?.file,
+                                                                        })
+                                                                    }
+                                                                    onDeleteImage={() =>
+                                                                        handleUpdateMediaInfo(mediaKey, {
+                                                                            video_thumbnail_file: undefined,
+                                                                        })
+                                                                    }
+                                                                    onError={(errorMessage) =>
+                                                                        setError(
+                                                                            `media.${mediaKey}.video_thumbnail_file`,
+                                                                            errorMessage,
+                                                                        )
+                                                                    }
+                                                                    error={
+                                                                        !!errors[
+                                                                            `media.${mediaKey}.video_thumbnail_file`
+                                                                        ]
+                                                                    }
+                                                                    helperText={
+                                                                        errors[`media.${mediaKey}.video_thumbnail_file`]
+                                                                    }
+                                                                    disabled={processing}
+                                                                />
+                                                            </FormControl>
                                                         </Grid>
                                                     </Grid>
                                                 )}

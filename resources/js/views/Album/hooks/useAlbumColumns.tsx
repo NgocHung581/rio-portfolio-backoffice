@@ -1,4 +1,4 @@
-import ImageInTable from '@/Components/ImageInTable';
+import MediaInTable from '@/Components/MediaInTable';
 import { Language } from '@/enums/language';
 import { Album } from '@/types/album';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -26,7 +26,7 @@ const useAlbumColumns = () => {
 
                     return (
                         <Stack direction="row" alignItems="center" gap={3}>
-                            <ImageInTable src={row.thumbnail.url} alt={name} aspectRatio={4 / 5} />
+                            <MediaInTable src={row.thumbnail.url} alt={name} aspectRatio={4 / 5} />
                             <Stack flex={1} overflow="hidden">
                                 <Typography variant="body2" fontWeight={500}>
                                     {name}
@@ -42,7 +42,7 @@ const useAlbumColumns = () => {
                 size: 200,
             },
             {
-                accessorFn: (row) => row.media_items.length,
+                accessorKey: 'media_items_count',
                 header: t('number_of_media'),
                 size: isVietnamese ? 125 : 50,
             },

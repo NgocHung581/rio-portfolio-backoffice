@@ -7,9 +7,10 @@ import ConfirmationModal from './ConfirmationModal';
 
 type Props = {
     href: string;
+    disabled?: boolean;
 };
 
-const BackListButton = ({ href }: Props) => {
+const BackListButton = ({ href, disabled }: Props) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -32,7 +33,12 @@ const BackListButton = ({ href }: Props) => {
 
     return (
         <Fragment>
-            <Button color="secondary" startIcon={<FormatListBulletedOutlinedIcon />} onClick={handleOpenModal}>
+            <Button
+                color="secondary"
+                startIcon={<FormatListBulletedOutlinedIcon />}
+                disabled={disabled}
+                onClick={handleOpenModal}
+            >
                 {t('list')}
             </Button>
 

@@ -56,5 +56,6 @@ Route::middleware('auth')->group(function(): void {
     Route::controller(SettingAboutPageController::class)->prefix('/setting-about-page')->name('settingAboutPage.')
         ->group(function(): void {
             Route::get('/', 'index')->name('index');
+            Route::post('/', 'save')->name('save');
         });
 });

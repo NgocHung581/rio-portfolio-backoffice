@@ -175,4 +175,5 @@ img {
 
 #nprogress .bar {
     height: 4px !important;
+    z-index: 9999 !important;
 }

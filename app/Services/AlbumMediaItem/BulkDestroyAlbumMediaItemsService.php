@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class BulkDestroyAlbumMediaItemsService
 {
@@ -26,9 +27,15 @@ class BulkDestroyAlbumMediaItemsService
             $mediaFileIds = [];
             $mediaFilePaths = [];
 
+
             foreach ($albumMediaItems as $albumMediaItem) {
                 $mediaFileIds[] = $albumMediaItem->mediaFile->id;
                 $mediaFilePaths[] = $albumMediaItem->mediaFile->file_path;
+
+                if (isset($albumMediaItem->videoThumbnailFile)) {
+                    $mediaFileIds[] = $albumMediaItem->videoThumbnailFile->id;
+                    $mediaFilePaths[] = $albumMediaItem->videoThumbnailFile->file_path;
+                }
             }
 
             DB::beginTransaction();
@@ -58,9 +65,7 @@ class BulkDestroyAlbumMediaItemsService
             }
 
             // Delete uploaded files.
-            foreach ($mediaFilePaths as $mediaFilePath) {
-                unlink(public_path($mediaFilePath));
-            }
+            Storage::disk('public')->delete($mediaFilePaths);
 
             DB::commit();
 

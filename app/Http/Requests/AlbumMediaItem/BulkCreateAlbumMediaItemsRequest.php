@@ -6,12 +6,12 @@ namespace App\Http\Requests\AlbumMediaItem;
 
 use App\Constants\AlbumMediaItemSetting;
 use App\Enums\ColumnSpan;
-use App\Enums\FileType;
+use App\Enums\MediaType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 
-class CreateAlbumMediaItemRequest extends FormRequest
+class BulkCreateAlbumMediaItemsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,26 +29,30 @@ class CreateAlbumMediaItemRequest extends FormRequest
         $mediaCountLimitPerUpload = 0;
 
         match ($this->media_type) {
-            FileType::Image->value => $mediaCountLimitPerUpload = AlbumMediaItemSetting::IMAGES_COUNT_LIMIT_PER_UPLOAD,
-            FileType::Video->value => $mediaCountLimitPerUpload = AlbumMediaItemSetting::VIDEOS_COUNT_LIMIT_PER_UPLOAD,
+            MediaType::Image->value => $mediaCountLimitPerUpload = AlbumMediaItemSetting::IMAGES_COUNT_LIMIT_PER_UPLOAD,
+            MediaType::Video->value => $mediaCountLimitPerUpload = AlbumMediaItemSetting::VIDEOS_COUNT_LIMIT_PER_UPLOAD,
         };
 
         return [
-            'media_type' => ['required', 'integer', Rule::in(FileType::cases())],
+            'media_type' => ['required', 'integer', Rule::in(MediaType::cases())],
             'media' => ['required', 'array', "max:{$mediaCountLimitPerUpload}"],
-            'media.*' => ['required', 'array', 'size:3'],
+            'media.*' => ['required', 'array', 'max:4'],
             'media.*.column_span' => ['required', 'integer', Rule::in(ColumnSpan::cases())],
             'media.*.is_displayed_on_banner' => ['required', 'boolean'],
             'media.*.file' => [
                 'required',
                 Rule::when(
-                    $this->media_type === FileType::Image->value,
-                    [File::image()->types(['jpg', 'jpeg', 'png'])->max('30mb')]
+                    $this->media_type === MediaType::Image->value,
+                    [File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb')]
                 ),
                 Rule::when(
-                    $this->media_type === FileType::Video->value,
+                    $this->media_type === MediaType::Video->value,
                     ['file', 'mimetypes:video/mp4', 'max:2097152'] // 2GB
                 ),
+            ],
+            'media.*.video_thumbnail_file' => [
+                Rule::requiredIf($this->media_type === MediaType::Video->value),
+                File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb'),
             ],
         ];
     }
@@ -62,7 +66,8 @@ class CreateAlbumMediaItemRequest extends FormRequest
             'media_type' => __('media_type'),
             'media.*.column_span' => __('column_width'),
             'media.*.is_displayed_on_banner' => __('display_on_banner'),
-            'media.*.file' => FileType::tryFrom($this->media_type)?->label(),
+            'media.*.file' => MediaType::tryFrom($this->media_type)?->label(),
+            'media.*.video_thumbnail_file' => __('thumbnail'),
         ];
     }
 

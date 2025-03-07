@@ -12,14 +12,9 @@ return new class() extends Migration {
      */
     public function up(): void
     {
-        Schema::create('media_files', function(Blueprint $table): void {
+        Schema::create('about_page_information', function(Blueprint $table): void {
             $table->id();
-            $table->unsignedTinyInteger('type');
-            $table->string('file_path')->unique();
-            $table->string('file_name', 50)->unique();
-            $table->unsignedBigInteger('file_size');
-            $table->unsignedBigInteger('media_fileable_id');
-            $table->string('media_fileable_type', 50);
+            $table->text('description');
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });
@@ -30,6 +25,6 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('media_files');
+        Schema::dropIfExists('about_page_information');
     }
 };

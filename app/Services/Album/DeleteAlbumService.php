@@ -22,7 +22,6 @@ class DeleteAlbumService
         try {
             DB::beginTransaction();
 
-            // TODO: Delete media of album
             $isCompleted = $this->albumRepository->deleteAlbumById($album->id);
 
             if (!$isCompleted) {
@@ -30,7 +29,7 @@ class DeleteAlbumService
 
                 return [
                     'is_success' => false,
-                    'message'    => __('messages')['data_disabled_failed'],
+                    'message' => __('messages')['data_disabled_failed'],
                 ];
             }
 
@@ -38,7 +37,7 @@ class DeleteAlbumService
 
             return [
                 'is_success' => true,
-                'message'    => __('messages')['data_disabled_successfully'],
+                'message' => __('messages')['data_disabled_successfully'],
             ];
         } catch (Exception|QueryException $e) {
             Log::error($e);
@@ -46,7 +45,7 @@ class DeleteAlbumService
 
             return [
                 'is_success' => false,
-                'message'    => __('messages')['internal_server_error'],
+                'message' => __('messages')['internal_server_error'],
             ];
         }
     }

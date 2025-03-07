@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Album;
 
-use App\Constants\MediaFolderNamePrefix;
-use App\Enums\FileType;
+use App\Constants\MediaFolderName;
+use App\Constants\PublicStorageFolderPathPrefix;
+use App\Enums\MediaType;
 use App\Repositories\AlbumRepository;
 use App\Traits\MediaHelper;
 use Exception;
@@ -24,7 +25,7 @@ class CreateAlbumService
 
     public function execute(array $data): array
     {
-        $uploadedFilePath = '';
+        $albumMediaFolderPath = '';
 
         try {
             DB::beginTransaction();
@@ -42,12 +43,13 @@ class CreateAlbumService
                 $data['is_highlight']
             );
 
+            $albumMediaFolderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $album->id;
             $thumbnailFile = $data['thumbnail_file'];
             $thumbnailFileName = $this->generateMediaFileName($thumbnailFile);
-            $thumbnailFolderName = 'media/' . MediaFolderNamePrefix::THUMBNAILS . '/album';
+            $thumbnailFolderPath = $albumMediaFolderPath . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
 
             // Upload album thumbnail file.
-            $result = Storage::disk('public')->putFileAs($thumbnailFolderName, $thumbnailFile, $thumbnailFileName);
+            $result = Storage::disk('public')->putFileAs($thumbnailFolderPath, $thumbnailFile, $thumbnailFileName);
 
             if ($result === false) {
                 DB::rollBack();
@@ -58,13 +60,10 @@ class CreateAlbumService
                 ];
             }
 
-            $thumbnailFilePath = "/storage/{$result}";
-            $uploadedFilePath = $thumbnailFilePath;
-
             // Create album thumbnail.
             $album->thumbnail()->create([
-                'file_type' => FileType::Image->value,
-                'file_path' => $thumbnailFilePath,
+                'type' => MediaType::Thumbnail->value,
+                'file_path' => $result,
                 'file_name' => $thumbnailFileName,
                 'file_size' => $thumbnailFile->getSize(),
             ]);
@@ -79,7 +78,7 @@ class CreateAlbumService
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
-            unlink(public_path($uploadedFilePath));
+            Storage::disk('public')->deleteDirectory($albumMediaFolderPath);
 
             return [
                 'is_success' => false,

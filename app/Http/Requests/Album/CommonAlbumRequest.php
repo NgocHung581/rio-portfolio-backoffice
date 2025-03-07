@@ -61,7 +61,7 @@ class CommonAlbumRequest extends FormRequest
             ],
             'thumbnail_file' => [
                 Rule::requiredIf(is_null($this->album) || (isset($this->album) && $this->is_thumbnail_deleted && is_null($this->thumbnail_file))),
-                File::image()->types(['jpg', 'jpeg', 'png'])->max('30mb'),
+                File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb'),
             ],
             'is_highlight' => [
                 'required',

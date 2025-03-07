@@ -1,17 +1,15 @@
-import { MediaType } from '@/enums/mediaType';
 import { MediaFile } from './mediaFile';
 
 export type AlbumMediaItem = {
     id: number;
     album_id: number;
-    file_type: MediaType;
-    file_path: string;
+    type: number;
+    url: string;
     file_name: string;
     file_size: number;
     column_span: number;
     is_displayed_on_banner: boolean;
-    created_at: string;
-    updated_at: string;
+    video_thumbnail_url?: string;
 };
 
 export type Album = {
@@ -26,7 +24,7 @@ export type Album = {
     summary_vi: string;
     is_highlight: boolean;
     thumbnail: MediaFile;
-    media_items: AlbumMediaItem[];
+    media_items_count: number;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;

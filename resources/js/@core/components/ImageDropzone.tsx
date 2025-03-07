@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 
-type SelectedImage = {
+export type SelectedImage = {
     url: string;
     file?: File;
     file_name: string;
@@ -20,13 +20,13 @@ type SelectedImage = {
 };
 
 type SingleFileProps = {
-    onChange?: (file: File | undefined) => void;
+    onChange?: (image: SelectedImage | undefined) => void;
     multiple?: false;
     initImage?: SelectedImage;
 };
 
 type MultipleFileProps = {
-    onChange?: (files: File[]) => void;
+    onChange?: (images: SelectedImage[]) => void;
     multiple: true;
     initImages?: SelectedImage[];
     onDeleteAllImages?: () => void;
@@ -38,9 +38,10 @@ type Props = (SingleFileProps | MultipleFileProps) & {
     disabled?: boolean;
     height?: number;
     maxSize?: number;
-    onDeleteImage?: (url: string) => void;
+    onDeleteImage?: (image: SelectedImage) => void;
     onError?: (errorMessage: string) => void;
     shouldReset?: boolean;
+    maxFiles?: number;
 };
 
 const ImageDropzone = ({
@@ -52,16 +53,17 @@ const ImageDropzone = ({
     onDeleteImage,
     onError,
     shouldReset,
+    maxFiles = 1,
     ...props
 }: Props) => {
     const { t } = useTranslation();
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: handleDropFile,
         disabled,
-        accept: { 'image/jpeg': [], 'image/png': [] },
+        accept: { 'image/jpeg': [], 'image/png': [], 'image/webp': [] },
         multiple: props.multiple,
         maxSize,
-        maxFiles: 1,
+        maxFiles,
     });
 
     const [selectedImages, setSelectedImages] = useState<SelectedImage[]>(getInitImages);
@@ -85,41 +87,35 @@ const ImageDropzone = ({
                     return onError(t('messages.file_too_large', { max: convertBytes(maxSize) }));
                 case ErrorCode.FileInvalidType:
                     return onError(t('messages.invalid_mine_types', { mine_types: ['jpeg', 'png'].join(', ') }));
+                case ErrorCode.TooManyFiles:
+                    return onError(t('messages.too_many_files', { max: maxFiles }));
                 default:
                     return onError(t('messages.file_upload_failed'));
             }
         }
 
+        const newUploadedFiles: SelectedImage[] = acceptedFiles.map((file) => ({
+            url: URL.createObjectURL(file),
+            file,
+            file_name: file.name,
+            file_size: file.size,
+        }));
+
         setSelectedImages((prev) => {
             if (!props.multiple) {
                 URL.revokeObjectURL(prev[0]?.url);
 
-                return [
-                    {
-                        url: URL.createObjectURL(acceptedFiles[0]),
-                        file: acceptedFiles[0],
-                        file_name: acceptedFiles[0].name,
-                        file_size: acceptedFiles[0].size,
-                    },
-                ];
+                return newUploadedFiles;
             }
 
-            return [
-                ...prev,
-                ...acceptedFiles.map((file) => ({
-                    url: URL.createObjectURL(file),
-                    file,
-                    file_name: file.name,
-                    file_size: file.size,
-                })),
-            ];
+            return [...prev, ...newUploadedFiles];
         });
 
         if (props.onChange) {
             if (props.multiple) {
-                props.onChange(acceptedFiles);
+                props.onChange(newUploadedFiles);
             } else {
-                props.onChange(acceptedFiles[0]);
+                props.onChange(newUploadedFiles[0]);
             }
         }
     }
@@ -144,7 +140,7 @@ const ImageDropzone = ({
     const handleDeleteImage = (deletedImage: SelectedImage) => () => {
         URL.revokeObjectURL(deletedImage.url);
         setSelectedImages((prev) => prev.filter((image) => image.url !== deletedImage.url));
-        onDeleteImage && onDeleteImage(deletedImage.url);
+        onDeleteImage && onDeleteImage(deletedImage);
     };
 
     return (
@@ -195,7 +191,13 @@ const ImageDropzone = ({
                 <Stack spacing={2}>
                     {props.multiple && (
                         <Box textAlign="right">
-                            <Button variant="outlined" color="error" size="small" onClick={handleDeleteAllImages}>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                disabled={disabled}
+                                onClick={handleDeleteAllImages}
+                            >
                                 {t('remove_all')}
                             </Button>
                         </Box>
