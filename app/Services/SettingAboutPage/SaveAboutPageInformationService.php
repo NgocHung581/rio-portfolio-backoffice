@@ -55,11 +55,11 @@ class SaveAboutPageInformationService
                 foreach ($partnerLogoFiles as $partnerLogoFile) {
                     $fileName = $this->generateMediaFileName($partnerLogoFile);
                     $fileSize = $partnerLogoFile->getSize();
-                    $filePath = Storage::disk('public')->putFileAs($folderPath, $partnerLogoFile, $fileName);
+                    $filePath = Storage::disk('common_public')->putFileAs($folderPath, $partnerLogoFile, $fileName);
 
                     if ($filePath === false) {
                         DB::rollBack();
-                        Storage::disk('public')->delete($uploadedFilePaths);
+                        Storage::disk('common_public')->delete($uploadedFilePaths);
 
                         return [
                             'is_success' => false,
@@ -81,7 +81,7 @@ class SaveAboutPageInformationService
             // Delete partner logos.
             if (!empty($deletedPartnerLogoPaths)) {
                 $aboutPageInfo->partnerLogos()->whereIn('file_path', $deletedPartnerLogoPaths)->delete();
-                Storage::disk('public')->delete($deletedPartnerLogoPaths);
+                Storage::disk('common_public')->delete($deletedPartnerLogoPaths);
             }
 
             DB::commit();
@@ -93,7 +93,7 @@ class SaveAboutPageInformationService
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
-            Storage::disk('public')->delete($uploadedFilePaths);
+            Storage::disk('common_public')->delete($uploadedFilePaths);
 
             return [
                 'is_success' => false,

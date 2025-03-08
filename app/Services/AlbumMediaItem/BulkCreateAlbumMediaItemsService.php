@@ -51,11 +51,11 @@ class BulkCreateAlbumMediaItemsService
                 );
 
                 // Upload album media file.
-                $mediaFilePath = Storage::disk('public')->putFileAs($folderPath, $file, $fileName);
+                $mediaFilePath = Storage::disk('common_public')->putFileAs($folderPath, $file, $fileName);
 
                 if ($mediaFilePath === false) {
                     DB::rollBack();
-                    Storage::disk('public')->delete($uploadedFilePaths);
+                    Storage::disk('common_public')->delete($uploadedFilePaths);
 
                     return [
                         'is_success' => false,
@@ -79,12 +79,12 @@ class BulkCreateAlbumMediaItemsService
                     $videoThumbnailFileName = $this->generateMediaFileName($videoThumbnailFile);
                     $videoThumbnailFolderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $albumId . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
 
-                    $videoThumbnailFilePath = Storage::disk('public')
+                    $videoThumbnailFilePath = Storage::disk('common_public')
                         ->putFileAs($videoThumbnailFolderPath, $videoThumbnailFile, $videoThumbnailFileName);
 
                     if ($videoThumbnailFilePath === false) {
                         DB::rollBack();
-                        Storage::disk('public')->delete($uploadedFilePaths);
+                        Storage::disk('common_public')->delete($uploadedFilePaths);
 
                         return [
                             'is_success' => false,
@@ -112,7 +112,7 @@ class BulkCreateAlbumMediaItemsService
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
-            Storage::disk('public')->delete($uploadedFilePaths);
+            Storage::disk('common_public')->delete($uploadedFilePaths);
 
             return [
                 'is_success' => false,

@@ -48,7 +48,7 @@ class DestroyAlbumService
             }
 
             // Delete album media's folder.
-            Storage::disk('public')->deleteDirectory($albumMediaFolderPath);
+            Storage::disk('common_public')->deleteDirectory($albumMediaFolderPath);
 
             DB::commit();
 

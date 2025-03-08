@@ -49,7 +49,7 @@ class DestroyAlbumMediaItemService
             }
 
             // Delete uploaded file.
-            Storage::disk('public')->delete($uploadedFilePaths);
+            Storage::disk('common_public')->delete($uploadedFilePaths);
 
             DB::commit();
 
