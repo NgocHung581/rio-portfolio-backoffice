@@ -232,7 +232,7 @@ const AlbumMediaItemListTable = () => {
                     from={albumMediaItems.meta.from}
                     to={albumMediaItems.meta.to}
                     total={albumMediaItems.meta.total}
-                    disabled={isLoading}
+                    disabled={isLoading || isUpdating}
                 />
             </Stack>
         );
