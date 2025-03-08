@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\AlbumMediaItem;
+use Common\App\Repositories\AlbumMediaItemRepository as CommonAlbumMediaItemRepository;
 use Illuminate\Database\Eloquent\Collection;
 
-class AlbumMediaItemRepository
+class AlbumMediaItemRepository extends CommonAlbumMediaItemRepository
 {
     /**
      * Find album media items by IDs.

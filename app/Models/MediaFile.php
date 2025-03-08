@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Common\App\Models\MediaFile as CommonMediaFile;
 
-class MediaFile extends Model
+class MediaFile extends CommonMediaFile
 {
-    protected $table = 'media_files';
-
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'type',
         'file_path',
@@ -21,12 +16,4 @@ class MediaFile extends Model
         'media_fileable_id',
         'media_fileable_type',
     ];
-
-    /**
-    * Get the parent model.
-    */
-    public function mediaFileable(): MorphTo
-    {
-        return $this->morphTo();
-    }
 }

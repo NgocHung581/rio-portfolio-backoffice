@@ -36,7 +36,7 @@ class DestroyAlbumService
             $this->mediaFileRepository->bulkDestroyByIds($mediaFileIds);
 
             // Delete album.
-            $isCompleted = $this->albumRepository->destroyAlbumById($album->id);
+            $isCompleted = $this->albumRepository->destroyById($album->id);
 
             if (!$isCompleted) {
                 DB::rollBack();

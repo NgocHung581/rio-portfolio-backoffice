@@ -15,6 +15,6 @@ class ListAlbumsService
 
     public function execute(int $perPage, ?string $keyword): LengthAwarePaginator
     {
-        return $this->albumRepository->findAlbums($perPage, $keyword, ['thumbnail'], ['mediaItems']);
+        return $this->albumRepository->findWithPagination($perPage, $keyword, ['thumbnail'], ['mediaItems']);
     }
 }

@@ -5,40 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Album;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
+use Common\App\Repositories\AlbumRepository as CommonAlbumRepository;
 
-class AlbumRepository
+class AlbumRepository extends CommonAlbumRepository
 {
-    /**
-     * Find albums.
-     */
-    public function findAlbums(
-        int $perPage,
-        ?string $keyword,
-        array $relations = [],
-        array $withCountRelations = [],
-        string $sortKey = 'created_at',
-        string $sortOrder = 'desc',
-        bool $withTrashed = true
-    ): LengthAwarePaginator {
-        return Album::query()
-            ->withTrashed($withTrashed)
-            ->when(
-                isset($keyword),
-                function(Builder $query) use ($keyword): void {
-                    $query->whereLike('title_en', "%{$keyword}%")
-                        ->orWhereLike('title_vi', "%{$keyword}%")
-                        ->orWhereLike('name_en', "%{$keyword}%")
-                        ->orWhereLike('name_vi', "%{$keyword}%");
-                }
-            )
-            ->with($relations)
-            ->withCount($withCountRelations)
-            ->orderBy($sortKey, $sortOrder)
-            ->paginate($perPage);
-    }
-
     /**
      * Create a new album.
      */
@@ -101,7 +71,7 @@ class AlbumRepository
     /**
      * Delete (soft) the album by ID.
      */
-    public function deleteAlbumById(int $id): bool
+    public function deleteById(int $id): bool
     {
         $deletedCount = Album::query()->where('id', $id)->delete();
 
@@ -111,7 +81,7 @@ class AlbumRepository
     /**
      * Restore the album by ID.
      */
-    public function restoreAlbumById(int $id): bool
+    public function restoreById(int $id): bool
     {
         $restoredCount = Album::query()
             ->withTrashed()
@@ -125,7 +95,7 @@ class AlbumRepository
     /**
      * Delete (force) the album by ID.
      */
-    public function destroyAlbumById(int $id): bool
+    public function destroyById(int $id): bool
     {
         $deletedCount = Album::query()->withTrashed()->where('id', $id)->forceDelete();
 

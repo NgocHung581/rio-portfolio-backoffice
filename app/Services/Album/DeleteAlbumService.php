@@ -22,7 +22,7 @@ class DeleteAlbumService
         try {
             DB::beginTransaction();
 
-            $isCompleted = $this->albumRepository->deleteAlbumById($album->id);
+            $isCompleted = $this->albumRepository->deleteById($album->id);
 
             if (!$isCompleted) {
                 DB::rollBack();

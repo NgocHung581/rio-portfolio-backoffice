@@ -22,7 +22,7 @@ class RestoreAlbumService
         try {
             DB::beginTransaction();
 
-            $isCompleted = $this->albumRepository->restoreAlbumById($album->id);
+            $isCompleted = $this->albumRepository->restoreById($album->id);
 
             if (!$isCompleted) {
                 DB::rollBack();
