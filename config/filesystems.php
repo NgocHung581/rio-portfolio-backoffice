@@ -62,23 +62,6 @@ return [
             'report' => false,
         ],
 
-        'common_private' => [
-            'driver' => 'local',
-            'root' => base_path('common/storage/app/private'),
-            'serve' => true,
-            'throw' => false,
-            'report' => false,
-        ],
-
-        'common_public' => [
-            'driver' => 'local',
-            'root' => base_path('common/storage/app/public'),
-            'url' => env('APP_URL') . '/storage',
-            'visibility' => 'public',
-            'throw' => false,
-            'report' => false,
-        ],
-
     ],
 
     /*
@@ -93,7 +76,7 @@ return [
     */
 
     'links' => [
-        public_path('storage') => base_path('common/storage/app/public'),
+        public_path('storage') => storage_path('app/public'),
     ],
 
 ];

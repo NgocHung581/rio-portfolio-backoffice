@@ -65,7 +65,7 @@ class BulkDestroyAlbumMediaItemsService
             }
 
             // Delete uploaded files.
-            Storage::disk('common_public')->delete($mediaFilePaths);
+            Storage::disk('public')->delete($mediaFilePaths);
 
             DB::commit();
 

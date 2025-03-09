@@ -63,7 +63,7 @@ class UpdateAlbumService
                 $newThumbnailFileName = $this->generateMediaFileName($newThumbnailFile);
 
                 // Upload new album thumbnail.
-                $newThumbnailFilePath = Storage::disk('common_public')->putFileAs($thumbnailFolderPath, $newThumbnailFile, $newThumbnailFileName);
+                $newThumbnailFilePath = Storage::disk('public')->putFileAs($thumbnailFolderPath, $newThumbnailFile, $newThumbnailFileName);
 
                 if ($newThumbnailFilePath === false) {
                     DB::rollBack();
@@ -83,7 +83,7 @@ class UpdateAlbumService
 
                 if ($updatedCount !== 1) {
                     DB::rollBack();
-                    Storage::disk('common_public')->delete($newThumbnailFilePath);
+                    Storage::disk('public')->delete($newThumbnailFilePath);
 
                     return [
                         'is_success' => false,
@@ -92,7 +92,7 @@ class UpdateAlbumService
                 }
 
                 // Delete old album thumbnail.
-                Storage::disk('common_public')->delete($oldThumbnailFilePath);
+                Storage::disk('public')->delete($oldThumbnailFilePath);
             }
 
             DB::commit();
@@ -104,7 +104,7 @@ class UpdateAlbumService
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
-            Storage::disk('common_public')->delete($newThumbnailFilePath);
+            Storage::disk('public')->delete($newThumbnailFilePath);
 
             return [
                 'is_success' => false,

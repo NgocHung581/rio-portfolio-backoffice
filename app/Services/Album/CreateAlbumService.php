@@ -49,7 +49,7 @@ class CreateAlbumService
             $thumbnailFolderPath = $albumMediaFolderPath . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
 
             // Upload album thumbnail file.
-            $result = Storage::disk('common_public')->putFileAs($thumbnailFolderPath, $thumbnailFile, $thumbnailFileName);
+            $result = Storage::disk('public')->putFileAs($thumbnailFolderPath, $thumbnailFile, $thumbnailFileName);
 
             if ($result === false) {
                 DB::rollBack();
@@ -78,7 +78,7 @@ class CreateAlbumService
         } catch (Exception|QueryException $e) {
             Log::error($e);
             DB::rollBack();
-            Storage::disk('common_public')->deleteDirectory($albumMediaFolderPath);
+            Storage::disk('public')->deleteDirectory($albumMediaFolderPath);
 
             return [
                 'is_success' => false,

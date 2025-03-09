@@ -137,7 +137,7 @@ const useAlbumMediaItemColumns = ({
                             onChange={(_, isChecked) =>
                                 onChangeAlbumMediaItemInfo(row.original, { is_displayed_on_banner: isChecked })
                             }
-                            disabled={isUpdating}
+                            disabled={isUpdating || row.original.type === fileType.video}
                         />
                     );
                 } else if (row.original.is_displayed_on_banner) {
