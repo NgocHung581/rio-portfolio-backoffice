@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Constants\AlbumMediaItemSetting;
 use App\Enums\ColumnSpan;
-use App\Enums\MediaType;
 use App\Http\Requests\AlbumMediaItem\BulkCreateAlbumMediaItemsRequest;
 use App\Http\Requests\AlbumMediaItem\BulkDestroyAlbumMediaItemsRequest;
 use App\Http\Requests\AlbumMediaItem\BulkUpdateAlbumMediaItemsRequest;
@@ -17,6 +16,7 @@ use App\Services\AlbumMediaItem\BulkCreateAlbumMediaItemsService;
 use App\Services\AlbumMediaItem\BulkDestroyAlbumMediaItemsService;
 use App\Services\AlbumMediaItem\BulkUpdateAlbumMediaItemsService;
 use App\Services\AlbumMediaItem\DestroyAlbumMediaItemService;
+use Common\App\Enums\MediaType;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
 use Inertia\ResponseFactory;

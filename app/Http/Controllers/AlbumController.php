@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Constants\PerPage;
 use App\Enums\ColumnSpan;
-use App\Enums\MediaType;
 use App\Http\Requests\Album\CreateAlbumRequest;
 use App\Http\Requests\Album\ListAlbumsRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
@@ -19,6 +18,7 @@ use App\Services\Album\DestroyAlbumService;
 use App\Services\Album\ListAlbumsService;
 use App\Services\Album\RestoreAlbumService;
 use App\Services\Album\UpdateAlbumService;
+use Common\App\Enums\MediaType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\URL;
 use Inertia\Response;

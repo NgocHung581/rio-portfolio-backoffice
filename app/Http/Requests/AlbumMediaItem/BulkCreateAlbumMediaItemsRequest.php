@@ -6,7 +6,7 @@ namespace App\Http\Requests\AlbumMediaItem;
 
 use App\Constants\AlbumMediaItemSetting;
 use App\Enums\ColumnSpan;
-use App\Enums\MediaType;
+use Common\App\Enums\MediaType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;

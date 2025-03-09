@@ -206,25 +206,27 @@ const CreateAlbumMediaPage = ({
                                                     ))}
                                                 </TextField>
                                             </Grid>
-                                            <Grid size={{ xs: 12 }}>
-                                                <Grid container spacing={4} alignItems="center">
-                                                    <Grid size={{ xs: 12, sm: 2 }}>
-                                                        <FormLabel>{t('display_on_banner')}</FormLabel>
-                                                    </Grid>
-                                                    <Grid size={{ xs: 12, sm: 10 }}>
-                                                        <Switch
-                                                            edge="start"
-                                                            disabled={processing}
-                                                            checked={data.media[mediaKey].is_displayed_on_banner}
-                                                            onChange={(_, isChecked) =>
-                                                                handleUpdateMediaInfo(mediaKey, {
-                                                                    is_displayed_on_banner: isChecked,
-                                                                })
-                                                            }
-                                                        />
+                                            {data.media_type === fileType.image && (
+                                                <Grid size={{ xs: 12 }}>
+                                                    <Grid container spacing={4} alignItems="center">
+                                                        <Grid size={{ xs: 12, sm: 2 }}>
+                                                            <FormLabel>{t('display_on_banner')}</FormLabel>
+                                                        </Grid>
+                                                        <Grid size={{ xs: 12, sm: 10 }}>
+                                                            <Switch
+                                                                edge="start"
+                                                                disabled={processing}
+                                                                checked={data.media[mediaKey].is_displayed_on_banner}
+                                                                onChange={(_, isChecked) =>
+                                                                    handleUpdateMediaInfo(mediaKey, {
+                                                                        is_displayed_on_banner: isChecked,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </Grid>
                                                     </Grid>
                                                 </Grid>
-                                            </Grid>
+                                            )}
                                             <Grid size={{ xs: 12 }}>
                                                 {data.media_type === fileType.image ? (
                                                     <FormControl required>

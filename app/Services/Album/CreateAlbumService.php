@@ -6,9 +6,9 @@ namespace App\Services\Album;
 
 use App\Constants\MediaFolderName;
 use App\Constants\PublicStorageFolderPathPrefix;
-use App\Enums\MediaType;
 use App\Repositories\AlbumRepository;
 use App\Traits\MediaHelper;
+use Common\App\Enums\MediaType;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
