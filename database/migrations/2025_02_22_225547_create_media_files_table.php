@@ -15,6 +15,7 @@ return new class() extends Migration {
         Schema::create('media_files', function(Blueprint $table): void {
             $table->id();
             $table->unsignedTinyInteger('type');
+            $table->string('url')->unique();
             $table->string('file_path')->unique();
             $table->string('file_name', 50)->unique();
             $table->unsignedBigInteger('file_size');

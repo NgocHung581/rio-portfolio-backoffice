@@ -16,7 +16,7 @@ class MediaFileResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'url' => asset("/storage/{$this->file_path}"),
+            'url' => $this->url,
             'type' => $this->type,
             'file_name' => $this->file_name,
             'file_size' => $this->file_size,

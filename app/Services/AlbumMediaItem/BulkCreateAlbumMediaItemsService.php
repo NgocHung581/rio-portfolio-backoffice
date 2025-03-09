@@ -68,6 +68,7 @@ class BulkCreateAlbumMediaItemsService
                 // Create album media item.
                 $albumMediaItem->mediaFile()->create([
                     'type' => $type,
+                    'url' => asset("/storage/{$mediaFilePath}"),
                     'file_path' => $mediaFilePath,
                     'file_name' => $fileName,
                     'file_size' => $file->getSize(),
@@ -96,6 +97,7 @@ class BulkCreateAlbumMediaItemsService
 
                     $albumMediaItem->videoThumbnailFile()->create([
                         'type' => MediaType::Thumbnail->value,
+                        'url' => asset("/storage/{$videoThumbnailFilePath}"),
                         'file_path' => $videoThumbnailFilePath,
                         'file_name' => $videoThumbnailFileName,
                         'file_size' => $videoThumbnailFile->getSize(),

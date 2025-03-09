@@ -63,6 +63,7 @@ class CreateAlbumService
             // Create album thumbnail.
             $album->thumbnail()->create([
                 'type' => MediaType::Thumbnail->value,
+                'url' => asset("/storage/{$result}"),
                 'file_path' => $result,
                 'file_name' => $thumbnailFileName,
                 'file_size' => $thumbnailFile->getSize(),

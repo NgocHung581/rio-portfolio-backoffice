@@ -76,6 +76,7 @@ class UpdateAlbumService
 
                 // Save new album thumbnail.
                 $updatedCount = $album->thumbnail()->update([
+                    'url' => asset("/storage/{$newThumbnailFilePath}"),
                     'file_path' => $newThumbnailFilePath,
                     'file_name' => $newThumbnailFileName,
                     'file_size' => $newThumbnailFile->getSize(),

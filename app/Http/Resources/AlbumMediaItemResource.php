@@ -20,7 +20,7 @@ class AlbumMediaItemResource extends JsonResource
             'id' => $this->id,
             'album_id' => $this->album_id,
             'type' => $this->mediaFile->type,
-            'url' => asset("/storage/{$this->mediaFile->file_path}"),
+            'url' => $this->mediaFile->url,
             'file_size' => $this->mediaFile->file_size,
             'file_name' => $this->mediaFile->file_name,
             'column_span' => $this->column_span,
@@ -28,7 +28,7 @@ class AlbumMediaItemResource extends JsonResource
         ];
 
         if (isset($this->videoThumbnailFile)) {
-            $data['video_thumbnail_url'] = asset("/storage/{$this->videoThumbnailFile->file_path}");
+            $data['video_thumbnail_url'] = $this->videoThumbnailFile->url;
         }
 
         return $data;
