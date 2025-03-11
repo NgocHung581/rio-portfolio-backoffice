@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Album;
 
-use App\Constants\PerPage;
+use Common\App\Constants\PerPage;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ListAlbumsRequest extends FormRequest
