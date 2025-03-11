@@ -1,4 +1,4 @@
-import { VerticalMenuType } from '@/enums/menu';
+import { VerticalMenuType } from '@/@menu/enums/menu';
 import { VerticalMenu } from '@/types/menu';
 import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';

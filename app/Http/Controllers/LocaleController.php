@@ -10,9 +10,9 @@ use Illuminate\Http\Request;
 class LocaleController extends Controller
 {
     /**
-     * Update application locale.
+     * Set application locale.
      */
-    public function update(Request $request): RedirectResponse
+    public function __invoke(Request $request): RedirectResponse
     {
         $request->session()->put('locale', $request->locale);
 

@@ -1,12 +1,12 @@
 import { PropsWithChildren } from '@/types';
-import LanguageProvider from './LanguageProvider';
+import LocaleProvider from './LocaleProvider';
 import ThemeProvider from './ThemeProvider';
 
 const Providers = ({ children }: PropsWithChildren) => {
     return (
-        <LanguageProvider>
+        <LocaleProvider>
             <ThemeProvider>{children}</ThemeProvider>
-        </LanguageProvider>
+        </LocaleProvider>
     );
 };
 

@@ -1,11 +1,10 @@
-import { ThemeMode } from '@/enums/themeMode';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
-import { useColorScheme } from '@mui/material/styles';
+import { PaletteMode, useColorScheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { Fragment, useRef, useState } from 'react';
@@ -27,7 +26,7 @@ const ThemeModeSwitcher = () => {
         setOpenMenu(false);
     };
 
-    const handleChangeMode = (selectedMode: ThemeMode) => () => {
+    const handleChangeMode = (selectedMode: PaletteMode) => () => {
         if (mode !== selectedMode) {
             setMode(selectedMode);
         }
@@ -39,7 +38,7 @@ const ThemeModeSwitcher = () => {
         <Fragment>
             <Tooltip title={t('mode')}>
                 <IconButton ref={containerRef} sx={{ color: 'text.primary' }} onClick={handleOpenMenu}>
-                    {mode === ThemeMode.Light ? (
+                    {mode === 'light' ? (
                         <LightModeOutlinedIcon fontSize="small" />
                     ) : (
                         <DarkModeOutlinedIcon fontSize="small" />
@@ -55,13 +54,13 @@ const ThemeModeSwitcher = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem selected={mode === ThemeMode.Light} onClick={handleChangeMode(ThemeMode.Light)}>
+                <MenuItem selected={mode === 'light'} onClick={handleChangeMode('light')}>
                     <Stack direction="row" alignItems="center" gap={3}>
                         <LightModeOutlinedIcon />
                         <Typography color="inherit">{t('light')}</Typography>
                     </Stack>
                 </MenuItem>
-                <MenuItem selected={mode === ThemeMode.Dark} onClick={handleChangeMode(ThemeMode.Dark)}>
+                <MenuItem selected={mode === 'dark'} onClick={handleChangeMode('dark')}>
                     <Stack direction="row" alignItems="center" gap={3}>
                         <DarkModeOutlinedIcon />
                         <Typography color="inherit">{t('dark')}</Typography>

@@ -1,8 +1,8 @@
+import { VerticalMenuType } from '@/@menu/enums/menu';
 import StyledListItem from '@/@menu/styles/vertical/StyledListItem';
 import StyledListItemButton from '@/@menu/styles/vertical/StyledListItemButton';
 import StyledListItemIcon from '@/@menu/styles/vertical/StyledListItemIcon';
 import StyledListItemText from '@/@menu/styles/vertical/StyledListItemText';
-import { VerticalMenuType } from '@/enums/menu';
 import { VerticalSubMenu } from '@/types/menu';
 import CircleIcon from '@mui/icons-material/Circle';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';

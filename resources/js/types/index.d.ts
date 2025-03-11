@@ -14,6 +14,7 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     };
     ziggy: Config & { location: string };
     message: string;
+    localeOptions: Option<string>[];
 };
 
 export type PropsWithChildren<T = unknown> = T & { children: ReactNode };

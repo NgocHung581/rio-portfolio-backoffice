@@ -1,4 +1,4 @@
-import { VerticalMenuType } from '@/enums/menu';
+import { VerticalMenuType } from '@/@menu/enums/menu';
 import { VerticalMenuItem } from '@/types/menu';
 import MenuItemLink from './MenuItemLink';
 import MenuSection from './MenuSection';

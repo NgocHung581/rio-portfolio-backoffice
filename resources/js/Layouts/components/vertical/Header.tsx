@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-import LanguageSwitcher from '../shared/LanguageSwitcher';
+import LocaleSwitcher from '../shared/LocaleSwitcher';
 import ThemeModeSwitcher from '../shared/ThemeModeSwitcher';
 import UserDropdown from '../shared/UserDropdown';
 
@@ -53,7 +53,7 @@ const Header = () => {
                 </Box>
                 <Stack direction="row" alignItems="center" gap={2}>
                     <Stack direction="row" alignItems="center">
-                        <LanguageSwitcher />
+                        <LocaleSwitcher />
                         <ThemeModeSwitcher />
                     </Stack>
                     <UserDropdown />

@@ -10,8 +10,8 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SettingAboutPageController;
 use Illuminate\Support\Facades\Route;
 
-// Update locale.
-Route::put('/locale', [LocaleController::class, 'update'])->name('locale.update');
+// Set locale.
+Route::put('/locale', LocaleController::class)->name('locale.set');
 
 Route::middleware('guest')->group(function(): void {
     // Auth.

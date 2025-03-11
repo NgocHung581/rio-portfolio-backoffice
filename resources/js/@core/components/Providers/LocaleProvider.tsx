@@ -3,14 +3,14 @@ import { router } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const LanguageProvider = ({ children }: PropsWithChildren) => {
+const LocaleProvider = ({ children }: PropsWithChildren) => {
     const { i18n } = useTranslation();
 
     useEffect(() => {
-        router.put(route('locale.update'), { locale: i18n.language }, { preserveScroll: true });
+        router.put(route('locale.set'), { locale: i18n.language }, { preserveScroll: true });
     }, []);
 
     return children;
 };
 
-export default LanguageProvider;
+export default LocaleProvider;

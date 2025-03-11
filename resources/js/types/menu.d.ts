@@ -1,4 +1,4 @@
-import { VerticalMenuType } from '@/enums/menu';
+import { VerticalMenuType } from '@/@menu/enums/menu';
 import { SvgIconComponent } from '@mui/icons-material';
 
 export type VerticalMenuItemLink = {
