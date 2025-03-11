@@ -1,7 +1,7 @@
 import MediaInTable from '@/Components/MediaInTable';
 import { EditAlbumPageProps } from '@/Pages/Album/Edit';
 import { PageProps } from '@/types';
-import { AlbumMediaItem } from '@/types/album';
+import { AlbumMediaItem } from '@/types/albumMediaItem';
 import { convertBytes } from '@/utils/fileHelper';
 import { usePage } from '@inertiajs/react';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';

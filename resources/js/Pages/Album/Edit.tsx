@@ -1,5 +1,6 @@
 import { Option, PageProps, PaginatedData } from '@/types';
-import { Album, AlbumMediaItem } from '@/types/album';
+import { Album } from '@/types/album';
+import { AlbumMediaItem } from '@/types/albumMediaItem';
 import AlbumMediaItemListTable from '@/views/AlbumMediaItem/list/AlbumMediaItemListTable';
 import { Head } from '@inertiajs/react';
 import Stack from '@mui/material/Stack';

@@ -1,7 +1,7 @@
 import Pagination from '@/Components/Pagination';
 import { Language } from '@/enums/language';
 import { PageProps } from '@/types';
-import { AlbumMediaItem } from '@/types/album';
+import { AlbumMediaItem } from '@/types/albumMediaItem';
 import { Link, router, usePage } from '@inertiajs/react';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';

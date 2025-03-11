@@ -1,7 +1,7 @@
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import { EditAlbumPageProps } from '@/Pages/Album/Edit';
 import { PageProps } from '@/types';
-import { AlbumMediaItem } from '@/types/album';
+import { AlbumMediaItem } from '@/types/albumMediaItem';
 import { router, usePage } from '@inertiajs/react';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import IconButton from '@mui/material/IconButton';
