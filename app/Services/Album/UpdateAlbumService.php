@@ -55,7 +55,7 @@ class UpdateAlbumService
             }
 
             // Update album thumbnail.
-            $newThumbnailFile = $data['thumbnail_file'];
+            $newThumbnailFile = $data['thumbnail_file'] ?? null;
 
             if (isset($newThumbnailFile)) {
                 $oldThumbnailFilePath = $album->thumbnail->file_path;

@@ -18,6 +18,7 @@ class Album extends CommonAlbum
         'summary_en',
         'summary_vi',
         'thumbnail_url',
+        'slug',
         'is_highlight',
     ];
 }

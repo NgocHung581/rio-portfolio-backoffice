@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { AlbumActionProps } from '../list/AlbumOtherActions';
 
-const AlbumDisableAction = ({ album, onCloseMenu }: AlbumActionProps) => {
+const AlbumDisableAction = ({ album, onCloseMenu, disabled }: AlbumActionProps) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -41,7 +41,7 @@ const AlbumDisableAction = ({ album, onCloseMenu }: AlbumActionProps) => {
     return (
         <Fragment>
             {route().current('albums.index') && (
-                <MenuItem onClick={handleOpenModal}>
+                <MenuItem disabled={disabled} onClick={handleOpenModal}>
                     <ListItemIcon>
                         <NotInterestedOutlinedIcon />
                     </ListItemIcon>
@@ -49,7 +49,12 @@ const AlbumDisableAction = ({ album, onCloseMenu }: AlbumActionProps) => {
                 </MenuItem>
             )}
             {route().current('albums.edit', album) && (
-                <Button color="warning" startIcon={<NotInterestedOutlinedIcon />} onClick={handleOpenModal}>
+                <Button
+                    color="warning"
+                    startIcon={<NotInterestedOutlinedIcon />}
+                    disabled={disabled}
+                    onClick={handleOpenModal}
+                >
                     {t('disable')}
                 </Button>
             )}

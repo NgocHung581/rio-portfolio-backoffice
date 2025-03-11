@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Models\Album;
 use Common\App\Repositories\AlbumRepository as CommonAlbumRepository;
+use Illuminate\Support\Str;
 
 class AlbumRepository extends CommonAlbumRepository
 {
@@ -32,6 +33,7 @@ class AlbumRepository extends CommonAlbumRepository
             'description_vi' => $descriptionVi,
             'summary_en' => $summaryEn,
             'summary_vi' => $summaryVi,
+            'slug' => Str::slug($nameEn),
             'is_highlight' => $isHighlight,
         ]);
 
@@ -62,6 +64,7 @@ class AlbumRepository extends CommonAlbumRepository
             'description_vi' => $descriptionVi,
             'summary_en' => $summaryEn,
             'summary_vi' => $summaryVi,
+            'slug' => Str::slug($nameEn),
             'is_highlight' => $isHighlight,
         ]);
 

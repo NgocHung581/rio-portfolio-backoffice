@@ -102,11 +102,11 @@ const AlbumForm = ({ album }: Props) => {
                             {!!album && (
                                 <Fragment>
                                     {!!album.deleted_at ? (
-                                        <AlbumRestoreAction album={album} />
+                                        <AlbumRestoreAction album={album} disabled={processing} />
                                     ) : (
-                                        <AlbumDisableAction album={album} />
+                                        <AlbumDisableAction album={album} disabled={processing} />
                                     )}
-                                    <AlbumDeleteAction album={album} />
+                                    <AlbumDeleteAction album={album} disabled={processing} />
                                 </Fragment>
                             )}
                         </Stack>

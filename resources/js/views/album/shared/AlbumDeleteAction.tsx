@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { AlbumActionProps } from '../list/AlbumOtherActions';
 
-const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
+const AlbumDeleteAction = ({ album, onCloseMenu, disabled }: AlbumActionProps) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -44,7 +44,7 @@ const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
             {route().current('albums.index') && (
                 <Fragment>
                     <Divider />
-                    <MenuItem onClick={handleOpenModal}>
+                    <MenuItem disabled={disabled} onClick={handleOpenModal}>
                         <ListItemIcon>
                             <DeleteOutlinedIcon color="error" />
                         </ListItemIcon>
@@ -53,7 +53,7 @@ const AlbumDeleteAction = ({ album, onCloseMenu }: AlbumActionProps) => {
                 </Fragment>
             )}
             {route().current('albums.edit', album) && (
-                <Button color="error" startIcon={<DeleteOutlinedIcon />} onClick={handleOpenModal}>
+                <Button color="error" startIcon={<DeleteOutlinedIcon />} disabled={disabled} onClick={handleOpenModal}>
                     {t('delete')}
                 </Button>
             )}

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { AlbumActionProps } from '../list/AlbumOtherActions';
 
-const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
+const AlbumRestoreAction = ({ album, onCloseMenu, disabled }: AlbumActionProps) => {
     const { t } = useTranslation();
 
     const [openModal, setOpenModal] = useState(false);
@@ -41,7 +41,7 @@ const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
     return (
         <Fragment>
             {route().current('albums.index') && (
-                <MenuItem onClick={handleOpenModal}>
+                <MenuItem disabled={disabled} onClick={handleOpenModal}>
                     <ListItemIcon>
                         <RestoreOutlinedIcon />
                     </ListItemIcon>
@@ -49,7 +49,12 @@ const AlbumRestoreAction = ({ album, onCloseMenu }: AlbumActionProps) => {
                 </MenuItem>
             )}
             {route().current('albums.edit', album) && (
-                <Button color="success" startIcon={<RestoreOutlinedIcon />} onClick={handleOpenModal}>
+                <Button
+                    color="success"
+                    startIcon={<RestoreOutlinedIcon />}
+                    disabled={disabled}
+                    onClick={handleOpenModal}
+                >
                     {t('restore')}
                 </Button>
             )}

@@ -14,6 +14,7 @@ type Props = {
 export type AlbumActionProps<T = unknown> = T & {
     album: Album;
     onCloseMenu?: () => void;
+    disabled?: boolean;
 };
 
 const AlbumOtherActions = ({ album }: Props) => {
