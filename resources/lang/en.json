@@ -90,6 +90,9 @@
     "action": "Action",
     "partner_logos": "Partner logos",
     "description": "Description",
+    "quote": "Quote",
+    "bullet_list": "Bullet list",
+    "number_list": "Number list",
     "messages": {
         "invalid_link": "The link is invalid.",
         "file_too_large": "The file must not be greater than {{max}} {{fileSizeUnit}}.",

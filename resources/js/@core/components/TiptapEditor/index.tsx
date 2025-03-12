@@ -1,3 +1,4 @@
+import ProseWrapper from '@/Components/ProseWrapper';
 import Backdrop from '@mui/material/Backdrop';
 import FormHelperText from '@mui/material/FormHelperText';
 import Paper from '@mui/material/Paper';
@@ -15,11 +16,14 @@ import AlignCenterAction from './actions/AlignCenterAction';
 import AlignJustifyAction from './actions/AlignJustifyAction';
 import AlignLeftAction from './actions/AlignLeftAction';
 import AlignRightAction from './actions/AlignRightAction';
+import BulletListAction from './actions/BulletListAction';
 import FormatBoldAction from './actions/FormatBoldAction';
 import FormatItalicAction from './actions/FormatItalicAction';
 import FormatStrikeAction from './actions/FormatStrikeAction';
 import FormatUnderlineAction from './actions/FormatUnderlineAction';
 import InsertLinkAction from './actions/InsertLinkAction';
+import OrderedListAction from './actions/OrderedListAction';
+import ToggleBlockquoteAction from './actions/ToggleBlockquoteAction';
 import UnsetLinkAction from './actions/UnsetLinkAction';
 
 type Props = {
@@ -35,7 +39,7 @@ type Props = {
 
 const TiptapEditor = forwardRef(
     (
-        { value, onChange, onBlur, characterLimit, error, helperText, height = 200, disabled }: Props,
+        { value, onChange, onBlur, characterLimit, error, helperText, height = 300, disabled }: Props,
         ref: ForwardedRef<HTMLDivElement>,
     ) => {
         const editor = useEditor({
@@ -43,7 +47,16 @@ const TiptapEditor = forwardRef(
             onUpdate: handleUpdateEditor,
             onBlur,
             extensions: [
-                StarterKit,
+                StarterKit.configure({
+                    hardBreak: false,
+                    history: false,
+                    horizontalRule: false,
+                    dropcursor: false,
+                    gapcursor: false,
+                    heading: false,
+                    code: false,
+                    codeBlock: false,
+                }),
                 Underline,
                 TextAlign.configure({ types: ['heading', 'paragraph'], defaultAlignment: 'left' }),
                 Link.configure({ autolink: false }),
@@ -79,10 +92,15 @@ const TiptapEditor = forwardRef(
                             <AlignJustifyAction editor={editor} />
                             <InsertLinkAction editor={editor} />
                             <UnsetLinkAction editor={editor} />
+                            <ToggleBlockquoteAction editor={editor} />
+                            <OrderedListAction editor={editor} />
+                            <BulletListAction editor={editor} />
                         </Stack>
                     </Paper>
 
-                    <EditorContent ref={ref} editor={editor} className="tiptap-wrapper" />
+                    <ProseWrapper>
+                        <EditorContent ref={ref} editor={editor} className="tiptap-wrapper" />
+                    </ProseWrapper>
 
                     {!!characterLimit && <CharacterCount editor={editor} limit={characterLimit} />}
                 </TiptapWrapper>

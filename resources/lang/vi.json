@@ -90,6 +90,9 @@
     "action": "Hành động",
     "partner_logos": "Logo đối tác",
     "description": "Mô tả",
+    "quote": "Trích dẫn",
+    "bullet_list": "Danh sách có dấu đầu dòng",
+    "number_list": "Danh sách được đánh số",
     "messages": {
         "invalid_link": "Đường dẫn này không hợp lệ.",
         "file_too_large": "Tệp không được lớn hơn {{max}} {{fileSizeUnit}}.",
