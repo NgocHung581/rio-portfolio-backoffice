@@ -36,7 +36,7 @@ class BulkCreateAlbumMediaItemsService
                 $isDisplayedOnBanner = $item['is_displayed_on_banner'];
                 $file = $item['file'];
                 $fileName = $this->generateMediaFileName($file);
-                $folderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $albumId . DIRECTORY_SEPARATOR;
+                $folderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $albumId . '/';
 
                 match ($type) {
                     MediaType::Image->value => $folderPath .= MediaFolderName::IMAGES,
@@ -78,7 +78,7 @@ class BulkCreateAlbumMediaItemsService
                 if ($type === MediaType::Video->value) {
                     $videoThumbnailFile = $item['video_thumbnail_file'];
                     $videoThumbnailFileName = $this->generateMediaFileName($videoThumbnailFile);
-                    $videoThumbnailFolderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $albumId . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
+                    $videoThumbnailFolderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $albumId . '/' . MediaFolderName::THUMBNAILS;
 
                     $videoThumbnailFilePath = Storage::disk('public')
                         ->putFileAs($videoThumbnailFolderPath, $videoThumbnailFile, $videoThumbnailFileName);

@@ -25,7 +25,7 @@ class SaveAboutPageInformationService
 
     public function execute(string $description, array $newPartnerLogos, array $deletedPartnerLogoPaths): array
     {
-        $folderPath = PublicStorageFolderPathPrefix::PARTNER_LOGOS . DIRECTORY_SEPARATOR . MediaFolderName::IMAGES;
+        $folderPath = PublicStorageFolderPathPrefix::PARTNER_LOGOS . '/' . MediaFolderName::IMAGES;
         $aboutPageInfo = $this->aboutPageInformationRepository->getAboutPageInformation();
         $uploadedFilePaths = [];
 

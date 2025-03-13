@@ -46,7 +46,7 @@ class CreateAlbumService
             $albumMediaFolderPath = PublicStorageFolderPathPrefix::ALBUM_MEDIA . $album->id;
             $thumbnailFile = $data['thumbnail_file'];
             $thumbnailFileName = $this->generateMediaFileName($thumbnailFile);
-            $thumbnailFolderPath = $albumMediaFolderPath . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
+            $thumbnailFolderPath = $albumMediaFolderPath . '/' . MediaFolderName::THUMBNAILS;
 
             // Upload album thumbnail file.
             $result = Storage::disk('public')->putFileAs($thumbnailFolderPath, $thumbnailFile, $thumbnailFileName);

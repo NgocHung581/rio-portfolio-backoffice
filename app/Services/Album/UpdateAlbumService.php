@@ -59,7 +59,7 @@ class UpdateAlbumService
 
             if (isset($newThumbnailFile)) {
                 $oldThumbnailFilePath = $album->thumbnail->file_path;
-                $thumbnailFolderPath = $albumMediaFolderPath . DIRECTORY_SEPARATOR . MediaFolderName::THUMBNAILS;
+                $thumbnailFolderPath = $albumMediaFolderPath . '/' . MediaFolderName::THUMBNAILS;
                 $newThumbnailFileName = $this->generateMediaFileName($newThumbnailFile);
 
                 // Upload new album thumbnail.
