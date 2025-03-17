@@ -4,4 +4,5 @@ export type MediaFile = {
     url: string;
     file_name: string;
     file_size: number;
+    aspect_ratio?: string;
 };

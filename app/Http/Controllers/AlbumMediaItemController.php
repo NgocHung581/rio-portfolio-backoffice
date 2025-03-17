@@ -33,7 +33,7 @@ class AlbumMediaItemController extends Controller
             'fileTypeOptions' => MediaType::toFileTypeOptions(),
             'imagesCountLimitPerUpload' => AlbumMediaItemSetting::IMAGES_COUNT_LIMIT_PER_UPLOAD,
             'videosCountLimitPerUpload' => AlbumMediaItemSetting::VIDEOS_COUNT_LIMIT_PER_UPLOAD,
-            'columnSpanOptions' => ColumnSpan::toArray(),
+            'columnSpanOptions' => ColumnSpan::toOptions(),
             'fileType' => MediaType::toFileTypeArray(),
         ]);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Album;
 
+use App\Enums\AspectRatio;
 use App\Models\Album;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -63,6 +64,11 @@ class CommonAlbumRequest extends FormRequest
                 Rule::requiredIf(is_null($this->album) || (isset($this->album) && $this->is_thumbnail_deleted && is_null($this->thumbnail_file))),
                 File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb'),
             ],
+            'thumbnail_frame' => [
+                'required',
+                'string',
+                Rule::in(AspectRatio::cases()),
+            ],
             'is_highlight' => [
                 'required',
                 'boolean',
@@ -85,6 +91,7 @@ class CommonAlbumRequest extends FormRequest
             'summary_en' => __('summary_en'),
             'summary_vi' => __('summary_vi'),
             'thumbnail_file' => __('thumbnail'),
+            'thumbnail_frame' => __('frame'),
             'is_highlight' => __('highlight'),
         ];
     }

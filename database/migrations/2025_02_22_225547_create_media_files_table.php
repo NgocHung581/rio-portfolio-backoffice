@@ -21,6 +21,7 @@ return new class() extends Migration {
             $table->unsignedBigInteger('file_size');
             $table->unsignedBigInteger('media_fileable_id');
             $table->string('media_fileable_type', 50);
+            $table->string('aspect_ratio', 5);
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });

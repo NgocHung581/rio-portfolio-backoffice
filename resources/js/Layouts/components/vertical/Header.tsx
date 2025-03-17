@@ -37,7 +37,10 @@ const Header = () => {
             elevation={trigger ? undefined : 0}
         >
             <Toolbar
-                sx={{ px: { xs: 0, sm: trigger ? 6 : 0 }, transition: (theme) => theme.transitions.create('padding') }}
+                sx={{
+                    px: { xs: trigger ? 4 : 0, sm: trigger ? 6 : 0 },
+                    transition: (theme) => theme.transitions.create('padding'),
+                }}
             >
                 <Box flex={1}>
                     <IconButton

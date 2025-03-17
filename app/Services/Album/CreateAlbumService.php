@@ -67,6 +67,7 @@ class CreateAlbumService
                 'file_path' => $result,
                 'file_name' => $thumbnailFileName,
                 'file_size' => $thumbnailFile->getSize(),
+                'aspect_ratio' => $data['thumbnail_frame'],
             ]);
 
             DB::commit();

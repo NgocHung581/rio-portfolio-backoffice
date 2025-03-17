@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\AspectRatio;
 use App\Enums\ColumnSpan;
 use App\Http\Requests\Album\CreateAlbumRequest;
 use App\Http\Requests\Album\ListAlbumsRequest;
@@ -46,7 +47,7 @@ class AlbumController extends Controller
      */
     public function create(): Response|ResponseFactory
     {
-        return inertia('Album/Create');
+        return inertia('Album/Create', ['aspectRatioOptions' => AspectRatio::toOptions()]);
     }
 
     /**
@@ -74,9 +75,10 @@ class AlbumController extends Controller
         return inertia('Album/Edit', [
             'album' => new AlbumResource($album->loadCount('mediaItems')),
             'albumMediaItems' => AlbumMediaItemResource::collection($albumMediaItems),
-            'columnSpanOptions' => ColumnSpan::toArray(),
+            'columnSpanOptions' => ColumnSpan::toOptions(),
             'fileTypeOptions' => MediaType::toFileTypeOptions(),
             'fileType' => MediaType::toFileTypeArray(),
+            'aspectRatioOptions' => AspectRatio::toOptions(),
         ]);
     }
 

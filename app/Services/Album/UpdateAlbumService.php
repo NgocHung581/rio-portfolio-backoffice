@@ -80,6 +80,7 @@ class UpdateAlbumService
                     'file_path' => $newThumbnailFilePath,
                     'file_name' => $newThumbnailFileName,
                     'file_size' => $newThumbnailFile->getSize(),
+                    'aspect_ratio' => $data['thumbnail_frame'],
                 ]);
 
                 if ($updatedCount !== 1) {
@@ -94,6 +95,8 @@ class UpdateAlbumService
 
                 // Delete old album thumbnail.
                 Storage::disk('public')->delete($oldThumbnailFilePath);
+            } else {
+                $album->thumbnail()->update(['aspect_ratio' => $data['thumbnail_frame']]);
             }
 
             DB::commit();

@@ -2,7 +2,8 @@ import ImageDropzone from '@/@core/components/ImageDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
 import BackListButton from '@/Components/BackListButton';
 import { MaxFileSize } from '@/enums/maxFileSize';
-import { Album, AlbumFormPayload } from '@/types/album';
+import { Option } from '@/types';
+import { Album } from '@/types/album';
 import { useForm } from '@inertiajs/react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import Alert from '@mui/material/Alert';
@@ -14,8 +15,12 @@ import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid2';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
@@ -29,9 +34,25 @@ import AlbumRestoreAction from './AlbumRestoreAction';
 
 type Props = {
     album?: Album;
+    aspectRatioOptions: Option<string>[];
 };
 
-const AlbumForm = ({ album }: Props) => {
+export type AlbumFormPayload = {
+    title_en: string;
+    title_vi: string;
+    name_en: string;
+    name_vi: string;
+    description_en: string;
+    description_vi: string;
+    summary_en: string;
+    summary_vi: string;
+    thumbnail_file?: File;
+    thumbnail_frame: string;
+    is_highlight: boolean;
+    is_thumbnail_deleted?: boolean;
+};
+
+const AlbumForm = ({ album, aspectRatioOptions }: Props) => {
     const { t } = useTranslation();
 
     const { data, setData, errors, setError, clearErrors, post, processing, reset, setDefaults, wasSuccessful } =
@@ -45,6 +66,7 @@ const AlbumForm = ({ album }: Props) => {
             summary_en: album?.summary_en ?? '',
             summary_vi: album?.summary_vi ?? '',
             thumbnail_file: undefined,
+            thumbnail_frame: album?.thumbnail.aspect_ratio ?? '',
             is_highlight: album?.is_highlight ?? false,
             ...(!!album && { is_thumbnail_deleted: false }),
         });
@@ -82,7 +104,7 @@ const AlbumForm = ({ album }: Props) => {
                     <Stack direction="row" alignItems="center" justifyContent="space-between" gap={4} flexWrap="wrap">
                         <Box>
                             {!!album &&
-                                (!!album.deleted_at ? (
+                                (album.deleted_at ? (
                                     <Alert severity="warning">
                                         <Typography variant="h6">{t('data_disabled_alert')}</Typography>
                                     </Alert>
@@ -101,7 +123,7 @@ const AlbumForm = ({ album }: Props) => {
                             <BackListButton href={route('albums.index')} disabled={processing} />
                             {!!album && (
                                 <Fragment>
-                                    {!!album.deleted_at ? (
+                                    {album.deleted_at ? (
                                         <AlbumRestoreAction album={album} disabled={processing} />
                                     ) : (
                                         <AlbumDisableAction album={album} disabled={processing} />
@@ -244,7 +266,31 @@ const AlbumForm = ({ album }: Props) => {
                             />
                         </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 12 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <Stack direction="row" alignItems="center" gap={4}>
+                            <FormLabel sx={{ mb: 0 }}>{t('frame')}</FormLabel>
+                            <Box>
+                                <RadioGroup
+                                    value={data.thumbnail_frame}
+                                    onChange={(e) => setData('thumbnail_frame', e.target.value)}
+                                    sx={{ flexDirection: 'row' }}
+                                >
+                                    {aspectRatioOptions.map((option) => (
+                                        <FormControlLabel
+                                            key={option.value}
+                                            value={option.value}
+                                            control={<Radio />}
+                                            label={option.label}
+                                        />
+                                    ))}
+                                </RadioGroup>
+                                {!!errors.thumbnail_frame && (
+                                    <FormHelperText error>{errors.thumbnail_frame}</FormHelperText>
+                                )}
+                            </Box>
+                        </Stack>
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <Stack direction="row" alignItems="center" gap={4}>
                             <FormLabel sx={{ mb: 0 }}>{t('highlight')}</FormLabel>
                             <Switch

@@ -14,16 +14,17 @@ export type EditAlbumPageProps = {
     columnSpanOptions: Option[];
     fileTypeOptions: Option[];
     fileType: Record<string, number>;
+    aspectRatioOptions: Option<string>[];
 };
 
-const EditAlbumPage = ({ album }: PageProps<EditAlbumPageProps>) => {
+const EditAlbumPage = ({ album, aspectRatioOptions }: PageProps<EditAlbumPageProps>) => {
     const { t } = useTranslation();
 
     return (
         <Stack spacing={6}>
             <Head title={t('edit_album')} />
             <Typography variant="h2">{t('edit_album')}</Typography>
-            <AlbumForm album={album} />
+            <AlbumForm album={album} aspectRatioOptions={aspectRatioOptions} />
             <AlbumMediaItemListTable />
         </Stack>
     );

@@ -14,12 +14,18 @@ class MediaFileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'url' => $this->url,
             'type' => $this->type,
             'file_name' => $this->file_name,
             'file_size' => $this->file_size,
         ];
+
+        if (!empty($this->aspect_ratio)) {
+            $data['aspect_ratio'] = $this->aspect_ratio;
+        }
+
+        return $data;
     }
 }
