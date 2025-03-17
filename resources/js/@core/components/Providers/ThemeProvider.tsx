@@ -7,7 +7,7 @@ import theme from '../../theme';
 
 const ThemeProvider = ({ children }: PropsWithChildren) => {
     return (
-        <MuiThemeProvider theme={theme}>
+        <MuiThemeProvider theme={theme} defaultMode="light">
             <CssBaseline />
             <ToastContainer autoClose={3000} />
             <ScrollToTopButton />

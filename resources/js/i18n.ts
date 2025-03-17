@@ -13,6 +13,7 @@ i18n.use(Backend)
             en: { translation: enJson },
             vi: { translation: viJson },
         },
+        lng: 'en',
         fallbackLng: 'en',
         debug: true,
         interpolation: {
