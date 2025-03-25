@@ -113,6 +113,7 @@
         "data_restored_failed": "Khôi phục dữ liệu không thành công.",
         "data_deleted_failed": "Xóa dữ liệu không thành công.",
         "data_saved_failed": "Lưu dữ liệu không thành công.",
-        "too_many_files": "Vui lòng tải lên không quá {{max}} tệp."
+        "too_many_files": "Vui lòng tải lên không quá {{max}} tệp.",
+        "exceed_max_highlight_albums": "Bạn chỉ có thể thiết lập tối đa {{max}} album nổi bật."
     }
 }

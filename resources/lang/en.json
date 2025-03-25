@@ -113,6 +113,7 @@
         "data_restored_failed": "Failed to restore data.",
         "data_deleted_failed": "Failed to delete data.",
         "data_saved_failed": "Failed to save data.",
-        "too_many_files": "Please upload no more than {{max}} file(s)."
+        "too_many_files": "Please upload no more than {{max}} file(s).",
+        "exceed_max_highlight_albums": "You can only set up to {{max}} highlighted albums."
     }
 }

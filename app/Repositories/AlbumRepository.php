@@ -104,4 +104,12 @@ class AlbumRepository extends CommonAlbumRepository
 
         return $deletedCount === 1;
     }
+
+    /**
+     * Get the count of highlighted albums.
+     */
+    public function countHighlightAlbums(): int
+    {
+        return Album::query()->where('is_highlight', true)->count();
+    }
 }

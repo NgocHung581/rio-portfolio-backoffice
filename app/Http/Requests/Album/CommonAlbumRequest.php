@@ -6,12 +6,19 @@ namespace App\Http\Requests\Album;
 
 use App\Enums\AspectRatio;
 use App\Models\Album;
+use App\Repositories\AlbumRepository;
+use Common\App\Constants\AlbumSetting;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\Validator;
 
 class CommonAlbumRequest extends FormRequest
 {
+    public function __construct(private readonly AlbumRepository $albumRepository)
+    {
+    }
+
     /**
      * Get the validation rules that apply to the request.
      */
@@ -74,6 +81,28 @@ class CommonAlbumRequest extends FormRequest
                 'boolean',
             ],
         ];
+    }
+
+    /**
+     * Add additional validation logic after the default validation rules are applied.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function(Validator $validator): void {
+            // Check if the album has already reached the maximum number of highlighted albums.
+            $hasEnoughHighlightedAlbums = $this->albumRepository->countHighlightAlbums() >= AlbumSetting::MAX_HIGHLIGHT_ALBUMS;
+
+            if ($hasEnoughHighlightedAlbums && $this->is_highlight) {
+                $validator->errors()->add(
+                    'is_highlight',
+                    str_replace(
+                        '{{max}}',
+                        (string) AlbumSetting::MAX_HIGHLIGHT_ALBUMS,
+                        __('messages')['exceed_max_highlight_albums']
+                    )
+                );
+            }
+        });
     }
 
     /**

@@ -293,11 +293,14 @@ const AlbumForm = ({ album, aspectRatioOptions }: Props) => {
                     <Grid size={{ xs: 12, sm: 6 }}>
                         <Stack direction="row" alignItems="center" gap={4}>
                             <FormLabel sx={{ mb: 0 }}>{t('highlight')}</FormLabel>
-                            <Switch
-                                disabled={isDisabledForm}
-                                checked={data.is_highlight}
-                                onChange={(_, isChecked) => setData('is_highlight', isChecked)}
-                            />
+                            <Box>
+                                <Switch
+                                    disabled={isDisabledForm}
+                                    checked={data.is_highlight}
+                                    onChange={(_, isChecked) => setData('is_highlight', isChecked)}
+                                />
+                                {!!errors.is_highlight && <FormHelperText error>{errors.is_highlight}</FormHelperText>}
+                            </Box>
                         </Stack>
                     </Grid>
                 </Grid>
