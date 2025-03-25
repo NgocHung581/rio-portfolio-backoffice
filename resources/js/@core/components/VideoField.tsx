@@ -49,7 +49,7 @@ const VideoField = ({ value, onChange, maxSize, disabled, error, helperText, onD
                     disabled={disabled}
                 >
                     {t('choose_file')}
-                    <VisuallyHiddenInput type="file" onChange={handleChangeFile} accept="video/mp4" />
+                    <VisuallyHiddenInput type="file" onChange={handleChangeFile} accept=".mov, .gif" />
                 </Button>
                 {!!value && (
                     <Fragment>

@@ -47,7 +47,7 @@ class BulkCreateAlbumMediaItemsRequest extends FormRequest
                 ),
                 Rule::when(
                     $this->media_type === MediaType::Video->value,
-                    ['file', 'mimetypes:video/mp4', 'max:2097152'] // 2GB
+                    ['file', 'mimetypes:video/mov,video/gif', 'max:2097152'] // 2GB
                 ),
             ],
             'media.*.video_thumbnail_file' => [
