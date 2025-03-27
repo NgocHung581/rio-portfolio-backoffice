@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SettingAboutPage\SaveAboutPageInformationRequest;
-use App\Http\Resources\AboutPageInformationResource;
-use App\Services\SettingAboutPage\GetAboutPageInformationService;
-use App\Services\SettingAboutPage\SaveAboutPageInformationService;
+use App\Http\Requests\SettingAboutPage\SaveAboutPageInfoRequest;
+use App\Services\SettingAboutPage\GetAboutPageInfoService;
+use App\Services\SettingAboutPage\SaveAboutPageInfoService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
 use Inertia\ResponseFactory;
@@ -17,24 +17,31 @@ class SettingAboutPageController extends Controller
     /**
      * Display the setting about page view.
      */
-    public function index(GetAboutPageInformationService $service): Response|ResponseFactory
+    public function index(GetAboutPageInfoService $service): Response|ResponseFactory
     {
-        $aboutPageInformation = new AboutPageInformationResource($service->execute());
+        $aboutPageInfo = $service->execute();
 
-        return inertia('SettingAboutPage', compact('aboutPageInformation'));
+        return inertia('SettingAboutPage', compact('aboutPageInfo'));
+    }
+
+    /**
+     * Get the about page information for API.
+     */
+    public function getAboutPageInfoApi(GetAboutPageInfoService $service): JsonResponse
+    {
+        return response()->json($service->execute());
     }
 
     /**
      * Save the about page information.
      */
-    public function save(
-        SaveAboutPageInformationRequest $request,
-        SaveAboutPageInformationService $service
-    ): RedirectResponse {
+    public function save(SaveAboutPageInfoRequest $request, SaveAboutPageInfoService $service): RedirectResponse
+    {
         $result = $service->execute(
-            $request->description,
-            $request->partner_logos,
-            $request->deleted_partner_logo_paths
+            $request->introduction,
+            $request->short_introduction,
+            $request->partner_logo_images,
+            $request->deleted_partner_logo_image_file_paths
         );
 
         if (!$result['is_success']) {

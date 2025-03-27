@@ -59,3 +59,8 @@ Route::middleware('auth')->group(function(): void {
             Route::post('/', 'save')->name('save');
         });
 });
+
+// Public API.
+Route::prefix('/api')->name('api.')->group(function(): void {
+    Route::get('/about-page-information', [SettingAboutPageController::class, 'getAboutPageInfoApi'])->name('aboutPageInfo');
+});

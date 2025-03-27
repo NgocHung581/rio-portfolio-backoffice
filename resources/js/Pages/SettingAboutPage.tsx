@@ -11,6 +11,7 @@ import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,46 +24,51 @@ type PartnerLogoImage = {
     file_size: number;
 };
 
-type AboutPageInformation = {
-    description: string;
-    partner_logos: PartnerLogoImage[];
+type AboutPageInfo = {
+    introduction: string;
+    short_introduction: string;
+    partner_logo_images: PartnerLogoImage[];
 };
 
 type Props = {
-    aboutPageInformation: AboutPageInformation;
+    aboutPageInfo: AboutPageInfo;
 };
 
 type SettingAboutPagePayload = {
-    description: string;
-    partner_logos: SelectedImage[];
-    deleted_partner_logo_urls: string[];
+    introduction: string;
+    short_introduction: string;
+    partner_logo_images: SelectedImage[];
+    deleted_partner_logo_image_urls: string[];
 };
 
-const SettingAboutPage = ({ aboutPageInformation }: PageProps<Props>) => {
+const SettingAboutPage = ({ aboutPageInfo }: PageProps<Props>) => {
     const { t } = useTranslation();
 
     const { data, setData, errors, setError, clearErrors, processing, post, reset, wasSuccessful } =
         useForm<SettingAboutPagePayload>({
-            description: aboutPageInformation.description,
-            partner_logos: [],
-            deleted_partner_logo_urls: [],
+            introduction: aboutPageInfo.introduction,
+            short_introduction: aboutPageInfo.short_introduction,
+            partner_logo_images: [],
+            deleted_partner_logo_image_urls: [],
         });
 
     const handleDeleteAllPartnerLogos = () => {
         setData((prev) => ({
             ...prev,
             partner_logos: [],
-            deleted_partner_logo_urls: aboutPageInformation.partner_logos.map((image) => image.url),
+            deleted_partner_logo_image_urls: aboutPageInfo.partner_logo_images.map((image) => image.file_path),
         }));
     };
 
     const handleDeletePartnerLogo = (deletedImage: SelectedImage) => {
-        const isDeleted = aboutPageInformation.partner_logos.some((image) => image.url === deletedImage.url);
+        const isDeleted = aboutPageInfo.partner_logo_images.some((image) => image.url === deletedImage.url);
 
         setData((prev) => ({
             ...prev,
-            partner_logos: data.partner_logos.filter((file) => file.url !== deletedImage.url),
-            ...(isDeleted && { deleted_partner_logo_urls: [...prev.deleted_partner_logo_urls, deletedImage.url] }),
+            partner_logos: data.partner_logo_images.filter((file) => file.url !== deletedImage.url),
+            ...(isDeleted && {
+                deleted_partner_logo_image_urls: [...prev.deleted_partner_logo_image_urls, deletedImage.url],
+            }),
         }));
     };
 
@@ -85,15 +91,26 @@ const SettingAboutPage = ({ aboutPageInformation }: PageProps<Props>) => {
             <Card component="form" onSubmit={handleSubmit}>
                 <CardContent>
                     <Stack spacing={4}>
+                        <TextField
+                            multiline
+                            minRows={2}
+                            maxRows={5}
+                            name="short_introduction"
+                            label={t('short_introduction')}
+                            value={data.short_introduction}
+                            onChange={(e) => setData('short_introduction', e.target.value)}
+                            error={!!errors.short_introduction}
+                            helperText={errors.short_introduction}
+                        />
                         <FormControl required>
-                            <FormLabel>{t('description')}</FormLabel>
+                            <FormLabel>{t('introduction')}</FormLabel>
                             <TiptapEditor
                                 characterLimit={5000}
-                                value={data.description}
-                                onChange={(content) => setData('description', content)}
+                                value={data.introduction}
+                                onChange={(content) => setData('introduction', content)}
                                 disabled={processing}
-                                error={!!errors.description}
-                                helperText={errors.description}
+                                error={!!errors.introduction}
+                                helperText={errors.introduction}
                                 height={500}
                             />
                         </FormControl>
@@ -103,15 +120,15 @@ const SettingAboutPage = ({ aboutPageInformation }: PageProps<Props>) => {
                                 multiple
                                 maxFiles={10}
                                 maxSize={MaxFileSize.Image}
-                                onChange={(files) => setData('partner_logos', files)}
+                                onChange={(files) => setData('partner_logo_images', files)}
                                 onDeleteAllImages={handleDeleteAllPartnerLogos}
                                 onDeleteImage={handleDeletePartnerLogo}
-                                onError={(errorMessage) => setError('partner_logos', errorMessage)}
-                                error={!!errors.partner_logos}
-                                helperText={errors.partner_logos}
+                                onError={(errorMessage) => setError('partner_logo_images', errorMessage)}
+                                error={!!errors.partner_logo_images}
+                                helperText={errors.partner_logo_images}
                                 disabled={processing}
                                 shouldReset={wasSuccessful}
-                                initImages={aboutPageInformation.partner_logos}
+                                initImages={aboutPageInfo.partner_logo_images}
                             />
                         </FormControl>
                     </Stack>
