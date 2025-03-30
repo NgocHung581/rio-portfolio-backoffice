@@ -6,7 +6,9 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
+import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 import IconButton from '@mui/material/IconButton';
@@ -19,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 type LoginPayload = {
     email: string;
     password: string;
+    remember: boolean;
 };
 
 const LoginPage = () => {
@@ -29,6 +32,7 @@ const LoginPage = () => {
     const { data, setData, errors, processing, post } = useForm<LoginPayload>({
         email: '',
         password: '',
+        remember: false,
     });
 
     const handleTogglePassword = () => {
@@ -102,6 +106,14 @@ const LoginPage = () => {
                                 }}
                             />
                         </FormGroup>
+                        <FormControlLabel
+                            name="remember"
+                            checked={data.remember}
+                            onChange={(_, checked) => setData('remember', checked)}
+                            control={<Checkbox edge="start" />}
+                            label={t('remember_me')}
+                            disabled={processing}
+                        />
                         <Button loading={processing} type="submit">
                             {t('login')}
                         </Button>

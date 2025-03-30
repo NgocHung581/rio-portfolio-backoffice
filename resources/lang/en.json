@@ -95,6 +95,7 @@
     "bullet_list": "Bullet list",
     "number_list": "Number list",
     "frame": "Frame",
+    "remember_me": "Remember me",
     "messages": {
         "invalid_link": "The link is invalid.",
         "file_too_large": "The file must not be greater than {{max}} {{fileSizeUnit}}.",
