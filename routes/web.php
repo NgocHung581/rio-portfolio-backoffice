@@ -18,6 +18,12 @@ Route::middleware('guest')->group(function(): void {
     Route::controller(AuthController::class)->group(function(): void {
         Route::get('/login', 'login')->name('login');
         Route::post('/login', 'authenticate')->name('authenticate');
+        Route::name('password.')->group(function(): void {
+            Route::get('/forgot-password', 'forgotPassword')->name('request');
+            Route::post('/forgot-password', 'sendResetPasswordLink')->name('sendResetLink');
+            Route::get('/reset-password', 'resetPassword')->name('reset');
+            Route::post('/reset-password', 'storePassword')->name('store');
+        });
     });
 });
 

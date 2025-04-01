@@ -96,6 +96,12 @@
     "number_list": "Number list",
     "frame": "Frame",
     "remember_me": "Remember me",
+    "forgot_password": "Forgot password",
+    "reset_your_password": "Reset your password",
+    "password_reset_prompt": "Enter your email and we will send you a password reset link.",
+    "send": "Send",
+    "reset_password": "Reset password",
+    "confirm_password": "Confirm password",
     "messages": {
         "invalid_link": "The link is invalid.",
         "file_too_large": "The file must not be greater than {{max}} {{fileSizeUnit}}.",

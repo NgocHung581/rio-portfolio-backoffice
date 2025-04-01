@@ -96,6 +96,12 @@
     "number_list": "Danh sách được đánh số",
     "frame": "Khung",
     "remember_me": "Giữ phiên đăng nhập",
+    "forgot_password": "Quên mật khẩu",
+    "reset_your_password": "Đặt lại mật khẩu của bạn",
+    "password_reset_prompt": "Nhập email của bạn và chúng tôi sẽ gửi cho bạn liên kết đặt lại mật khẩu.",
+    "send": "Gửi",
+    "reset_password": "Cập nhật mật khẩu",
+    "confirm_password": "Xác nhận mật khẩu",
     "messages": {
         "invalid_link": "Đường dẫn này không hợp lệ.",
         "file_too_large": "Tệp không được lớn hơn {{max}} {{fileSizeUnit}}.",
