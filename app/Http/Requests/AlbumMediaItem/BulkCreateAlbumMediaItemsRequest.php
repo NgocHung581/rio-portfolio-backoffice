@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\AlbumMediaItem;
 
 use App\Constants\AlbumMediaItemSetting;
+use App\Constants\MediaSetting;
 use App\Enums\ColumnSpan;
 use Common\App\Enums\MediaType;
 use Illuminate\Foundation\Http\FormRequest;
@@ -43,16 +44,20 @@ class BulkCreateAlbumMediaItemsRequest extends FormRequest
                 'required',
                 Rule::when(
                     $this->media_type === MediaType::Image->value,
-                    [File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb')]
+                    [File::image()->types(MediaSetting::VALID_IMAGE_TYPES)->max(MediaSetting::MAX_IMAGE_SIZE_STRING)]
                 ),
                 Rule::when(
                     $this->media_type === MediaType::Video->value,
-                    ['file', 'mimetypes:video/mov,video/gif', 'max:2097152'] // 2GB
+                    [
+                        'file',
+                        'mimetypes:' . join(',', MediaSetting::VALID_VIDEO_MIME_TYPES),
+                        'max:' . MediaSetting::MAX_VIDEO_SIZE_NUMBER,
+                    ]
                 ),
             ],
             'media.*.video_thumbnail_file' => [
                 Rule::requiredIf($this->media_type === MediaType::Video->value),
-                File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb'),
+                File::image()->types(MediaSetting::VALID_IMAGE_TYPES)->max(MediaSetting::MAX_IMAGE_SIZE_STRING),
             ],
         ];
     }

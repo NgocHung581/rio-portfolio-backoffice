@@ -16,5 +16,5 @@ class MediaSetting
     public const VALID_VIDEO_MIME_TYPES = ['video/mov', 'video/gif'];
 
     /** @var string Max video size (2GB). */
-    public const MAX_VIDEO_SIZE_NUMBER = '2097152';
+    public const MAX_VIDEO_SIZE_NUMBER = 2097152;
 }

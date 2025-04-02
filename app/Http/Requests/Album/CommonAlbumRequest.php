@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Album;
 
+use App\Constants\MediaSetting;
 use App\Enums\AspectRatio;
 use App\Models\Album;
 use App\Repositories\AlbumRepository;
@@ -69,7 +70,7 @@ class CommonAlbumRequest extends FormRequest
             ],
             'thumbnail_file' => [
                 Rule::requiredIf(is_null($this->album) || (isset($this->album) && $this->is_thumbnail_deleted && is_null($this->thumbnail_file))),
-                File::image()->types(['jpg', 'jpeg', 'png', 'webp'])->max('30mb'),
+                File::image()->types(MediaSetting::VALID_IMAGE_TYPES)->max(MediaSetting::MAX_IMAGE_SIZE_STRING),
             ],
             'thumbnail_frame' => [
                 'required',
