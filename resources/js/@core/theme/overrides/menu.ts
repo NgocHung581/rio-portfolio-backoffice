@@ -4,9 +4,12 @@ const menu: Theme['components'] = {
     MuiMenu: {
         styleOverrides: {
             paper: ({ theme }) => ({
-                marginTop: theme.spacing(4),
+                marginTop: theme.spacing(2),
                 minWidth: 160,
             }),
+        },
+        defaultProps: {
+            disableEnforceFocus: true,
         },
     },
     MuiMenuItem: {
@@ -16,24 +19,6 @@ const menu: Theme['components'] = {
                     paddingTop: theme.spacing(2),
                     paddingBottom: theme.spacing(2),
                 },
-                theme.applyStyles('light', {
-                    '&.Mui-selected': {
-                        backgroundColor: 'var(--mui-palette-primary-darkOpacity)',
-                        color: 'var(--mui-palette-primary-main)',
-                        ':hover': {
-                            backgroundColor: 'var(--mui-palette-primary-darkerOpacity)',
-                        },
-                    },
-                }),
-                theme.applyStyles('dark', {
-                    '&.Mui-selected': {
-                        backgroundColor: 'var(--mui-palette-primary-lighterOpacity)',
-                        color: 'var(--mui-palette-primary-main)',
-                        ':hover': {
-                            backgroundColor: 'var(--mui-palette-primary-lightOpacity)',
-                        },
-                    },
-                }),
             ],
         },
     },

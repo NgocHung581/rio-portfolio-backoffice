@@ -4,42 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
-html[class]:root,
-[class].dark {
-    /* [Palette]: Background */
-    --mui-palette-background-lighterMain: #fbeedd;
+html:root {
+    --mui-palette-common-black: #000;
+    --mui-palette-common-white: #fff;
+    --mui-palette-common-background: #fff;
+    --mui-palette-common-onBackground: #000;
+    --mui-palette-common-backgroundChannel: 255 255 255;
+    --mui-palette-common-onBackgroundChannel: 0 0 0;
 
-    /* [Palette]: Primary */
-    --mui-palette-primary-main: #a85626;
-    --mui-palette-primary-light: #b97751;
-    --mui-palette-primary-dark: #753c1a;
+    --mui-palette-primary-main: #881d1d;
+    --mui-palette-primary-light: #9f4a4a;
+    --mui-palette-primary-dark: #5f1414;
     --mui-palette-primary-contrastText: #fff;
-    --mui-palette-primary-mainChannel: 168 86 38;
-    --mui-palette-primary-lightChannel: 185 119 81;
-    --mui-palette-primary-darkChannel: 117 60 26;
+    --mui-palette-primary-mainChannel: 136 29 29;
+    --mui-palette-primary-lightChannel: 159 74 74;
+    --mui-palette-primary-darkChannel: 95 20 20;
     --mui-palette-primary-contrastTextChannel: 255 255 255;
-    --mui-palette-primary-lighterOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.08);
-    --mui-palette-primary-lightOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.16);
-    --mui-palette-primary-mainOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.24);
-    --mui-palette-primary-darkOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.32);
-    --mui-palette-primary-darkerOpacity: rgb(var(--mui-palette-primary-mainChannel) / 0.38);
 
-    /* [Palette]: Secondary */
-    --mui-palette-secondary-main: #6d788d;
-    --mui-palette-secondary-light: #8a93a4;
-    --mui-palette-secondary-dark: #626c7f;
+    --mui-palette-secondary-main: #a85626;
+    --mui-palette-secondary-light: #b97751;
+    --mui-palette-secondary-dark: #753c1a;
     --mui-palette-secondary-contrastText: #fff;
-    --mui-palette-secondary-mainChannel: 109 120 141;
-    --mui-palette-secondary-lightChannel: 138 147 164;
-    --mui-palette-secondary-darkChannel: 98 108 127;
+    --mui-palette-secondary-mainChannel: 168 86 38;
+    --mui-palette-secondary-lightChannel: 185 119 81;
+    --mui-palette-secondary-darkChannel: 117 60 26;
     --mui-palette-secondary-contrastTextChannel: 255 255 255;
-    --mui-palette-secondary-lighterOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.08);
-    --mui-palette-secondary-lightOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.16);
-    --mui-palette-secondary-mainOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.24);
-    --mui-palette-secondary-darkOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.32);
-    --mui-palette-secondary-darkerOpacity: rgb(var(--mui-palette-secondary-mainChannel) / 0.38);
 
-    /* [Palette]: Error */
     --mui-palette-error-main: #ff4d49;
     --mui-palette-error-light: #ff716d;
     --mui-palette-error-dark: #e64542;
@@ -48,13 +38,7 @@ html[class]:root,
     --mui-palette-error-lightChannel: 255 113 109;
     --mui-palette-error-darkChannel: 230 69 66;
     --mui-palette-error-contrastTextChannel: 255 255 255;
-    --mui-palette-error-lighterOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.08);
-    --mui-palette-error-lightOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.16);
-    --mui-palette-error-mainOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.24);
-    --mui-palette-error-darkOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.32);
-    --mui-palette-error-darkerOpacity: rgb(var(--mui-palette-error-mainChannel) / 0.38);
 
-    /* [Palette]: Warning */
     --mui-palette-warning-main: #fdb528;
     --mui-palette-warning-light: #fdc453;
     --mui-palette-warning-dark: #e4a324;
@@ -63,13 +47,7 @@ html[class]:root,
     --mui-palette-warning-lightChannel: 253 196 83;
     --mui-palette-warning-darkChannel: 228 163 36;
     --mui-palette-warning-contrastTextChannel: 255 255 255;
-    --mui-palette-warning-lighterOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.08);
-    --mui-palette-warning-lightOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.16);
-    --mui-palette-warning-mainOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.24);
-    --mui-palette-warning-darkOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.32);
-    --mui-palette-warning-darkerOpacity: rgb(var(--mui-palette-warning-mainChannel) / 0.38);
 
-    /* [Palette]: Info */
     --mui-palette-info-main: #26c6f9;
     --mui-palette-info-light: #51d1fa;
     --mui-palette-info-dark: #22b3e1;
@@ -78,13 +56,7 @@ html[class]:root,
     --mui-palette-info-lightChannel: 81 209 250;
     --mui-palette-info-darkChannel: 34 179 225;
     --mui-palette-info-contrastTextChannel: 255 255 255;
-    --mui-palette-info-lighterOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.08);
-    --mui-palette-info-lightOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.16);
-    --mui-palette-info-mainOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.24);
-    --mui-palette-info-darkOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.32);
-    --mui-palette-info-darkerOpacity: rgb(var(--mui-palette-info-mainChannel) / 0.38);
 
-    /* [Palette]: Success */
     --mui-palette-success-main: #72e128;
     --mui-palette-success-light: #8ee753;
     --mui-palette-success-dark: #67cb24;
@@ -93,63 +65,132 @@ html[class]:root,
     --mui-palette-success-lightChannel: 142 231 83;
     --mui-palette-success-darkChannel: 103 203 36;
     --mui-palette-success-contrastTextChannel: 255 255 255;
-    --mui-palette-success-lighterOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.08);
-    --mui-palette-success-lightOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.16);
-    --mui-palette-success-mainOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.24);
-    --mui-palette-success-darkOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.32);
-    --mui-palette-success-darkerOpacity: rgb(var(--mui-palette-success-mainChannel) / 0.38);
 
-    /* [Palette]: Switch */
-    --mui-palette-Switch-primaryDisabledColor: var(--mui-palette-primary-light);
-}
+    --mui-palette-grey-50: #fafafa;
+    --mui-palette-grey-100: #f5f5f5;
+    --mui-palette-grey-200: #eeeeee;
+    --mui-palette-grey-300: #e0e0e0;
+    --mui-palette-grey-400: #bdbdbd;
+    --mui-palette-grey-500: #9e9e9e;
+    --mui-palette-grey-600: #757575;
+    --mui-palette-grey-700: #616161;
+    --mui-palette-grey-800: #424242;
+    --mui-palette-grey-900: #212121;
+    --mui-palette-grey-A100: #f5f5f5;
+    --mui-palette-grey-A200: #eeeeee;
+    --mui-palette-grey-A400: #bdbdbd;
+    --mui-palette-grey-A700: #616161;
 
-html.light:root {
-    /* [Palette]: Background */
+    --mui-palette-text-primary: rgba(0, 0, 0, 0.87);
+    --mui-palette-text-secondary: rgba(0, 0, 0, 0.6);
+    --mui-palette-text-disabled: rgba(0, 0, 0, 0.38);
+    --mui-palette-text-caption: #a67958;
+    --mui-palette-text-primaryChannel: 0 0 0;
+    --mui-palette-text-secondaryChannel: 0 0 0;
+
+    --mui-palette-divider: rgba(0, 0, 0, 0.12);
+    --mui-palette-dividerChannel: 0 0 0;
+
+    --mui-palette-background-paper: #fff;
     --mui-palette-background-default: #f7f7f9;
-    --mui-palette-background-defaultChannel: 255 255 255;
-}
+    --mui-palette-background-paperChannel: 255 255 255;
+    --mui-palette-background-defaultChannel: 247 247 249;
 
-html.dark:root,
-[class].dark {
-    /* [Palette]: Background */
-    --mui-palette-background-default: #282a42;
-    --mui-palette-background-paper: #30334e;
-    --mui-palette-background-defaultChannel: 40 42 66;
-    --mui-palette-background-paperChannel: 48 51 78;
+    --mui-palette-action-active: rgba(0, 0, 0, 0.54);
+    --mui-palette-action-hover: rgba(0, 0, 0, 0.04);
+    --mui-palette-action-hoverOpacity: 0.04;
+    --mui-palette-action-selected: rgba(0, 0, 0, 0.08);
+    --mui-palette-action-selectedOpacity: 0.08;
+    --mui-palette-action-disabled: rgba(0, 0, 0, 0.26);
+    --mui-palette-action-disabledBackground: rgba(0, 0, 0, 0.12);
+    --mui-palette-action-disabledOpacity: 0.38;
+    --mui-palette-action-focus: rgba(0, 0, 0, 0.12);
+    --mui-palette-action-focusOpacity: 0.12;
+    --mui-palette-action-activatedOpacity: 0.12;
+    --mui-palette-action-activeChannel: 0 0 0;
+    --mui-palette-action-selectedChannel: 0 0 0;
 
-    /* [Palette]: Text */
-    --mui-palette-text-primary: #fff;
-    --mui-palette-text-secondary: rgba(255, 255, 255, 0.7);
+    --mui-palette-Alert-errorColor: rgb(95, 33, 32);
+    --mui-palette-Alert-infoColor: rgb(1, 67, 97);
+    --mui-palette-Alert-successColor: rgb(30, 70, 32);
+    --mui-palette-Alert-warningColor: rgb(102, 60, 0);
+    --mui-palette-Alert-errorFilledBg: var(--mui-palette-error-main, #d32f2f);
+    --mui-palette-Alert-infoFilledBg: var(--mui-palette-info-main, #0288d1);
+    --mui-palette-Alert-successFilledBg: var(--mui-palette-success-main, #2e7d32);
+    --mui-palette-Alert-warningFilledBg: var(--mui-palette-warning-main, #ed6c02);
+    --mui-palette-Alert-errorFilledColor: #fff;
+    --mui-palette-Alert-infoFilledColor: #fff;
+    --mui-palette-Alert-successFilledColor: #fff;
+    --mui-palette-Alert-warningFilledColor: #fff;
+    --mui-palette-Alert-errorStandardBg: rgb(253, 237, 237);
+    --mui-palette-Alert-infoStandardBg: rgb(229, 246, 253);
+    --mui-palette-Alert-successStandardBg: rgb(237, 247, 237);
+    --mui-palette-Alert-warningStandardBg: rgb(255, 244, 229);
+    --mui-palette-Alert-errorIconColor: var(--mui-palette-error-main, #d32f2f);
+    --mui-palette-Alert-infoIconColor: var(--mui-palette-info-main, #0288d1);
+    --mui-palette-Alert-successIconColor: var(--mui-palette-success-main, #2e7d32);
+    --mui-palette-Alert-warningIconColor: var(--mui-palette-warning-main, #ed6c02);
 
-    /* [Palette]: Action */
-    --mui-palette-action-hover: rgba(255, 255, 255, 0.08);
-    --mui-palette-action-selected: rgba(255, 255, 255, 0.16);
-    --mui-palette-action-selectedChannel: 255, 255, 255;
+    --mui-palette-AppBar-defaultBg: var(--mui-palette-grey-100, #f5f5f5);
 
-    /* [Palette]: Divider */
-    --mui-palette-divider: rgba(255, 255, 255, 0.12);
-    --mui-palette-dividerChannel: 255 255 255;
+    --mui-palette-Avatar-defaultBg: var(--mui-palette-grey-400, #bdbdbd);
+
+    --mui-palette-Button-inheritContainedBg: var(--mui-palette-grey-300, #e0e0e0);
+    --mui-palette-Button-inheritContainedHoverBg: var(--mui-palette-grey-A100, #f5f5f5);
+
+    --mui-palette-Chip-defaultBorder: var(--mui-palette-grey-400, #bdbdbd);
+    --mui-palette-Chip-defaultAvatarColor: var(--mui-palette-grey-700, #616161);
+    --mui-palette-Chip-defaultIconColor: var(--mui-paette-grey-700, #616161);
+
+    --mui-palette-FilledInput-bg: rgba(0, 0, 0, 0.06);
+    --mui-palette-FilledInput-hoverBg: rgba(0, 0, 0, 0.09);
+    --mui-palette-FilledInput-disabledBg: rgba(0, 0, 0, 0.12);
+
+    --mui-palette-LinearProgress-primaryBg: rgb(167, 202, 237);
+    --mui-palette-LinearProgress-secondaryBg: rgb(217, 172, 224);
+    --mui-palette-LinearProgress-errorBg: rgb(238, 175, 175);
+    --mui-palette-LinearProgress-infoBg: rgb(158, 209, 237);
+    --mui-palette-LinearProgress-successBg: rgb(175, 205, 177);
+    --mui-palette-LinearProgress-warningBg: rgb(248, 199, 158);
+
+    --mui-palette-Skeleton-bg: rgba(var(--mui-palette-text-primaryChannel, undefined) / 0.11);
+
+    --mui-palette-Slider-primaryTrack: rgb(167, 202, 237);
+    --mui-palette-Slider-secondaryTrack: rgb(217, 172, 224);
+    --mui-palette-Slider-errorTrack: rgb(238, 175, 175);
+    --mui-palette-Slider-infoTrack: rgb(158, 209, 237);
+    --mui-palette-Slider-successTrack: rgb(175, 205, 177);
+    --mui-palette-Slider-warningTrack: rgb(248, 199, 158);
+
+    --mui-palette-SnackbarContent-bg: rgb(50, 50, 50);
+    --mui-palette-SnackbarContent-color: #fff;
+
+    --mui-palette-SpeedDialAction-fabHoverBg: rgb(216, 216, 216);
+
+    --mui-palette-StepConnector-border: var(--mui-palette-grey-400, #bdbdbd);
+    --mui-palette-StepContent-border: var(--mui-palette-grey-400, #bdbdbd);
+
+    --mui-palette-Switch-defaultColor: var(--mui-palette-common-white, #fff);
+    --mui-palette-Switch-defaultDisabledColor: var(--mui-palette-grey-100, #f5f5f5);
+    --mui-palette-Switch-primaryDisabledColor: rgb(167, 202, 237);
+    --mui-palette-Switch-secondaryDisabledColor: rgb(217, 172, 224);
+    --mui-palette-Switch-errorDisabledColor: rgb(238, 175, 175);
+    --mui-palette-Switch-infoDisabledColor: rgb(158, 209, 237);
+    --mui-palette-Switch-successDisabledColor: rgb(175, 205, 177);
+    --mui-palette-Switch-warningDisabledColor: rgb(248, 199, 158);
+
+    --mui-palette-TableCell-border: rgba(224, 224, 224, 1);
+
+    --mui-palette-Tooltip-bg: rgba(97, 97, 97, 0.92);
+
+    --mui-opacity-inputPlaceholder: 0.42;
+    --mui-opacity-inputUnderline: 0.42;
+    --mui-opacity-switchTrackDisabled: 0.12;
+    --mui-opacity-switchTrack: 0.38;
 }
 
 * {
     scroll-behavior: smooth;
-    font-family: Roboto, sans-serif;
-}
-
-a {
-    display: inline-block;
-    color: inherit;
-}
-
-ul {
-    margin: 0;
-    padding-left: 0;
-}
-
-img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
 }
 
 .ps__rail-y {

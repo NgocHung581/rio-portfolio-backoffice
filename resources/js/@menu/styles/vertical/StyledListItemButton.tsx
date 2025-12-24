@@ -13,13 +13,12 @@ const StyledListItemButton = styled(ListItemButton, {
     paddingRight: theme.spacing(2.5),
     borderRadius: theme.shape.borderRadius,
     fontWeight: 500,
-    transition: theme.transitions.create(['background-color', 'color']),
-    ':hover': { backgroundColor: 'var(--mui-palette-action-hover)' },
+    ':hover': { backgroundColor: 'var(--mui-palette-primary-light)' },
     '&.Mui-selected': {
-        backgroundColor: isSubmenu ? 'var(--mui-palette-action-hover)' : 'var(--mui-palette-primary-main)',
-        color: isSubmenu ? 'var(--mui-palette-text-primary)' : 'var(--mui-palette-primary-contrastText)',
+        backgroundColor: isSubmenu ? 'var(--mui-palette-primary-light)' : 'var(--mui-palette-primary-dark)',
+        color: 'var(--mui-palette-primary-contrastText)',
         ':hover': {
-            backgroundColor: isSubmenu ? 'var(--mui-palette-action-hover)' : 'var(--mui-palette-primary-main)',
+            backgroundColor: isSubmenu ? 'var(--mui-palette-primary-light)' : 'var(--mui-palette-primary-dark)',
         },
     },
 }));

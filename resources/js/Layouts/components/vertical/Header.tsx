@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import LocaleSwitcher from '../shared/LocaleSwitcher';
-import ThemeModeSwitcher from '../shared/ThemeModeSwitcher';
 import UserDropdown from '../shared/UserDropdown';
 
 const Header = () => {
@@ -28,9 +27,7 @@ const Header = () => {
             sx={(theme) => ({
                 borderBottomLeftRadius: theme.shape.borderRadius,
                 borderBottomRightRadius: theme.shape.borderRadius,
-                bgcolor: trigger
-                    ? 'rgb(var(--mui-palette-background-paperChannel) / 0.85) !important'
-                    : 'transparent !important',
+                bgcolor: trigger ? 'rgb(var(--mui-palette-background-paperChannel) / 0.8)' : 'transparent',
                 ...(trigger && { backdropFilter: 'blur(9px)' }),
                 transition: theme.transitions.create(['background-color', 'box-shadow']),
             })}
@@ -55,10 +52,7 @@ const Header = () => {
                     </IconButton>
                 </Box>
                 <Stack direction="row" alignItems="center" gap={2}>
-                    <Stack direction="row" alignItems="center">
-                        <LocaleSwitcher />
-                        <ThemeModeSwitcher />
-                    </Stack>
+                    <LocaleSwitcher />
                     <UserDropdown />
                 </Stack>
             </Toolbar>

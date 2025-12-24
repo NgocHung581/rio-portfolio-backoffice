@@ -78,7 +78,6 @@ const Navigation = () => {
         <Fragment>
             <Drawer
                 variant="permanent"
-                className="dark"
                 open={!isCollapsedNav}
                 onMouseEnter={handleMouseEnterNav}
                 onMouseLeave={handleMouseLeaveNav}
@@ -91,8 +90,8 @@ const Navigation = () => {
                     sx: (theme) => ({
                         width: getNavInnerWidth(),
                         position: 'sticky',
-                        bgcolor: 'background.default',
-                        color: 'text.secondary',
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText',
                         borderRight: 0,
                         maxHeight: '100vh',
                         boxShadow: isCollapsedNav && isHoveredNav ? 3 : 0,
@@ -104,7 +103,6 @@ const Navigation = () => {
             </Drawer>
             <Drawer
                 variant="temporary"
-                className="dark"
                 open={openMobileNav}
                 onClose={handleCloseMobileNav}
                 sx={{ display: { lg: 'none' } }}
@@ -112,8 +110,8 @@ const Navigation = () => {
                     elevation: 0,
                     sx: {
                         width: VerticalNavWidth.Opened,
-                        bgcolor: 'background.default',
-                        color: 'text.secondary',
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText',
                     },
                 }}
             >
