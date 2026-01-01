@@ -1,5 +1,6 @@
 import { VerticalMenuType } from '@/@menu/enums/menu';
 import { VerticalMenu } from '@/types/menu';
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PhotoAlbumOutlinedIcon from '@mui/icons-material/PhotoAlbumOutlined';
@@ -20,6 +21,12 @@ const verticalMenuData: VerticalMenu = [
         href: route('albums.index', undefined, false),
         label: 'list_of_albums',
         icon: PhotoAlbumOutlinedIcon,
+    },
+    {
+        type: VerticalMenuType.Link,
+        href: route('categories.index', undefined, false),
+        label: 'list_of_categories',
+        icon: CategoryOutlinedIcon,
     },
     {
         type: VerticalMenuType.Section,

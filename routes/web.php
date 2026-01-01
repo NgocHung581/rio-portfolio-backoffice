@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\AlbumMediaItemController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SettingAboutPageController;
@@ -33,6 +34,14 @@ Route::middleware('auth')->group(function(): void {
 
     // Dashboard.
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Category.
+    Route::prefix('/categories')->name('categories.')->controller(CategoryController::class)->group(function(): void {
+        Route::get('/', 'index')->name('index');
+        Route::post('/store', 'store')->name('store');
+        Route::put('/update/{category}', 'update')->name('update');
+        Route::post('/bulk-delete', 'bulkDelete')->name('bulkDelete');
+    });
 
     // Album.
     Route::prefix('/albums')->name('albums.')->group(function(): void {

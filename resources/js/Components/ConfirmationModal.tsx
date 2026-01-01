@@ -1,43 +1,51 @@
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import { Fragment, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Modal from './Modal';
 
-type Props = {
-    open: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-    content: string;
+type RenderTriggerProps = {
+    openModal: () => void;
+};
+
+type OnConfirmProps = {
+    closeModal: () => void;
+};
+
+export type ConfirmationModalProps = {
+    renderTrigger: (props: RenderTriggerProps) => ReactNode;
+    content: ReactNode;
+    onConfirm: (props: OnConfirmProps) => void;
     isLoading?: boolean;
 };
 
-const ConfirmationModal = ({ open, onClose, onConfirm, content, isLoading }: Props) => {
+const ConfirmationModal = ({ onConfirm, content, isLoading, renderTrigger }: ConfirmationModalProps) => {
     const { t } = useTranslation();
 
-    const handleClose = () => {
-        if (!isLoading) {
-            onClose();
-        }
+    const [openModal, setOpenModal] = useState(false);
+
+    const handleOpenModal = () => {
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-            <DialogTitle variant="h5">{t('confirmation')}</DialogTitle>
-            <DialogContent dividers>
-                <DialogContentText>{content}</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" color="secondary" onClick={handleClose} disabled={isLoading}>
-                    {t('cancel')}
-                </Button>
-                <Button loading={isLoading} onClick={onConfirm}>
-                    OK
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <Fragment>
+            {renderTrigger({ openModal: handleOpenModal })}
+            <Modal
+                title={t('confirmation')}
+                open={openModal}
+                onClose={handleCloseModal}
+                onOk={() => onConfirm({ closeModal: handleCloseModal })}
+                isLoading={isLoading}
+                okText={t('confirm')}
+                closeText={t('cancel')}
+            >
+                {typeof content === 'string' ? <DialogContentText>{content}</DialogContentText> : content}
+            </Modal>
+        </Fragment>
     );
 };
 

@@ -1,6 +1,6 @@
 import { Theme } from '@mui/material/styles';
 
-const input: Theme['components'] = {
+const form: Theme['components'] = {
     MuiTextField: {
         defaultProps: {
             size: 'small',
@@ -12,7 +12,6 @@ const input: Theme['components'] = {
             root: ({ theme }) => ({
                 fontWeight: 500,
                 marginBottom: theme.spacing(1),
-                color: theme.palette.text.secondary,
             }),
             asterisk: {
                 color: 'red',
@@ -31,6 +30,11 @@ const input: Theme['components'] = {
             }),
         },
     },
+    MuiSelect: {
+        defaultProps: {
+            size: 'small',
+        },
+    },
 };
 
-export default input;
+export default form;

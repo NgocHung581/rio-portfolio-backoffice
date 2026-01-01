@@ -193,6 +193,13 @@ html:root {
     scroll-behavior: smooth;
 }
 
+input:autofill,
+input:webkit-autofill {
+    box-shadow: 0 0 0 100px #fffef2 inset !important;
+    -webkit-text-fill-color: var(--mui-palette-secondary-main) !important;
+    caret-color: var(--mui-palette-secondary-main) !important;
+}
+
 .ps__rail-y {
     width: 12px !important;
     & .ps__thumb-y {

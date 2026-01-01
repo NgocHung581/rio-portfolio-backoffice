@@ -1,6 +1,11 @@
 import { Theme } from '@mui/material/styles';
 
 const dialog: Theme['components'] = {
+    MuiDialog: {
+        defaultProps: {
+            disableRestoreFocus: true,
+        },
+    },
     MuiDialogActions: {
         styleOverrides: {
             root: ({ theme }) => ({

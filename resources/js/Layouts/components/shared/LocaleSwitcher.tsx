@@ -32,7 +32,11 @@ const LocaleSwitcher = () => {
             router.put(
                 route('locale.set'),
                 { locale: selectedLocale },
-                { onSuccess: () => changeLanguage(selectedLocale), preserveScroll: true },
+                {
+                    onSuccess: () => changeLanguage(selectedLocale),
+                    preserveScroll: true,
+                    preserveState: true,
+                },
             );
         }
 

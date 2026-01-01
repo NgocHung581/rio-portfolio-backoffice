@@ -18,6 +18,11 @@ const theme = createTheme({
             xl: 1280,
         },
     },
+    transitions: {
+        duration: {
+            standard: 150,
+        },
+    },
 });
 
 export default responsiveFontSizes(theme);
