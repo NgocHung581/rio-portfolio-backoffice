@@ -15,5 +15,6 @@ class Category extends CommonCategory
         'name_en',
         'name_vi',
         'media_type',
+        'slug',
     ];
 }

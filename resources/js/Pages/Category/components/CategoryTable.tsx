@@ -100,7 +100,7 @@ const CategoryTable = () => {
                 <CategoryFormModal
                     renderTrigger={({ openModal }) => (
                         <Button startIcon={<AddIcon />} onClick={openModal} disabled={isSearching}>
-                            {t('add')}
+                            {t('add_new')}
                         </Button>
                     )}
                 />

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\UseCases\Category;
+namespace App\UseCases\Category;
 
 use App\Enums\PerPage;
 use App\Repositories\CategoryRepository;
@@ -17,11 +17,8 @@ class PaginateCategoriesUseCase
     {
     }
 
-    public function __invoke(
-        PerPage $perPage,
-        ?array $webVisibilities = null,
-        ?string $keyword = null
-    ): LengthAwarePaginator {
-        return $this->categoryRepository->paginate($perPage, $webVisibilities, $keyword);
+    public function __invoke(PerPage $perPage, ?string $keyword = null): LengthAwarePaginator
+    {
+        return $this->categoryRepository->paginate($perPage, $keyword);
     }
 }

@@ -17,9 +17,21 @@ type Props = {
     closeText?: string;
     onOk?: () => void;
     isLoading?: boolean;
+    hideOkButton?: boolean;
 };
 
-const Modal = ({ open, onClose, title, children, maxWidth, closeText, okText, onOk, isLoading }: Props) => {
+const Modal = ({
+    open,
+    onClose,
+    title,
+    children,
+    maxWidth,
+    closeText,
+    okText,
+    onOk,
+    isLoading,
+    hideOkButton,
+}: Props) => {
     const { t } = useTranslation();
 
     const handleClose = () => {
@@ -36,9 +48,11 @@ const Modal = ({ open, onClose, title, children, maxWidth, closeText, okText, on
                 <Button variant="outlined" color="secondary" onClick={handleClose} disabled={isLoading}>
                     {!closeText ? t('close') : closeText}
                 </Button>
-                <Button onClick={!onOk ? handleClose : onOk} loading={isLoading}>
-                    {!okText ? t('ok') : okText}
-                </Button>
+                {!hideOkButton && (
+                    <Button onClick={!onOk ? handleClose : onOk} loading={isLoading}>
+                        {!okText ? t('ok') : okText}
+                    </Button>
+                )}
             </DialogActions>
         </Dialog>
     );

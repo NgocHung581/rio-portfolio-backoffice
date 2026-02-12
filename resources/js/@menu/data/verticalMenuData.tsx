@@ -18,8 +18,8 @@ const verticalMenuData: VerticalMenu = [
     },
     {
         type: VerticalMenuType.Link,
-        href: route('albums.index', undefined, false),
-        label: 'list_of_albums',
+        href: route('projects.index', undefined, false),
+        label: 'list_of_projects',
         icon: PhotoAlbumOutlinedIcon,
     },
     {

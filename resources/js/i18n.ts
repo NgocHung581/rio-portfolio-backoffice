@@ -15,12 +15,9 @@ i18n.use(Backend)
         },
         lng: 'en',
         fallbackLng: 'en',
-        debug: true,
+        debug: import.meta.env.DEV,
         interpolation: {
             escapeValue: false,
-            defaultVariables: {
-                fileSizeUnit: 'KB',
-            },
         },
         react: {
             useSuspense: true,

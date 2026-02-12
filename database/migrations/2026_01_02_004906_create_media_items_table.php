@@ -12,12 +12,12 @@ return new class() extends Migration {
      */
     public function up(): void
     {
-        Schema::create('categories', function(Blueprint $table): void {
+        Schema::create('media_items', function(Blueprint $table): void {
             $table->id();
-            $table->string('name_en', 25)->unique();
-            $table->string('name_vi', 25)->unique();
-            $table->unsignedTinyInteger('media_type');
-            $table->string('slug', 50)->unique();
+            $table->foreignId('gallery_id')->constrained('galleries');
+            $table->string('file_path')->unique();
+            $table->string('frame', 5);
+            $table->boolean('is_banner')->default(false);
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent();
         });
@@ -28,6 +28,6 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('media');
     }
 };

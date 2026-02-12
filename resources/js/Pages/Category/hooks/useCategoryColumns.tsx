@@ -1,6 +1,5 @@
 import { Category } from '@/types/category';
 import { usePage } from '@inertiajs/react';
-import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +7,7 @@ import { CategoryListPageProps } from '../List';
 
 const useCategoryColumns = (): MRT_ColumnDef<Category>[] => {
     const { t } = useTranslation();
-    const { locale, mediaTypeOptions, webVisibilityOptions } = usePage<CategoryListPageProps>().props;
+    const { locale, mediaTypeOptions } = usePage<CategoryListPageProps>().props;
 
     return [
         {
@@ -24,17 +23,6 @@ const useCategoryColumns = (): MRT_ColumnDef<Category>[] => {
                     {mediaTypeOptions.find((option) => option.value === row.original.media_type)?.label}
                 </Typography>
             ),
-        },
-        {
-            header: t('web_visibility'),
-            accessorKey: 'web_visibility',
-            Cell: ({ row }) => {
-                const webVisibilityOption = webVisibilityOptions.find(
-                    (option) => option.value === row.original.web_visibility,
-                );
-
-                return <Chip label={webVisibilityOption?.label} color={webVisibilityOption?.color} />;
-            },
         },
     ];
 };

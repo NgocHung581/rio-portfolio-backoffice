@@ -1,4 +1,4 @@
-import DebouncedInput from '@/Components/DebouncedInput';
+// import DebouncedInput from '@/Components/DebouncedSearchInput';
 import Pagination from '@/Components/Pagination';
 import { AlbumListPageProps } from '@/Pages/Album/List';
 import { PageProps } from '@/types';

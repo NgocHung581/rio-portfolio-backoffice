@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Constants;
 
+/**
+ * The constant class for media setting.
+ */
 class MediaSetting
 {
     /** @var string[] Valid image types. */
@@ -17,4 +20,7 @@ class MediaSetting
 
     /** @var string Max video size (2GB). */
     public const MAX_VIDEO_SIZE_NUMBER = 2097152;
+
+    /** @var int Max media count per gallery. */
+    public const MAX_MEDIA_COUNT_PER_GALLERY = 5;
 }

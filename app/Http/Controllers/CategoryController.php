@@ -8,13 +8,12 @@ use App\Enums\PerPage;
 use App\Http\Requests\Category\PaginateCategoriesRequest;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
-use App\Http\UseCases\Category\BulkDeleteCategoriesUseCase;
-use App\Http\UseCases\Category\PaginateCategoriesUseCase;
-use App\Http\UseCases\Category\StoreCategoryUseCase;
-use App\Http\UseCases\Category\UpdateCategoryUseCase;
 use App\Models\Category;
+use App\UseCases\Category\BulkDeleteCategoriesUseCase;
+use App\UseCases\Category\PaginateCategoriesUseCase;
+use App\UseCases\Category\StoreCategoryUseCase;
+use App\UseCases\Category\UpdateCategoryUseCase;
 use Common\App\Enums\MediaType;
-use Common\App\Enums\WebVisibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -32,15 +31,13 @@ class CategoryController extends Controller
         PaginateCategoriesRequest $request,
         PaginateCategoriesUseCase $useCase
     ): Response|ResponseFactory {
-        $categories = $useCase(PerPage::from($request->per_page), $request->web_visibilities, $request->keyword);
-        $webVisibilityOptions = WebVisibility::toOptions(['color']);
+        $categories = $useCase(PerPage::from($request->per_page), $request->keyword);
         $mediaTypeOptions = MediaType::toOptions();
         $perPageOptions = PerPage::toOptions();
         $query = $request->query();
 
         return inertia('Category/List', compact(
             'categories',
-            'webVisibilityOptions',
             'mediaTypeOptions',
             'perPageOptions',
             'query',
@@ -73,8 +70,7 @@ class CategoryController extends Controller
             $category->id,
             $request->name_en,
             $request->name_vi,
-            MediaType::from($request->media_type),
-            WebVisibility::from($request->web_visibility)
+            MediaType::from($request->media_type)
         );
 
         if (!$result['success']) {

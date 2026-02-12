@@ -1,4 +1,4 @@
-import ImageDropzone from '@/@core/components/ImageDropzone';
+import ImageDropzone from '@/@core/components/FileDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
 import BackListButton from '@/Components/BackListButton';
 import { MaxFileSize } from '@/enums/maxFileSize';

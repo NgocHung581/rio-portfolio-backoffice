@@ -1,4 +1,4 @@
-import ImageDropzone, { SelectedImage } from '@/@core/components/ImageDropzone';
+import ImageDropzone, { SelectedImage } from '@/@core/components/FileDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
 import { MaxFileSize } from '@/enums/maxFileSize';
 import { PageProps } from '@/types';

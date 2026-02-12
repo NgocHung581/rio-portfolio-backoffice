@@ -2,7 +2,7 @@ import MediaInTable from '@/Components/MediaInTable';
 import { EditAlbumPageProps } from '@/Pages/Album/Edit';
 import { PageProps } from '@/types';
 import { AlbumMediaItem } from '@/types/albumMediaItem';
-import { convertBytes } from '@/utils/fileHelper';
+import { convertBytes } from '@/utils/file';
 import { usePage } from '@inertiajs/react';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';

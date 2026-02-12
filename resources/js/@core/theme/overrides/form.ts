@@ -33,6 +33,16 @@ const form: Theme['components'] = {
     MuiSelect: {
         defaultProps: {
             size: 'small',
+            fullWidth: true,
+        },
+    },
+    MuiInputBase: {
+        styleOverrides: {
+            root: {
+                '&.Mui-disabled': {
+                    backgroundColor: 'var(--mui-palette-action-hover)',
+                },
+            },
         },
     },
 };

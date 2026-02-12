@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SettingAboutPageController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,14 @@ Route::middleware('auth')->group(function(): void {
         Route::post('/store', 'store')->name('store');
         Route::put('/update/{category}', 'update')->name('update');
         Route::post('/bulk-delete', 'bulkDelete')->name('bulkDelete');
+    });
+
+    // Project.
+    Route::prefix('/projects')->name('projects.')->controller(ProjectController::class)->group(function(): void {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/edit/{project}', 'edit')->name('edit');
     });
 
     // Album.

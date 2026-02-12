@@ -30,11 +30,11 @@ class AlbumMediaItemController extends Controller
     {
         return inertia('AlbumMediaItem/Create', [
             'album' => new AlbumResource($album),
-            'fileTypeOptions' => MediaType::toFileTypeOptions(),
+            'fileTypeOptions' => MediaType::toOptions(),
             'imagesCountLimitPerUpload' => AlbumMediaItemSetting::IMAGES_COUNT_LIMIT_PER_UPLOAD,
             'videosCountLimitPerUpload' => AlbumMediaItemSetting::VIDEOS_COUNT_LIMIT_PER_UPLOAD,
             'columnSpanOptions' => ColumnSpan::toOptions(),
-            'fileType' => MediaType::toFileTypeArray(),
+            'fileType' => MediaType::toOptions(),
         ]);
     }
 

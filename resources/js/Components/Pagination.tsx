@@ -49,7 +49,7 @@ const Pagination = ({
         <Stack direction="row" alignItems="center" gap={4} flexWrap="wrap">
             <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
                 <Typography variant="body2">{t('show_per_page')}</Typography>
-                <Select value={perPage.toString()} onChange={handleChangePerPage} disabled={disabled}>
+                <Select value={perPage.toString()} onChange={handleChangePerPage} disabled={disabled} fullWidth={false}>
                     {perPageOptions.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                             {option.label}

@@ -12,12 +12,10 @@ return new class() extends Migration {
      */
     public function up(): void
     {
-        Schema::create('categories', function(Blueprint $table): void {
+        Schema::create('galleries', function(Blueprint $table): void {
             $table->id();
-            $table->string('name_en', 25)->unique();
-            $table->string('name_vi', 25)->unique();
-            $table->unsignedTinyInteger('media_type');
-            $table->string('slug', 50)->unique();
+            $table->foreignId('project_id')->constrained('projects');
+            $table->string('caption')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent();
         });
@@ -28,6 +26,6 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('galleries');
     }
 };

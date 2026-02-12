@@ -7,9 +7,10 @@ namespace App\Repositories;
 use App\Enums\PerPage;
 use App\Models\Category;
 use Common\App\Enums\MediaType;
-use Common\App\Enums\WebVisibility;
 use Common\App\Repositories\CategoryRepository as CommonCategoryRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 /**
  * The repository class for the category.
@@ -21,20 +22,31 @@ class CategoryRepository extends CommonCategoryRepository
      */
     public function paginate(
         PerPage $perPage,
-        ?array $webVisibilities = null,
         ?string $keyword = null
     ): LengthAwarePaginator {
         return Category::query()
-            ->when(
-                isset($webVisibilities),
-                fn ($query) => $query->whereIn('web_visibility', $webVisibilities)
-            )
             ->when(
                 isset($keyword),
                 fn ($query) => $query->whereLike('name_en', "%{$keyword}%")->orWhereLike('name_vi', "%{$keyword}%")
             )
             ->orderBy('id', 'desc')
             ->paginate($perPage->value);
+    }
+
+    /**
+     * Get all categories.
+     */
+    public function findAll(): Collection
+    {
+        return Category::all();
+    }
+
+    /**
+     * Find a category by ID.
+     */
+    public function findById(int $id): ?Category
+    {
+        return Category::find($id);
     }
 
     /**
@@ -46,6 +58,7 @@ class CategoryRepository extends CommonCategoryRepository
             'name_en' => $nameEn,
             'name_vi' => $nameVi,
             'media_type' => $mediaType,
+            'slug' => Str::slug($nameEn),
         ]);
     }
 
@@ -56,14 +69,13 @@ class CategoryRepository extends CommonCategoryRepository
         int $id,
         string $nameEn,
         string $nameVi,
-        MediaType $mediaType,
-        WebVisibility $webVisibility
+        MediaType $mediaType
     ): int {
         return Category::query()->where('id', $id)->update([
             'name_en' => $nameEn,
             'name_vi' => $nameVi,
             'media_type' => $mediaType,
-            'web_visibility' => $webVisibility,
+            'slug' => Str::slug($nameEn),
         ]);
     }
 

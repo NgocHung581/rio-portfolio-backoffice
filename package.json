@@ -52,7 +52,9 @@
         "react-dropzone": "^14.3.5",
         "react-i18next": "^15.4.0",
         "react-perfect-scrollbar": "^1.5.8",
+        "react-player": "^3.4.0",
         "react-toastify": "^11.0.3",
-        "use-debounce": "^10.0.4"
+        "use-debounce": "^10.0.4",
+        "uuid": "^13.0.0"
     }
 }

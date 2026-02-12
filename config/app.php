@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
+
 return [
 
     /*
@@ -123,4 +126,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    'image_mine_types' => env('IMAGE_MINE_TYPES', ''),
+
+    'image_size_limit' => (int) env('IMAGE_SIZE_LIMIT', 5242880),
+
+    'video_mine_types' => env('VIDEO_MINE_TYPES', ''),
+
+    'video_size_limit' => (int) env('VIDEO_SIZE_LIMIT', 52428800),
+
+    'file_host' => env('FILE_HOST', ''),
 ];

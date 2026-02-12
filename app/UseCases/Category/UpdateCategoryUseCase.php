@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Http\UseCases\Category;
+namespace App\UseCases\Category;
 
 use App\Repositories\CategoryRepository;
 use Common\App\Enums\MediaType;
-use Common\App\Enums\WebVisibility;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -23,11 +22,10 @@ class UpdateCategoryUseCase
         int $id,
         string $nameEn,
         string $nameVi,
-        MediaType $mediaType,
-        WebVisibility $webVisibility
+        MediaType $mediaType
     ): array {
         try {
-            $this->categoryRepository->update($id, $nameEn, $nameVi, $mediaType, $webVisibility);
+            $this->categoryRepository->update($id, $nameEn, $nameVi, $mediaType);
 
             return ['success' => true, 'message' => __('messages')['data_updated_successfully']];
         } catch (Exception $exception) {

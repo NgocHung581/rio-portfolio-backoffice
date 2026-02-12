@@ -1,4 +1,4 @@
-import ImageDropzone from '@/@core/components/ImageDropzone';
+import ImageDropzone from '@/@core/components/FileDropzone';
 import VideoField from '@/@core/components/VideoField';
 import BackListButton from '@/Components/BackListButton';
 import { Language } from '@/enums/language';
@@ -132,7 +132,7 @@ const CreateAlbumMediaPage = ({
                             <Typography variant="h5" color="primary">
                                 {`${t('album')}: ${i18n.language === Language.Vietnamese ? album.name_vi : album.name_en}`}
                             </Typography>
-                            <BackListButton href={`${route('albums.edit', album)}#media`} disabled={processing} />
+                            {/* <BackListButton href={`${route('albums.edit', album)}#media`} disabled={processing} /> */}
                         </Stack>
                     }
                 />

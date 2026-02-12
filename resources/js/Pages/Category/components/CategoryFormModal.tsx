@@ -26,19 +26,17 @@ type CategoryFormData = {
     name_en: string;
     name_vi: string;
     media_type: number;
-    web_visibility?: number;
 };
 
 const CategoryFormModal = ({ renderTrigger, category }: Props) => {
     const { t } = useTranslation();
-    const { mediaTypeOptions, webVisibilityOptions } = usePage<CategoryListPageProps>().props;
+    const { mediaTypeOptions } = usePage<CategoryListPageProps>().props;
 
     const { data, setData, errors, clearErrors, reset, setDefaults, post, put, processing } = useForm<CategoryFormData>(
         {
             name_en: category?.name_en ?? '',
             name_vi: category?.name_vi ?? '',
             media_type: category?.media_type ?? mediaTypeOptions[0].value,
-            ...(!!category && { web_visibility: category.web_visibility }),
         },
     );
 
@@ -57,7 +55,7 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
     };
 
     const updateFormField = (name: keyof CategoryFormData, value: CategoryFormData[keyof CategoryFormData]) => {
-        const numericFieldNames: (keyof CategoryFormData)[] = ['media_type', 'web_visibility'];
+        const numericFieldNames: (keyof CategoryFormData)[] = ['media_type'];
 
         numericFieldNames.forEach((numericFieldName) => {
             if (name === numericFieldName && !isNaN(Number(value))) {
@@ -155,36 +153,6 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
                         labelSize={{ lg: 4 }}
                         controlSize={{ lg: 8 }}
                     />
-                    {!!category && (
-                        <FormField
-                            control={
-                                <Fragment>
-                                    <RadioGroup
-                                        value={data.web_visibility}
-                                        onChange={(_, value) => updateFormField('web_visibility', value)}
-                                        sx={{ flexDirection: 'row' }}
-                                    >
-                                        {webVisibilityOptions.map((option) => (
-                                            <FormControlLabel
-                                                key={option.value}
-                                                value={option.value}
-                                                control={<Radio />}
-                                                label={option.label}
-                                                disabled={processing}
-                                            />
-                                        ))}
-                                    </RadioGroup>
-                                    {!!errors.web_visibility && (
-                                        <FormHelperText error>{errors.web_visibility}</FormHelperText>
-                                    )}
-                                </Fragment>
-                            }
-                            label={t('web_visibility')}
-                            required
-                            labelSize={{ lg: 4 }}
-                            controlSize={{ lg: 8 }}
-                        />
-                    )}
                 </Stack>
             </Modal>
         </Fragment>

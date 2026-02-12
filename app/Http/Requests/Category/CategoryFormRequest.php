@@ -6,7 +6,6 @@ namespace App\Http\Requests\Category;
 
 use App\Models\Category;
 use Common\App\Enums\MediaType;
-use Common\App\Enums\WebVisibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -35,11 +34,8 @@ class CategoryFormRequest extends FormRequest
             ],
             'media_type' => [
                 'required',
+                'integer',
                 Rule::enum(MediaType::class),
-            ],
-            'web_visibility' => [
-                Rule::requiredIf(isset($this->category)),
-                Rule::enum(WebVisibility::class),
             ],
         ];
     }
