@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Enums\MediaFrame;
 use App\Models\MediaItem;
+use Common\App\Enums\MediaFrame;
 use Common\App\Repositories\MediaItemRepository as CommonMediaItemRepository;
 
 /**

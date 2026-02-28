@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Project;
 
-use App\Enums\MediaFrame;
 use App\Models\Category;
 use App\Models\Project;
 use App\Repositories\CategoryRepository;
 use App\Traits\ValidationHelper;
+use Common\App\Enums\MediaFrame;
 use Common\App\Enums\MediaType;
 use Common\App\Enums\WebVisibility;
 use Illuminate\Contracts\Validation\Validator;

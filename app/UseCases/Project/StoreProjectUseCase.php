@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\UseCases\Project;
 
-use App\Enums\MediaFrame;
 use App\Repositories\GalleryRepository;
 use App\Repositories\MediaItemRepository;
 use App\Repositories\ProjectRepository;
+use Common\App\Enums\MediaFrame;
 use Common\App\Enums\WebVisibility;
 use Exception;
 use Illuminate\Support\Facades\DB;

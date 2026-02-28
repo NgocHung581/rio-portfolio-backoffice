@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Constants\MediaSetting;
-use App\Enums\MediaFrame;
 use App\Enums\PerPage;
 use App\Http\Requests\Project\PaginateProjectsRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
@@ -16,6 +15,7 @@ use App\UseCases\Project\BulkDeleteProjectsUseCase as ProjectBulkDeleteProjectsU
 use App\UseCases\Project\PaginateProjectsUseCase;
 use App\UseCases\Project\StoreProjectUseCase;
 use App\UseCases\Project\UpdateProjectUseCase;
+use Common\App\Enums\MediaFrame;
 use Common\App\Enums\WebVisibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

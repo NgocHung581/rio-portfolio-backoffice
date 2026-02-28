@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Enums\MediaFrame;
 use App\Enums\PerPage;
 use App\Models\Project;
+use Common\App\Enums\MediaFrame;
 use Common\App\Enums\WebVisibility;
 use Common\App\Repositories\ProjectRepository as CommonProjectRepository;
 use Illuminate\Database\Eloquent\Collection;
