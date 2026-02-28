@@ -16,7 +16,7 @@ const useCategoryColumns = (): MRT_ColumnDef<Category>[] => {
             Cell: ({ row }) => <Typography>{row.original[`name_${locale}`]}</Typography>,
         },
         {
-            header: t('media_type'),
+            header: t('classification'),
             accessorKey: 'media_type',
             Cell: ({ row }) => (
                 <Typography>

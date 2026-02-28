@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Enums\MediaFrame;
 use App\Models\MediaItem;
 use Common\App\Repositories\MediaItemRepository as CommonMediaItemRepository;
 
@@ -15,7 +16,7 @@ class MediaItemRepository extends CommonMediaItemRepository
     /**
      * Create a new media item.
      */
-    public function create(int $galleryId, string $filePath, string $frame, bool $isBanner): MediaItem
+    public function create(int $galleryId, string $filePath, MediaFrame $frame, bool $isBanner): MediaItem
     {
         return MediaItem::query()->create([
             'gallery_id' => $galleryId,
@@ -23,5 +24,24 @@ class MediaItemRepository extends CommonMediaItemRepository
             'frame' => $frame,
             'is_banner' => $isBanner,
         ]);
+    }
+
+    /**
+     * Update a media item by ID.
+     */
+    public function update(int $id, MediaFrame $frame, bool $isBanner): int
+    {
+        return MediaItem::query()->where('id', $id)->update([
+            'frame' => $frame,
+            'is_banner' => $isBanner,
+        ]);
+    }
+
+    /**
+     * Bulk delete media items by IDs.
+     */
+    public function bulkDelete(array $ids): int
+    {
+        return MediaItem::query()->whereIn('id', $ids)->delete();
     }
 }

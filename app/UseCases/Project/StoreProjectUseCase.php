@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UseCases\Project;
 
+use App\Enums\MediaFrame;
 use App\Repositories\GalleryRepository;
 use App\Repositories\MediaItemRepository;
 use App\Repositories\ProjectRepository;
@@ -52,7 +53,7 @@ class StoreProjectUseCase
                 $summaryVi,
                 $isHighlight,
                 $thumbnailFilePath,
-                $thumbnail['frame'],
+                MediaFrame::from($thumbnail['frame']),
                 $webVisibility
             );
 
@@ -68,7 +69,7 @@ class StoreProjectUseCase
                     $this->mediaItemRepository->create(
                         $newGallery->id,
                         $mediaItemFilePath,
-                        $mediaItem['frame'],
+                        MediaFrame::from($mediaItem['frame']),
                         $mediaItem['is_banner']
                     );
                 }

@@ -85,7 +85,7 @@ const Table = <TData extends MRT_RowData>({
         ),
         renderRowActions: (props) =>
             !!renderRowActions && (
-                <Stack direction="row" alignItems="center">
+                <Stack direction="row" alignItems="center" gap={1}>
                     {renderRowActions(props)}
                 </Stack>
             ),
@@ -110,7 +110,7 @@ const Table = <TData extends MRT_RowData>({
             },
         },
         renderEmptyRowsFallback: () => (
-            <Typography textAlign="center" color="error" py={4}>
+            <Typography textAlign="center" color="error" py={4} m="auto">
                 {t('no_data_available')}
             </Typography>
         ),

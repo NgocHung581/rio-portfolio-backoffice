@@ -56,7 +56,7 @@ const MediaItemCard = ({
         <Card variant="outlined" component={Stack} height={1}>
             <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <Box flex={1}>
-                    <Box component="img" src={mediaItem.url} width={1} height="auto" />
+                    <Box component="img" src={mediaItem.url} width={1} height="auto" sx={{ aspectRatio: frame }} />
                     {!!fileError && <FormHelperText error>{fileError}</FormHelperText>}
                 </Box>
                 <Stack width={1} gap={4}>
@@ -83,8 +83,8 @@ const MediaItemCard = ({
                     />
                 </Stack>
             </CardContent>
-            <CardActions>
-                <Box flex={1}>
+            <CardActions sx={{ justifyContent: 'space-between' }}>
+                <Box>
                     {props.showBannerVisibilityCheckbox && (
                         <FormControl>
                             <FormControlLabel

@@ -1,5 +1,6 @@
 import { MediaTypeValue } from '@/enums/media-type';
 import { Option } from '.';
+import { Category } from './category';
 
 export type ProjectFormPageProps = {
     categoryOptions: (Option & { media_type: MediaTypeValue })[];
@@ -22,6 +23,28 @@ export type Project = {
     thumbnail_url: string;
     thumbnail_file_path: string;
     thumbnail_frame: string;
-    created_at: Date;
-    updated_at: Date;
+    created_at: string;
+    updated_at: string;
+    category: Category;
+    galleries: Gallery[];
+};
+
+export type Gallery = {
+    id: number;
+    project_id: number;
+    caption: string;
+    created_at: string;
+    updated_at: string;
+    media_items: MediaItem[];
+};
+
+export type MediaItem = {
+    id: number;
+    gallery_id: number;
+    file_path: string;
+    file_url: string;
+    frame: string;
+    is_banner: boolean;
+    created_at: string;
+    updated_at: string;
 };

@@ -1,10 +1,11 @@
 import ConfirmationModal, { ConfirmationModalProps } from '@/Components/ConfirmationModal';
 import Pagination from '@/Components/Pagination';
 import Table from '@/Components/Table';
-import { router, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import Button from '@mui/material/Button';
 import DialogContentText from '@mui/material/DialogContentText';
 import IconButton from '@mui/material/IconButton';
@@ -15,27 +16,27 @@ import { MRT_RowSelectionState } from 'material-react-table';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import useCategoryColumns from '../hooks/useCategoryColumns';
-import useCategoryListPage from '../hooks/useCategoryListPage';
-import { CategoryListPageProps } from '../List';
-import CategoryFormModal from './CategoryFormModal';
+import useProjectColumns from '../hooks/useProjectColumns';
+import useProjectListPage from '../hooks/useProjectListPage';
+import { ProjectListPageProps } from '../List';
+import ProjectViewModal from './ProjectViewModal';
 
-const CategoryTable = () => {
+const ProjectTable = () => {
     const { t } = useTranslation();
-    const { categories, perPageOptions } = usePage<CategoryListPageProps>().props;
+    const { projects, perPageOptions, locale } = usePage<ProjectListPageProps>().props;
 
-    const { isSearching, setIsSearching } = useCategoryListPage();
-    const columns = useCategoryColumns();
+    const { isSearching, setIsSearching } = useProjectListPage();
+    const columns = useProjectColumns();
 
     const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const selectedCategoryIds = Object.keys(rowSelection).map(Number);
+    const selectedProjectIds = Object.keys(rowSelection).map(Number);
     const queryParams = route().queryParams;
 
     const handleChangePage = (selectedPage: number) => {
         router.get(
-            route('categories.index'),
+            route('projects.index'),
             { ...queryParams, page: selectedPage },
             { onStart: () => setIsSearching(true), onFinish: () => setIsSearching(false) },
         );
@@ -43,7 +44,7 @@ const CategoryTable = () => {
 
     const handleChangePerPage = (perPage: number) => {
         router.get(
-            route('categories.index'),
+            route('projects.index'),
             { ...queryParams, per_page: perPage, page: 1 },
             { onStart: () => setIsSearching(true), onFinish: () => setIsSearching(false) },
         );
@@ -51,8 +52,8 @@ const CategoryTable = () => {
 
     const handleDelete: ConfirmationModalProps['onConfirm'] = ({ closeModal }) => {
         router.post(
-            route('categories.bulkDelete'),
-            { ids: selectedCategoryIds },
+            route('projects.bulkDelete'),
+            { ids: selectedProjectIds },
             {
                 onStart: () => setIsDeleting(true),
                 onFinish: () => setIsDeleting(false),
@@ -76,7 +77,7 @@ const CategoryTable = () => {
                             color="error"
                             startIcon={<DeleteOutlinedIcon />}
                             onClick={openModal}
-                            disabled={isSearching || !selectedCategoryIds.length}
+                            disabled={isSearching || !selectedProjectIds.length}
                         >
                             {t('delete')}
                         </Button>
@@ -85,8 +86,8 @@ const CategoryTable = () => {
                         <DialogContentText>
                             <Trans
                                 i18nKey="deletion_confirmation"
-                                count={selectedCategoryIds.length}
-                                values={{ count: selectedCategoryIds.length }}
+                                count={selectedProjectIds.length}
+                                values={{ count: selectedProjectIds.length }}
                                 components={{
                                     warning: <Typography component="span" fontWeight={500} color="error" />,
                                 }}
@@ -96,13 +97,9 @@ const CategoryTable = () => {
                     onConfirm={handleDelete}
                     isLoading={isDeleting}
                 />
-                <CategoryFormModal
-                    renderTrigger={({ openModal }) => (
-                        <Button startIcon={<AddIcon />} onClick={openModal} disabled={isSearching}>
-                            {t('add_new')}
-                        </Button>
-                    )}
-                />
+                <Button LinkComponent={Link} href={route('projects.create')} startIcon={<AddIcon />}>
+                    {t('add_new')}
+                </Button>
             </Stack>
         );
     };
@@ -110,13 +107,13 @@ const CategoryTable = () => {
     const renderBottomToolbar = () => {
         return (
             <Pagination
-                totalPages={categories.last_page}
-                page={categories.current_page}
+                totalPages={projects.last_page}
+                page={projects.current_page}
                 onChange={handleChangePage}
-                from={categories.from}
-                to={categories.to}
-                total={categories.total}
-                perPage={categories.per_page}
+                from={projects.from}
+                to={projects.to}
+                total={projects.total}
+                perPage={projects.per_page}
                 perPageOptions={perPageOptions}
                 onChangePerPage={handleChangePerPage}
                 disabled={isSearching}
@@ -127,29 +124,40 @@ const CategoryTable = () => {
     return (
         <Table
             columns={columns}
-            data={categories.data}
+            data={projects.data}
             renderTopToolbar={renderTopToolbar}
-            renderBottomToolbar={!!categories.total && renderBottomToolbar}
+            renderBottomToolbar={!!projects.total && renderBottomToolbar}
             enableRowSelection
             positionActionsColumn="last"
             renderRowActions={({ row }) => [
-                <CategoryFormModal
-                    key={`edit-${row.original.id}`}
+                <ProjectViewModal
+                    key={`view-${row.original.id}`}
                     renderTrigger={({ openModal }) => (
-                        <Tooltip title={t('edit')}>
-                            <IconButton color="info" size="small" onClick={openModal}>
-                                <EditOutlinedIcon />
+                        <Tooltip title={t('view')}>
+                            <IconButton size="small" onClick={openModal}>
+                                <VisibilityOutlinedIcon />
                             </IconButton>
                         </Tooltip>
                     )}
-                    category={row.original}
+                    projectInfo={row.original}
+                    locale={locale}
                 />,
+                <Tooltip key={`edit-${row.original.id}`} title={t('edit')}>
+                    <IconButton
+                        LinkComponent={Link}
+                        href={route('projects.edit', row.original.id)}
+                        size="small"
+                        color="info"
+                    >
+                        <EditOutlinedIcon />
+                    </IconButton>
+                </Tooltip>,
             ]}
-            getRowId={(row) => row.id.toString()}
+            getRowId={(originalRow) => originalRow.id?.toString()}
             state={{ isLoading: isSearching, rowSelection }}
             onRowSelectionChange={setRowSelection}
         />
     );
 };
 
-export default CategoryTable;
+export default ProjectTable;

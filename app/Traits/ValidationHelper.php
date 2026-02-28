@@ -7,12 +7,11 @@ namespace App\Traits;
 use Illuminate\Contracts\Validation\Validator;
 
 /**
- * The trait for replacing index with key in errors.
- * - Only used in `FormRequest` class.
+ * The trait for validating a request.
  */
-trait ReplaceIndexWithKeyInErrors
+trait ValidationHelper
 {
-    protected function replaceIndexWithKey(Validator $validator): void
+    protected function replaceIndexWithIdInErrors(Validator $validator): void
     {
         $errors = $validator->errors();
         $data = $this->all();
@@ -27,8 +26,8 @@ trait ReplaceIndexWithKeyInErrors
                 if (is_numeric($segment) && is_array($currentData) && isset($currentData[$segment])) {
                     $item = $currentData[$segment];
 
-                    if (is_array($item) && isset($item['key'])) {
-                        $rebuiltPath[] = $item['key'];
+                    if (is_array($item) && isset($item['id'])) {
+                        $rebuiltPath[] = $item['id'];
                         $shouldChange = true;
                     } else {
                         $rebuiltPath[] = $segment;

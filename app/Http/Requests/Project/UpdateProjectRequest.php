@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Requests\Project;
 
 /**
- * The request class for storing a project.
+ * The request class for updating a project.
  */
-class StoreProjectRequest extends ProjectFormRequest
+class UpdateProjectRequest extends ProjectFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

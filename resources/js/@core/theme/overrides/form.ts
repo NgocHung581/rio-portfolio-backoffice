@@ -1,6 +1,11 @@
 import { Theme } from '@mui/material/styles';
 
 const form: Theme['components'] = {
+    MuiAutocomplete: {
+        defaultProps: {
+            size: 'small',
+        },
+    },
     MuiTextField: {
         defaultProps: {
             size: 'small',

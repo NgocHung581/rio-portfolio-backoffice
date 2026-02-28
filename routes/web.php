@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function(): void {
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
         Route::get('/edit/{project}', 'edit')->name('edit');
+        Route::post('/update/{project}', 'update')->name('update');
+        Route::post('/bulk-delete', 'bulkDelete')->name('bulkDelete');
     });
 
     // Album.

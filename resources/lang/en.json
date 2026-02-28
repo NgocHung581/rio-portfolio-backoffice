@@ -55,7 +55,7 @@
     "status": "Status",
     "active": "Active",
     "inactive": "Inactive",
-    "pagination": "{{from}}-{{to}} of {{total}}",
+    "pagination": "{{from}} - {{to}} of {{total}}",
     "actions": "Actions",
     "disable": "Disable",
     "restore": "Restore",
@@ -127,6 +127,14 @@
     "basic_information": "Basic information",
     "file": "File",
     "banner": "Banner",
+    "preview": "Preview",
+    "project": "Project",
+    "view": "View",
+    "the_end": "The end.",
+    "edit_project": "Edit project",
+    "classification": "Classification",
+    "photography": "Photography",
+    "cinematography": "Cinematography",
     "messages": {
         "invalid_link": "The link is invalid.",
         "file_too_large": "The file must not be greater than {{max}} KB.",
@@ -150,6 +158,7 @@
         "too_many_files_other": "You can upload up to {{max}} files only.",
         "exceed_max_highlight_albums": "You can only set up to {{max}} highlighted albums.",
         "cannot_publish_project_without_media": "Please add at least one image or video before making the project public.",
-        "must_select_category_before_uploading_media": "Please choose a category before adding images or videos."
+        "must_select_category_to_add_gallery": "Please choose a category to add the gallery.",
+        "cannot_change_category_due_to_gallery": "The category cannot be changed because the project already contains galleries."
     }
 }

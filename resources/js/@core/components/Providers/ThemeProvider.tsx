@@ -1,4 +1,3 @@
-import ScrollToTopButton from '@/Components/ScrollTopButton';
 import { PropsWithChildren } from '@/types';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiThemeProvider from '@mui/material/styles/ThemeProvider';
@@ -10,7 +9,6 @@ const ThemeProvider = ({ children }: PropsWithChildren) => {
         <MuiThemeProvider theme={theme} defaultMode="light">
             <CssBaseline />
             <ToastContainer autoClose={3000} />
-            <ScrollToTopButton />
             {children}
         </MuiThemeProvider>
     );

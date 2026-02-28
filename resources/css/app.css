@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:wght@200..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -187,15 +187,13 @@ html:root {
     --mui-opacity-inputUnderline: 0.42;
     --mui-opacity-switchTrackDisabled: 0.12;
     --mui-opacity-switchTrack: 0.38;
-}
 
-* {
-    scroll-behavior: smooth;
+    --bg-content: #fffef2;
 }
 
 input:autofill,
 input:webkit-autofill {
-    box-shadow: 0 0 0 100px #fffef2 inset !important;
+    box-shadow: 0 0 0 100px var(--bg-content) inset !important;
     -webkit-text-fill-color: var(--mui-palette-secondary-main) !important;
     caret-color: var(--mui-palette-secondary-main) !important;
 }

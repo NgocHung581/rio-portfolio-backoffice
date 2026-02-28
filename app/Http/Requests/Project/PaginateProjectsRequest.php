@@ -6,9 +6,9 @@ namespace App\Http\Requests\Project;
 
 use App\Enums\PerPage;
 use App\Models\Category;
-use Common\App\Enums\WebVisibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * The request class for paginating projects.
@@ -29,25 +29,14 @@ class PaginateProjectsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => [
-                'nullable',
-                'integer',
-                Rule::exists(Category::class, 'id'),
-            ],
-            'is_highlight' => [
-                'nullable',
-                'boolean',
-            ],
-            'web_visibilities' => [
+            'category_ids' => [
                 'nullable',
                 'array',
-                function($attr, $value, $fail): void {
-                    foreach ($value as $webVisibility) {
-                        if (!in_array($webVisibility, WebVisibility::cases())) {
-                            $fail(__('validation.enum'));
-                        }
-                    }
-                },
+            ],
+            'category_ids.*' => [
+                'required',
+                'integer',
+                Rule::exists(Category::class, 'id'),
             ],
             'keyword' => [
                 'nullable',
@@ -55,6 +44,18 @@ class PaginateProjectsRequest extends FormRequest
                 'max:50',
             ],
         ];
+    }
+
+    /**
+     * Add additional validation logic after the default validation rules are applied.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function(Validator $validator): void {
+            if ($validator->errors()->hasAny('category_ids.*')) {
+                $validator->errors()->add('category_ids', __('validation.exists'));
+            }
+        });
     }
 
     /**

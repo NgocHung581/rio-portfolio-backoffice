@@ -55,7 +55,7 @@
     "status": "Trạng thái",
     "active": "Đang hoạt động",
     "inactive": "Không hoạt động",
-    "pagination": "{{from}}-{{to}} của {{total}}",
+    "pagination": "{{from}} - {{to}} của {{total}}",
     "actions": "Các hành động",
     "disable": "Vô hiệu hóa",
     "restore": "Khôi phục",
@@ -126,6 +126,12 @@
     "basic_information": "Thông tin cơ bản",
     "file": "Tệp",
     "banner": "Banner",
+    "preview": "Xem trước",
+    "project": "Dự án",
+    "view": "Xem",
+    "the_end": "Kết thúc.",
+    "edit_project": "Chỉnh sửa dự án",
+    "classification": "Phân loại",
     "messages": {
         "invalid_link": "Đường dẫn này không hợp lệ.",
         "file_too_large": "Tệp không được lớn hơn {{max}} KB.",
@@ -148,6 +154,7 @@
         "too_many_files": "Bạn chỉ có thể tải lên tối đa {{max}} tệp",
         "exceed_max_highlight_albums": "Bạn chỉ có thể thiết lập tối đa {{max}} album nổi bật.",
         "cannot_publish_project_without_media": "Vui lòng thêm ít nhất một hình ảnh hoặc video trước khi công khai dự án.",
-        "must_select_category_before_uploading_media": "Vui lòng chọn danh mục trước khi thêm hình ảnh hoặc video."
+        "must_select_category_to_add_gallery": "Vui lòng chọn danh mục để thêm bộ sưu tập.",
+        "cannot_change_category_due_to_gallery": "Không thể thay đổi danh mục vì dự án đã chứa các bộ sưu tập."
     }
 }

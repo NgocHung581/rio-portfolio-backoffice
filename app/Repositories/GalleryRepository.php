@@ -22,4 +22,22 @@ class GalleryRepository extends CommonGalleryRepository
             'caption' => $caption,
         ]);
     }
+
+    /**
+     * Update a gallery by ID.
+     */
+    public function update(int $id, ?string $caption): int
+    {
+        return Gallery::query()->where('id', $id)->update([
+            'caption' => $caption,
+        ]);
+    }
+
+    /**
+     * Bulk delete galleries by IDs.
+     */
+    public function bulkDelete(array $ids): int
+    {
+        return Gallery::query()->whereIn('id', $ids)->delete();
+    }
 }

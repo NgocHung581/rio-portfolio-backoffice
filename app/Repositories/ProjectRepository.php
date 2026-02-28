@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Enums\MediaFrame;
 use App\Enums\PerPage;
 use App\Models\Project;
 use Common\App\Enums\WebVisibility;
 use Common\App\Repositories\ProjectRepository as CommonProjectRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -20,23 +22,13 @@ class ProjectRepository extends CommonProjectRepository
      */
     public function paginate(
         PerPage $perPage,
-        ?int $categoryId = null,
-        ?bool $isHighlight = null,
-        ?array $webVisibilities = null,
+        ?array $categoryIds = null,
         ?string $keyword = null
     ): LengthAwarePaginator {
         return Project::query()
             ->when(
-                isset($categoryId),
-                fn ($query) => $query->where('category_id', $categoryId)
-            )
-            ->when(
-                isset($isHighlight),
-                fn ($query) => $query->where('is_highlight', $isHighlight)
-            )
-            ->when(
-                filled($webVisibilities),
-                fn ($query) => $query->whereIn('web_visibility', $webVisibilities)
+                filled($categoryIds),
+                fn ($query) => $query->whereIn('category_id', $categoryIds)
             )
             ->when(
                 isset($keyword),
@@ -44,6 +36,14 @@ class ProjectRepository extends CommonProjectRepository
             )
             ->orderBy('id', 'desc')
             ->paginate($perPage->value);
+    }
+
+    /**
+     * Find many projects by IDs.
+     */
+    public function findManyByIds(array $ids): Collection
+    {
+        return Project::query()->whereIn('id', $ids)->get();
     }
 
     /**
@@ -59,7 +59,7 @@ class ProjectRepository extends CommonProjectRepository
         string $summaryVi,
         bool $isHighlight,
         string $thumbnailFilePath,
-        string $thumbnailFrame,
+        MediaFrame $thumbnailFrame,
         WebVisibility $webVisibility
     ): Project {
         return Project::query()->create([
@@ -75,5 +75,45 @@ class ProjectRepository extends CommonProjectRepository
             'thumbnail_frame' => $thumbnailFrame,
             'web_visibility' => $webVisibility,
         ]);
+    }
+
+    /**
+     * Update a project by ID.
+     */
+    public function update(
+        int $id,
+        int $categoryId,
+        string $titleEn,
+        string $titleVi,
+        string $descriptionEn,
+        string $descriptionVi,
+        string $summaryEn,
+        string $summaryVi,
+        bool $isHighlight,
+        string $thumbnailFilePath,
+        MediaFrame $thumbnailFrame,
+        WebVisibility $webVisibility
+    ): int {
+        return Project::query()->where('id', $id)->update([
+            'category_id' => $categoryId,
+            'title_en' => $titleEn,
+            'title_vi' => $titleVi,
+            'description_en' => $descriptionEn,
+            'description_vi' => $descriptionVi,
+            'summary_en' => $summaryEn,
+            'summary_vi' => $summaryVi,
+            'is_highlight' => $isHighlight,
+            'thumbnail_file_path' => $thumbnailFilePath,
+            'thumbnail_frame' => $thumbnailFrame,
+            'web_visibility' => $webVisibility,
+        ]);
+    }
+
+    /**
+     * Bulk delete projects by IDs.
+     */
+    public function bulkDelete(array $ids): int
+    {
+        return Project::query()->whereIn('id', $ids)->delete();
     }
 }

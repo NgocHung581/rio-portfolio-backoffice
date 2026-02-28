@@ -2,6 +2,7 @@ import FormField from '@/Components/FormField';
 import { useForm, usePage } from '@inertiajs/react';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SearchIcon from '@mui/icons-material/Search';
+import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -12,25 +13,26 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import useCategoryListPage from '../hooks/useCategoryListPage';
-import { CategoryListPageProps, CategoryListPageQuery } from '../List';
+import useProjectListPage from '../hooks/useProjectListPage';
+import { ProjectListPageProps, ProjectListPageQuery } from '../List';
 
-type CategorySearchFormData = Required<Pick<CategoryListPageQuery, 'keyword'>>;
+type ProjectSearchFormData = Required<Pick<ProjectListPageQuery, 'category_ids' | 'keyword'>>;
 
-const CategorySearchForm = () => {
+const ProjectSearchForm = () => {
     const { t } = useTranslation();
-    const { query } = usePage<CategoryListPageProps>().props;
+    const { query, categoryOptions } = usePage<ProjectListPageProps>().props;
 
-    const { setIsSearching } = useCategoryListPage();
+    const { setIsSearching } = useProjectListPage();
 
-    const { data, setData, errors, clearErrors, processing, get } = useForm<CategorySearchFormData>({
+    const { data, setData, errors, clearErrors, processing, get } = useForm<ProjectSearchFormData>({
+        category_ids: query.category_ids ?? [],
         keyword: query.keyword ?? '',
     });
 
     const handleSearch = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        get(route('categories.index'), {
+        get(route('projects.index'), {
             onStart: () => {
                 setIsSearching(true);
                 clearErrors();
@@ -45,6 +47,31 @@ const CategorySearchForm = () => {
             <CardContent>
                 <Stack gap={4}>
                     <FormField
+                        label={t('category')}
+                        control={
+                            <Autocomplete
+                                multiple
+                                disableCloseOnSelect
+                                options={categoryOptions}
+                                value={categoryOptions.filter((option) => data.category_ids.includes(option.value))}
+                                onChange={(_, selected) =>
+                                    setData(
+                                        'category_ids',
+                                        selected.map((option) => option.value),
+                                    )
+                                }
+                                disabled={processing}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        error={!!errors.category_ids}
+                                        helperText={errors.category_ids}
+                                    />
+                                )}
+                            />
+                        }
+                    />
+                    <FormField
                         label={
                             <Typography
                                 component="span"
@@ -57,7 +84,7 @@ const CategorySearchForm = () => {
                                 {t('keyword')}
                                 <Tooltip
                                     title={t('search_keyword_explanation', {
-                                        information: [t('name_en'), t('name_vi')].join(', '),
+                                        information: [t('title_en'), t('title_vi')].join(', '),
                                     })}
                                     placement="right"
                                 >
@@ -87,4 +114,4 @@ const CategorySearchForm = () => {
     );
 };
 
-export default CategorySearchForm;
+export default ProjectSearchForm;

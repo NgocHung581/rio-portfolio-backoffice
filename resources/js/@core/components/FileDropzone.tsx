@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 export type UploadedFile = {
     url: string;
-    file: File;
+    file: File | undefined;
 };
 
 type SingleFileProps = {

@@ -28,7 +28,11 @@ const NavHeader = ({ isCollapsedNav, isHoveredNav, onToggleNav, onCloseMobileNav
         <AppBar position="sticky" elevation={0} sx={{ bgcolor: 'inherit !important', color: 'inherit !important' }}>
             <Toolbar
                 sx={(theme) => ({
-                    justifyContent: 'space-between',
+                    justifyContent: isDownLgScreen
+                        ? 'space-between'
+                        : isCollapsedNav && !isHoveredNav
+                          ? 'center'
+                          : 'space-between',
                     gap: 4,
                     transition: theme.transitions.create('padding'),
                     ...(isCollapsedNav && !isHoveredNav && { px: { lg: 4 } }),
@@ -36,7 +40,7 @@ const NavHeader = ({ isCollapsedNav, isHoveredNav, onToggleNav, onCloseMobileNav
                     pr: { xs: 4 },
                 })}
             >
-                <Logo href="/" hideText={isCollapsedNav && !isHoveredNav} />
+                <Logo href="/" />
 
                 <IconButton
                     color="inherit"

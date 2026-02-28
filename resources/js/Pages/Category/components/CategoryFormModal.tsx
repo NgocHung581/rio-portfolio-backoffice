@@ -148,7 +148,7 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
                                 {!!errors.media_type && <FormHelperText error>{errors.media_type}</FormHelperText>}
                             </Fragment>
                         }
-                        label={t('media_type')}
+                        label={t('classification')}
                         required
                         labelSize={{ lg: 4 }}
                         controlSize={{ lg: 8 }}

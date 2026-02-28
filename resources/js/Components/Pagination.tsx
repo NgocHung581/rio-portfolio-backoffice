@@ -1,4 +1,5 @@
 import { Option } from '@/types';
+import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import MuiPagination from '@mui/material/Pagination';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -46,19 +47,31 @@ const Pagination = ({
     };
 
     return (
-        <Stack direction="row" alignItems="center" gap={4} flexWrap="wrap">
-            <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
-                <Typography variant="body2">{t('show_per_page')}</Typography>
-                <Select value={perPage.toString()} onChange={handleChangePerPage} disabled={disabled} fullWidth={false}>
-                    {perPageOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </Select>
+        <Stack width={1} direction="row" alignItems="center" justifyContent="space-between" gap={4} flexWrap="wrap">
+            <Stack
+                direction="row"
+                alignItems="center"
+                gap={4}
+                divider={<Divider orientation="vertical" flexItem sx={{ my: 2 }} />}
+            >
+                <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
+                    <Typography variant="body2">{t('show_per_page')}</Typography>
+                    <Select
+                        value={perPage.toString()}
+                        onChange={handleChangePerPage}
+                        disabled={disabled}
+                        fullWidth={false}
+                    >
+                        {perPageOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Stack>
+                <Typography variant="body2">{t('pagination', { from, to, total })}</Typography>
             </Stack>
             <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
-                <Typography variant="body2">{t('pagination', { from, to, total })}</Typography>
                 <MuiPagination
                     count={totalPages}
                     page={page}

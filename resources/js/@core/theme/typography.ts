@@ -1,7 +1,7 @@
 import { TypographyOptions } from '@mui/material/styles/createTypography';
 
 const typography: TypographyOptions = {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: '"Mona Sans", sans-serif',
     allVariants: {
         lineHeight: 1.5,
         color: 'var(--mui-palette-text-primary)',
