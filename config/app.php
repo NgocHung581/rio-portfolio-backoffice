@@ -135,5 +135,5 @@ return [
 
     'video_size_limit' => (int) env('VIDEO_SIZE_LIMIT', 52428800),
 
-    'file_host' => env('FILE_HOST', ''),
+    'storage_host' => env('STORAGE_HOST', ''),
 ];
