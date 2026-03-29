@@ -37,6 +37,7 @@ type Props = (ShowBannerVisibilityCheckboxProps | HideBannerVisibilityCheckboxPr
     frameFieldError?: string;
     fileError?: string;
     disabled?: boolean;
+    isVideo?: boolean;
 };
 
 const MediaItemCard = ({
@@ -47,6 +48,7 @@ const MediaItemCard = ({
     frameFieldError,
     fileError,
     disabled,
+    isVideo,
     ...props
 }: Props) => {
     const { t } = useTranslation();
@@ -56,7 +58,13 @@ const MediaItemCard = ({
         <Card variant="outlined" component={Stack} height={1}>
             <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <Box flex={1}>
-                    <Box component="img" src={mediaItem.url} width={1} height="auto" sx={{ aspectRatio: frame }} />
+                    {isVideo ? (
+                        <Box component="video" controls width={1} height="auto" sx={{ aspectRatio: frame }}>
+                            <source src={mediaItem.url} />
+                        </Box>
+                    ) : (
+                        <Box component="img" src={mediaItem.url} width={1} height="auto" sx={{ aspectRatio: frame }} />
+                    )}
                     {!!fileError && <FormHelperText error>{fileError}</FormHelperText>}
                 </Box>
                 <Stack width={1} gap={4}>

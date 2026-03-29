@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SettingAboutPageController;
+use App\Http\Controllers\WebsiteContentSettingController;
 use Illuminate\Support\Facades\Route;
 
 // Set locale.
@@ -54,6 +55,15 @@ Route::middleware('auth')->group(function(): void {
         Route::post('/bulk-delete', 'bulkDelete')->name('bulkDelete');
     });
 
+    // Setting.
+    Route::prefix('/settings')->name('settings.')->group(function(): void {
+        Route::prefix('website-content')->name('websiteContent.')->controller(WebsiteContentSettingController::class)
+            ->group(function(): void {
+                Route::get('/', 'index')->name('index');
+                Route::post('/', 'save')->name('save');
+            });
+    });
+
     // Album.
     Route::prefix('/albums')->name('albums.')->group(function(): void {
         Route::controller(AlbumController::class)->group(function(): void {
@@ -82,7 +92,7 @@ Route::middleware('auth')->group(function(): void {
     Route::controller(SettingAboutPageController::class)->prefix('/setting-about-page')->name('settingAboutPage.')
         ->group(function(): void {
             Route::get('/', 'index')->name('index');
-            Route::post('/', 'save')->name('save');
+            Route::put('/', 'save')->name('save');
         });
 });
 

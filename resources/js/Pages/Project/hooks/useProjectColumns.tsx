@@ -50,11 +50,13 @@ const useProjectColumns = (): MRT_ColumnDef<Project>[] => {
         {
             header: t('category'),
             accessorKey: 'category',
+            size: 75,
             Cell: ({ row }) => <Typography>{row.original.category[`name_${locale}`]}</Typography>,
         },
         {
             header: t('web_visibility'),
             accessorKey: 'web_visibility',
+            size: 50,
             Cell: ({ row }) => {
                 const webVisibilityOption = webVisibilityOptions.find(
                     (option) => option.value === row.original.web_visibility,

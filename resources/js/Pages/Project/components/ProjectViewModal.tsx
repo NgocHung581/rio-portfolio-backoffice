@@ -1,8 +1,10 @@
 import ProseWrapper from '@/Components/ProseWrapper';
+import MediaType, { MediaTypeValue } from '@/enums/media-type';
 import { PageProps } from '@/types';
 import { Gallery, MediaItem, Project } from '@/types/project';
 import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
@@ -20,6 +22,7 @@ type ProjectInfo = Pick<
     'title_en' | 'title_vi' | 'description_en' | 'description_vi' | 'summary_en' | 'summary_vi'
 > & {
     galleries: (Pick<Gallery, 'caption'> & { media_items: Pick<MediaItem, 'file_url' | 'frame'>[] })[];
+    mediaType: MediaTypeValue;
 };
 
 type Props = {
@@ -68,15 +71,26 @@ const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
                         />
                     </ProseWrapper>
                     {projectInfo.galleries.map((gallery, galleryIndex) => (
-                        <Stack key={galleryIndex} alignItems="center" gap={15}>
-                            <Grid container spacing={1}>
+                        <Stack key={galleryIndex} alignItems="center" gap={15} width={1}>
+                            <Grid container spacing={1} sx={{ width: 1 }}>
                                 {gallery.media_items.map((mediaItem, mediaItemIndex) => (
                                     <Grid key={mediaItemIndex} size={12 / gallery.media_items.length}>
-                                        <Box
-                                            component="img"
-                                            src={mediaItem.file_url}
-                                            sx={{ aspectRatio: mediaItem.frame }}
-                                        />
+                                        {projectInfo.mediaType === MediaType.Video ? (
+                                            <Box
+                                                component="video"
+                                                controls
+                                                width={1}
+                                                sx={{ aspectRatio: mediaItem.frame, bgcolor: grey[500] }}
+                                            >
+                                                <source src={mediaItem.file_url} />
+                                            </Box>
+                                        ) : (
+                                            <Box
+                                                component="img"
+                                                src={mediaItem.file_url}
+                                                sx={{ aspectRatio: mediaItem.frame }}
+                                            />
+                                        )}
                                     </Grid>
                                 ))}
                             </Grid>

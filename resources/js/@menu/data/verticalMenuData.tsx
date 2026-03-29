@@ -1,7 +1,7 @@
 import { VerticalMenuType } from '@/@menu/enums/menu';
 import { VerticalMenu } from '@/types/menu';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
-import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PhotoAlbumOutlinedIcon from '@mui/icons-material/PhotoAlbumOutlined';
 
@@ -30,13 +30,13 @@ const verticalMenuData: VerticalMenu = [
     },
     {
         type: VerticalMenuType.Section,
-        label: 'setting_pages',
+        label: 'settings',
     },
     {
         type: VerticalMenuType.Link,
-        href: route('settingAboutPage.index', undefined, false),
-        label: 'setting_about_page',
-        icon: ContactPageOutlinedIcon,
+        href: route('settings.websiteContent.index', undefined, false),
+        label: 'website_content',
+        icon: ArticleOutlinedIcon,
     },
 ];
 

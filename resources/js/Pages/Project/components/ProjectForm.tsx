@@ -593,6 +593,11 @@ const ProjectForm = ({
                                                                     `galleries.${gallery.id}.media_items.${mediaItem.id}.is_banner`
                                                                 ]
                                                             }
+                                                            isVideo={
+                                                                categoryOptions.find(
+                                                                    (category) => category.value === data.category_id,
+                                                                )?.media_type === MediaType.Video
+                                                            }
                                                         />
                                                     </Grid>
                                                 ))}
@@ -654,29 +659,33 @@ const ProjectForm = ({
                     {t('cancel')}
                 </Button>
                 <Stack direction="row" alignItems="center" gap={2}>
-                    <ProjectViewModal
-                        renderTrigger={({ openModal }) => (
-                            <Button variant="outlined" color="secondary" onClick={openModal} disabled={processing}>
-                                {t('preview')}
-                            </Button>
-                        )}
-                        projectInfo={{
-                            title_en: data.title_en,
-                            title_vi: data.title_vi,
-                            description_en: data.description_en,
-                            description_vi: data.description_vi,
-                            summary_en: data.summary_en,
-                            summary_vi: data.summary_vi,
-                            galleries: data.galleries.map((gallery) => ({
-                                caption: gallery.caption,
-                                media_items: gallery.media_items.map((mediaItem) => ({
-                                    file_url: mediaItem.url,
-                                    frame: mediaItem.frame,
+                    {!!data.category_id && (
+                        <ProjectViewModal
+                            renderTrigger={({ openModal }) => (
+                                <Button variant="outlined" color="secondary" onClick={openModal} disabled={processing}>
+                                    {t('preview')}
+                                </Button>
+                            )}
+                            projectInfo={{
+                                title_en: data.title_en,
+                                title_vi: data.title_vi,
+                                description_en: data.description_en,
+                                description_vi: data.description_vi,
+                                summary_en: data.summary_en,
+                                summary_vi: data.summary_vi,
+                                galleries: data.galleries.map((gallery) => ({
+                                    caption: gallery.caption,
+                                    media_items: gallery.media_items.map((mediaItem) => ({
+                                        file_url: mediaItem.url,
+                                        frame: mediaItem.frame,
+                                    })),
                                 })),
-                            })),
-                        }}
-                        locale={locale}
-                    />
+                                mediaType: categoryOptions.find((category) => category.value === data.category_id)!
+                                    .media_type,
+                            }}
+                            locale={locale}
+                        />
+                    )}
                     <Button type="submit" loading={processing}>
                         {t('save')}
                     </Button>

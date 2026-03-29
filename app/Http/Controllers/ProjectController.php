@@ -107,6 +107,9 @@ class ProjectController extends Controller
         ));
     }
 
+    /**
+     * Update the project.
+     */
     public function update(Project $project, UpdateProjectRequest $request, UpdateProjectUseCase $useCase): RedirectResponse
     {
         $result = $useCase(

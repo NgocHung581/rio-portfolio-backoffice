@@ -39,7 +39,7 @@ return [
     'date_format' => 'Trường :attribute không giống với định dạng :format.',
     'different' => 'Trường :attribute và :other phải khác nhau.',
     'digits' => 'Độ dài của trường :attribute phải gồm :digits chữ số.',
-    'digits_between' => 'Độ dài của trường :attribute phải nằm trong khoảng :min and :max chữ số.',
+    'digits_between' => 'Độ dài của trường này phải nằm trong khoảng :min and :max chữ số.',
     'dimensions' => 'Trường :attribute có kích thước không hợp lệ.',
     'distinct' => 'Trường :attribute có giá trị trùng lặp.',
     'email' => 'Trường :attribute phải là một địa chỉ email hợp lệ.',

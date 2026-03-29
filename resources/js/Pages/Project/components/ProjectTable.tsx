@@ -139,7 +139,7 @@ const ProjectTable = () => {
                             </IconButton>
                         </Tooltip>
                     )}
-                    projectInfo={row.original}
+                    projectInfo={{ ...row.original, mediaType: row.original.category.media_type }}
                     locale={locale}
                 />,
                 <Tooltip key={`edit-${row.original.id}`} title={t('edit')}>
