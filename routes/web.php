@@ -98,5 +98,6 @@ Route::middleware('auth')->group(function(): void {
 
 // Public API.
 Route::prefix('/api')->name('api.')->group(function(): void {
-    Route::get('/about-page-information', [SettingAboutPageController::class, 'getAboutPageInfoApi'])->name('aboutPageInfo');
+    Route::get('/website-content-setting', [WebsiteContentSettingController::class, 'getWebsiteContentSettingApi'])
+        ->name('WebsiteContentSetting');
 });

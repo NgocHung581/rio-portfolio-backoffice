@@ -26,11 +26,6 @@ class SaveWebsiteContentSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'full_name' => [
-                'required',
-                'string',
-                'max:50',
-            ],
             'phone_number' => [
                 'required',
                 'string',

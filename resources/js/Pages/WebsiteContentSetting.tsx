@@ -22,7 +22,6 @@ type SelectedFile = UploadedFile & {
 };
 
 type WebsiteContentSettingFormData = {
-    full_name: string;
     phone_number: string;
     email: string;
     introduction_en: string;
@@ -42,7 +41,6 @@ const WebsiteContentSettingPage = ({ websiteContentSetting }: PageProps<Props>) 
 
     const { data, setData, errors, setError, clearErrors, processing, post, wasSuccessful } =
         useForm<WebsiteContentSettingFormData>({
-            full_name: websiteContentSetting.full_name,
             phone_number: websiteContentSetting.phone_number,
             email: websiteContentSetting.email,
             avatar: websiteContentSetting.avatar,
@@ -76,40 +74,7 @@ const WebsiteContentSettingPage = ({ websiteContentSetting }: PageProps<Props>) 
             <Card component="form" onSubmit={handleSubmit} sx={{ overflow: 'visible' }}>
                 <CardContent>
                     <Grid container spacing={4}>
-                        <Grid size={{ xs: 12, sm: 4 }}>
-                            <FormField
-                                control={
-                                    <TextField
-                                        value={data.full_name}
-                                        onChange={(e) => setData('full_name', e.target.value)}
-                                        disabled={processing}
-                                        error={!!errors.full_name}
-                                        helperText={errors.full_name}
-                                    />
-                                }
-                                label={t('full_name')}
-                                required
-                                direction="column"
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 4 }}>
-                            <FormField
-                                control={
-                                    <TextField
-                                        name="phone_number"
-                                        value={data.phone_number}
-                                        onChange={(e) => setData('phone_number', e.target.value)}
-                                        disabled={processing}
-                                        error={!!errors.phone_number}
-                                        helperText={errors.phone_number}
-                                    />
-                                }
-                                label={t('phone_number')}
-                                required
-                                direction="column"
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 4 }}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <FormField
                                 control={
                                     <TextField
@@ -122,6 +87,23 @@ const WebsiteContentSettingPage = ({ websiteContentSetting }: PageProps<Props>) 
                                     />
                                 }
                                 label={t('email')}
+                                required
+                                direction="column"
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 6 }}>
+                            <FormField
+                                control={
+                                    <TextField
+                                        name="phone_number"
+                                        value={data.phone_number}
+                                        onChange={(e) => setData('phone_number', e.target.value)}
+                                        disabled={processing}
+                                        error={!!errors.phone_number}
+                                        helperText={errors.phone_number}
+                                    />
+                                }
+                                label={t('phone_number')}
                                 required
                                 direction="column"
                             />

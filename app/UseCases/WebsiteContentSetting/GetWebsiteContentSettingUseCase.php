@@ -26,7 +26,6 @@ class GetWebsiteContentSettingUseCase
             }
         } else {
             $websiteContentSetting = [
-                'full_name' => '',
                 'phone_number' => '',
                 'email' => '',
                 'introduction_en' => '',

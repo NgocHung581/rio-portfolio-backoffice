@@ -21,7 +21,6 @@ class SaveWebsiteContentSettingUseCase
     }
 
     public function __invoke(
-        string $fullName,
         string $phoneNumber,
         string $email,
         string $introductionEn,
@@ -74,7 +73,6 @@ class SaveWebsiteContentSettingUseCase
             }
 
             // Save other fields.
-            $websiteContentSetting['full_name'] = $fullName;
             $websiteContentSetting['phone_number'] = $phoneNumber;
             $websiteContentSetting['email'] = $email;
             $websiteContentSetting['introduction_en'] = $introductionEn;
