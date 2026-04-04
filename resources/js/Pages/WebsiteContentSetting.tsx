@@ -273,14 +273,14 @@ const WebsiteContentSettingPage = ({ websiteContentSetting }: PageProps<Props>) 
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <FormField
                                 control={
-                                    <TiptapEditor
-                                        characterLimit={5000}
+                                    <TextField
+                                        multiline
+                                        name="banner_text_en"
                                         value={data.banner_text_en}
-                                        onChange={(content) => setData('banner_text_en', content)}
+                                        onChange={(e) => setData('banner_text_en', e.target.value)}
                                         disabled={processing}
                                         error={!!errors.banner_text_en}
                                         helperText={errors.banner_text_en}
-                                        height={400}
                                     />
                                 }
                                 label={t('welcome_message_en')}
@@ -291,14 +291,14 @@ const WebsiteContentSettingPage = ({ websiteContentSetting }: PageProps<Props>) 
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <FormField
                                 control={
-                                    <TiptapEditor
-                                        characterLimit={5000}
+                                    <TextField
+                                        multiline
+                                        name="banner_text_vi"
                                         value={data.banner_text_vi}
-                                        onChange={(content) => setData('banner_text_vi', content)}
+                                        onChange={(e) => setData('banner_text_vi', e.target.value)}
                                         disabled={processing}
                                         error={!!errors.banner_text_vi}
                                         helperText={errors.banner_text_vi}
-                                        height={400}
                                     />
                                 }
                                 label={t('welcome_message_vi')}

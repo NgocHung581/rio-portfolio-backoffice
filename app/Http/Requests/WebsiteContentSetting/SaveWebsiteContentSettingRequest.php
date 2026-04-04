@@ -63,10 +63,12 @@ class SaveWebsiteContentSettingRequest extends FormRequest
             'banner_text_en' => [
                 'required',
                 'string',
+                'max:200',
             ],
             'banner_text_vi' => [
                 'required',
                 'string',
+                'max:200',
             ],
         ];
     }
