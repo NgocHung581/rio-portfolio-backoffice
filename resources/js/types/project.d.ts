@@ -20,9 +20,9 @@ export type Project = {
     summary_vi: string;
     is_highlight: boolean;
     web_visibility: number;
-    thumbnail_url: string;
-    thumbnail_file_path: string;
-    thumbnail_frame: string;
+    thumbnail_file_id: string;
+    thumbnail_file_name: string;
+    thumbnail_file_mime_type: string;
     created_at: string;
     updated_at: string;
     category: Category;
@@ -41,8 +41,9 @@ export type Gallery = {
 export type MediaItem = {
     id: number;
     gallery_id: number;
-    file_path: string;
-    file_url: string;
+    file_id: string;
+    file_name: string;
+    file_mime_type: string;
     frame: string;
     is_banner: boolean;
     created_at: string;

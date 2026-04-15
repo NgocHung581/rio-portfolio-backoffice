@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Mona+Sans:wght@200..900&display=swap');
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'inner-image-zoom/lib/styles.min.css';
 
 @tailwind base;
 @tailwind components;
@@ -223,4 +226,24 @@ input:webkit-autofill {
 #nprogress .bar {
     height: 4px !important;
     z-index: 9999 !important;
+}
+
+.picker.picker-dialog {
+    z-index: 9999;
+}
+
+button.iiz__btn.iiz__close.iiz__close--visible {
+    display: block;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    width: 36px;
+    height: 36px;
+    &::before {
+        background-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
+        background-size:
+            100% 2px,
+            2px 100%;
+        width: 16px;
+        height: 16px;
+    }
 }

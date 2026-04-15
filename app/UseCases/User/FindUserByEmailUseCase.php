@@ -2,18 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Services\User;
+namespace App\UseCases\User;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
 
-class FindUserByEmailService
+/**
+ * The use case class for finding a user by email.
+ */
+class FindUserByEmailUseCase
 {
     public function __construct(private readonly UserRepository $userRepository)
     {
     }
 
-    public function execute(string $email): ?User
+    public function __invoke(string $email): ?User
     {
         return $this->userRepository->findByEmail($email);
     }

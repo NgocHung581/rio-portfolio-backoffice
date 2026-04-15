@@ -36,6 +36,7 @@ const LocaleSwitcher = () => {
                     onSuccess: () => changeLanguage(selectedLocale),
                     preserveScroll: true,
                     preserveState: true,
+                    preserveUrl: true,
                 },
             );
         }

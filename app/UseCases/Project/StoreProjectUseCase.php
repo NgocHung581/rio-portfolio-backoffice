@@ -41,8 +41,6 @@ class StoreProjectUseCase
         try {
             DB::beginTransaction();
 
-            $thumbnailFilePath = $thumbnail['file']->store('projects/thumbnails', 'public');
-
             $newProject = $this->projectRepository->create(
                 $categoryId,
                 $titleEn,
@@ -52,8 +50,9 @@ class StoreProjectUseCase
                 $summaryEn,
                 $summaryVi,
                 $isHighlight,
-                $thumbnailFilePath,
-                MediaFrame::from($thumbnail['frame']),
+                $thumbnail['file_id'],
+                $thumbnail['file_name'],
+                $thumbnail['file_mime_type'],
                 $webVisibility
             );
 
@@ -61,14 +60,11 @@ class StoreProjectUseCase
                 $newGallery = $this->galleryRepository->create($newProject->id, $gallery['caption']);
 
                 foreach ($gallery['media_items'] as $mediaItem) {
-                    $mediaItemFilePath = $mediaItem['file']->store(
-                        "projects/{$newProject->id}/{$newGallery->id}",
-                        'public'
-                    );
-
                     $this->mediaItemRepository->create(
                         $newGallery->id,
-                        $mediaItemFilePath,
+                        $mediaItem['file_id'],
+                        $mediaItem['file_name'],
+                        $mediaItem['file_mime_type'],
                         MediaFrame::from($mediaItem['frame']),
                         $mediaItem['is_banner']
                     );

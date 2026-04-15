@@ -143,6 +143,8 @@
     "phone_number": "Phone number",
     "welcome_message_en": "Welcome message (English)",
     "welcome_message_vi": "Welcome message (Vietnamese)",
+    "no_files_uploaded": "No files have been uploaded yet.",
+    "scroll_to_top": "Scroll to top",
     "messages": {
         "invalid_link": "The link is invalid.",
         "file_too_large": "The file must not be greater than {{max}} KB.",

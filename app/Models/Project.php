@@ -20,8 +20,9 @@ class Project extends CommonProject
         'summary_en',
         'summary_vi',
         'is_highlight',
-        'thumbnail_file_path',
-        'thumbnail_frame',
+        'thumbnail_file_id',
+        'thumbnail_file_name',
+        'thumbnail_file_mime_type',
         'web_visibility',
     ];
 }

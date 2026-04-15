@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\AlbumController;
-use App\Http\Controllers\AlbumMediaItemController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\SettingAboutPageController;
 use App\Http\Controllers\WebsiteContentSettingController;
+use Common\App\Http\Controllers\GetGoogleDriveFileController;
 use Illuminate\Support\Facades\Route;
 
 // Set locale.
 Route::put('/locale', LocaleController::class)->name('locale.set');
+
+// Get files.
+Route::get('/files/{fileName}', GetGoogleDriveFileController::class)->name('file');
 
 Route::middleware('guest')->group(function(): void {
     // Auth.
@@ -29,6 +30,7 @@ Route::middleware('guest')->group(function(): void {
         });
     });
 });
+
 
 Route::middleware('auth')->group(function(): void {
     // Auth.
@@ -51,7 +53,7 @@ Route::middleware('auth')->group(function(): void {
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
         Route::get('/edit/{project}', 'edit')->name('edit');
-        Route::post('/update/{project}', 'update')->name('update');
+        Route::put('/update/{project}', 'update')->name('update');
         Route::post('/bulk-delete', 'bulkDelete')->name('bulkDelete');
     });
 
@@ -63,37 +65,6 @@ Route::middleware('auth')->group(function(): void {
                 Route::post('/', 'save')->name('save');
             });
     });
-
-    // Album.
-    Route::prefix('/albums')->name('albums.')->group(function(): void {
-        Route::controller(AlbumController::class)->group(function(): void {
-            Route::get('/', 'index')->name('index');
-            Route::get('/create', 'create')->name('create');
-            Route::post('/store', 'store')->name('store');
-            Route::get('/{album}/edit', 'edit')->name('edit')->withTrashed();
-            Route::post('/{album}/update', 'update')->name('update');
-            Route::patch('/{album}/delete', 'delete')->name('delete');
-            Route::patch('/{album}/restore', 'restore')->name('restore')->withTrashed();
-            Route::delete('/{album}/destroy', 'destroy')->name('destroy')->withTrashed();
-        });
-
-        // Album media.
-        Route::prefix('/{album}/media')->controller(AlbumMediaItemController::class)->name('media.')
-            ->group(function(): void {
-                Route::get('/upload', 'bulkCreate')->name('bulkCreate');
-                Route::post('/upload', 'bulkStore')->name('bulkStore');
-                Route::put('/bulk-update', 'bulkUpdate')->name('bulkUpdate');
-                Route::patch('/bulk-delete', 'bulkDestroy')->name('bulkDestroy');
-                Route::delete('/{albumMediaItem}/delete', 'destroy')->name('destroy');
-            });
-    });
-
-    // Setting about page.
-    Route::controller(SettingAboutPageController::class)->prefix('/setting-about-page')->name('settingAboutPage.')
-        ->group(function(): void {
-            Route::get('/', 'index')->name('index');
-            Route::put('/', 'save')->name('save');
-        });
 });
 
 // Public API.

@@ -142,6 +142,8 @@
     "phone_number": "Số điện thoại",
     "welcome_message_en": "Lời mở đầu (Tiếng Anh)",
     "welcome_message_vi": "Lời mở đầu (Tiếng Việt)",
+    "no_files_uploaded": "Chưa có tệp nào được tải lên.",
+    "scroll_to_top": "Cuộn lên đầu trang",
     "messages": {
         "invalid_link": "Đường dẫn này không hợp lệ.",
         "file_too_large": "Tệp không được lớn hơn {{max}} KB.",

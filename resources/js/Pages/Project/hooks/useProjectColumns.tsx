@@ -1,12 +1,12 @@
+import GoogleDriveImage from '@/Components/GoogleDriveImage';
 import { Project } from '@/types/project';
 import { usePage } from '@inertiajs/react';
 import { SvgIconComponent } from '@mui/icons-material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 import StarIcon from '@mui/icons-material/Star';
-import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import Chip, { ChipProps } from '@mui/material/Chip';
-import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { MRT_ColumnDef } from 'material-react-table';
@@ -29,20 +29,26 @@ const useProjectColumns = (): MRT_ColumnDef<Project>[] => {
             Cell: ({ row }) => {
                 return (
                     <Stack direction="row" alignItems="center" gap={2}>
-                        <Avatar
-                            variant="rounded"
-                            alt={row.original[`title_${locale}`]}
-                            src={row.original.thumbnail_url}
+                        {row.original.is_highlight && <StarIcon color="warning" fontSize="small" />}
+                        <Box
                             sx={{
+                                height: 40,
+                                width: 40,
                                 border: 1,
                                 borderColor: 'divider',
                                 p: 1,
-                                bgcolor: grey[50],
+                                borderRadius: 1,
+                                flexShrink: 0,
                             }}
-                            slotProps={{ img: { sx: { borderRadius: 0.5 } } }}
-                        />
+                        >
+                            <GoogleDriveImage
+                                fileName={row.original.thumbnail_file_name}
+                                containerSx={{ aspectRatio: '1/1' }}
+                                skeletonSx={{ borderRadius: 0.5 }}
+                                imageSx={{ aspectRatio: '1/1', borderRadius: 0.5 }}
+                            />
+                        </Box>
                         <Typography>{row.original[`title_${locale}`]}</Typography>
-                        {row.original.is_highlight && <StarIcon color="warning" fontSize="small" />}
                     </Stack>
                 );
             },

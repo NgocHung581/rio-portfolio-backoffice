@@ -11,6 +11,7 @@ use App\Traits\ValidationHelper;
 use Common\App\Enums\MediaFrame;
 use Common\App\Enums\MediaType;
 use Common\App\Enums\WebVisibility;
+use Common\App\Traits\NumberHelper;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -21,6 +22,7 @@ use Illuminate\Validation\Rules\File;
  */
 class ProjectFormRequest extends FormRequest
 {
+    use NumberHelper;
     use ValidationHelper;
 
     public function __construct(private readonly CategoryRepository $categoryRepository)
@@ -86,15 +88,18 @@ class ProjectFormRequest extends FormRequest
                 'required',
                 'array',
             ],
-            'thumbnail.file' => [
-                'nullable',
-                File::image()->types(config('app.image_mine_types'))->max(config('app.image_size_limit') / 1024),
-            ],
-            'thumbnail.frame' => [
-                'nullable',
-                Rule::requiredIf(filled($this->thumbnail['file'] ?? null)),
+            'thumbnail.file_id' => [
+                'required',
                 'string',
-                Rule::enum(MediaFrame::class),
+            ],
+            'thumbnail.file_name' => [
+                'required',
+                'string',
+            ],
+            'thumbnail.file_mime_type' => [
+                'required',
+                'string',
+                Rule::in(explode(',', config('app.image_mine_types'))),
             ],
             'galleries' => [
                 'nullable',
@@ -113,7 +118,15 @@ class ProjectFormRequest extends FormRequest
                 'required',
                 'array',
             ],
-            'galleries.*.media_items.*.file' => $this->getMediaItemFileRules(),
+            'galleries.*.media_items.*.file_id' => [
+                'required',
+                'string',
+            ],
+            'galleries.*.media_items.*.file_name' => [
+                'required',
+                'string',
+            ],
+            'galleries.*.media_items.*.file_mime_type' => $this->getMediaItemFileMimeTypeRules(),
             'galleries.*.media_items.*.frame' => [
                 'required',
                 'string',
@@ -136,29 +149,10 @@ class ProjectFormRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $parsedCategoryId = filter_var($this->category_id, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-        $parsedWebVisibility = filter_var($this->web_visibility, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-        $galleries = [];
-
-        if (isset($this->galleries)) {
-            foreach ($this->galleries as $gallery) {
-                $mediaItems = [];
-
-                foreach (($gallery['media_items'] ?? []) as $mediaItem) {
-                    $mediaItem['is_banner'] = filter_var($mediaItem['is_banner'], FILTER_VALIDATE_BOOLEAN);
-                    $mediaItems[] = $mediaItem;
-                }
-
-                $gallery['media_items'] = $mediaItems;
-                $galleries[] = $gallery;
-            }
-        }
-
         $this->merge([
-            'category_id' => $parsedCategoryId ?? $this->category_id,
+            'category_id' => $this->parseInt($this->category_id),
             'is_highlight' => filter_var($this->is_highlight, FILTER_VALIDATE_BOOLEAN),
-            'web_visibility' => $parsedWebVisibility ?? $this->web_visibility,
-            'galleries' => $galleries,
+            'web_visibility' => $this->parseInt($this->web_visibility),
         ]);
     }
 
@@ -175,17 +169,16 @@ class ProjectFormRequest extends FormRequest
     /**
      * Returns an array of validation rules for the media item file.
      */
-    private function getMediaItemFileRules(): array
+    private function getMediaItemFileMimeTypeRules(): array
     {
-        $rules = ['nullable'];
+        $rules = ['required', 'string'];
         $foundCategory = $this->categoryRepository->findById((int) $this->category_id);
 
         if (isset($foundCategory)) {
             if ($foundCategory->media_type === MediaType::Image) {
-                $rules[] = File::image()->types(config('app.image_mine_types'))->max(config('app.image_size_limit') / 1024);
+                $rules[] = Rule::in(explode(',', config('app.image_mine_types')));
             } else {
-                $rules[] = 'mimetypes:' . config('app.video_mine_types');
-                $rules[] = 'max:' . (config('app.video_size_limit') / 1024);
+                $rules[] = Rule::in(explode(',', config('app.video_mine_types')));
             }
         }
 

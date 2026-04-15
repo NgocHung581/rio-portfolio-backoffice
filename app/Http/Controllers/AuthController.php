@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SendResetPasswordLinkRequest;
 use App\Http\Requests\Auth\StorePasswordRequest;
-use App\Services\User\FindUserByEmailService;
+use App\UseCases\User\FindUserByEmailUseCase;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -80,9 +80,9 @@ class AuthController extends Controller
     /**
      * Display the password reset view.
      */
-    public function resetPassword(Request $request, FindUserByEmailService $service): Response|ResponseFactory
+    public function resetPassword(Request $request, FindUserByEmailUseCase $useCase): Response|ResponseFactory
     {
-        $user = $service->execute($request->email ?? '');
+        $user = $useCase($request->email ?? '');
 
         if (is_null($user) || !Password::tokenExists($user, $request->token)) {
             abort(404);

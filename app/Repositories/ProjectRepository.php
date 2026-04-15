@@ -6,7 +6,6 @@ namespace App\Repositories;
 
 use App\Enums\PerPage;
 use App\Models\Project;
-use Common\App\Enums\MediaFrame;
 use Common\App\Enums\WebVisibility;
 use Common\App\Repositories\ProjectRepository as CommonProjectRepository;
 use Illuminate\Database\Eloquent\Collection;
@@ -58,8 +57,9 @@ class ProjectRepository extends CommonProjectRepository
         string $summaryEn,
         string $summaryVi,
         bool $isHighlight,
-        string $thumbnailFilePath,
-        MediaFrame $thumbnailFrame,
+        string $thumbnailFileId,
+        string $thumbnailFileName,
+        string $thumbnailFileMimeType,
         WebVisibility $webVisibility
     ): Project {
         return Project::query()->create([
@@ -71,8 +71,9 @@ class ProjectRepository extends CommonProjectRepository
             'summary_en' => $summaryEn,
             'summary_vi' => $summaryVi,
             'is_highlight' => $isHighlight,
-            'thumbnail_file_path' => $thumbnailFilePath,
-            'thumbnail_frame' => $thumbnailFrame,
+            'thumbnail_file_id' => $thumbnailFileId,
+            'thumbnail_file_name' => $thumbnailFileName,
+            'thumbnail_file_mime_type' => $thumbnailFileMimeType,
             'web_visibility' => $webVisibility,
         ]);
     }
@@ -90,8 +91,9 @@ class ProjectRepository extends CommonProjectRepository
         string $summaryEn,
         string $summaryVi,
         bool $isHighlight,
-        string $thumbnailFilePath,
-        MediaFrame $thumbnailFrame,
+        string $thumbnailFileId,
+        string $thumbnailFileName,
+        string $thumbnailFileMimeType,
         WebVisibility $webVisibility
     ): int {
         return Project::query()->where('id', $id)->update([
@@ -103,8 +105,9 @@ class ProjectRepository extends CommonProjectRepository
             'summary_en' => $summaryEn,
             'summary_vi' => $summaryVi,
             'is_highlight' => $isHighlight,
-            'thumbnail_file_path' => $thumbnailFilePath,
-            'thumbnail_frame' => $thumbnailFrame,
+            'thumbnail_file_id' => $thumbnailFileId,
+            'thumbnail_file_name' => $thumbnailFileName,
+            'thumbnail_file_mime_type' => $thumbnailFileMimeType,
             'web_visibility' => $webVisibility,
         ]);
     }

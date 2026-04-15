@@ -13,7 +13,6 @@ use Common\App\Enums\WebVisibility;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * The use case class for updating a project.
@@ -42,18 +41,7 @@ class UpdateProjectUseCase
         array $galleries
     ): array {
         try {
-            $unusedFilePaths = [];
-
             DB::beginTransaction();
-
-            $originalThumbnailFilePath = $project->thumbnail_file_path;
-            $newThumbnailFilePath = $originalThumbnailFilePath;
-
-            // Case: Change thumbnail.
-            if (isset($thumbnail['file'])) {
-                $newThumbnailFilePath = $thumbnail['file']->store('projects/thumbnails', 'public');
-                $unusedFilePaths[] = $originalThumbnailFilePath;
-            }
 
             // Update project.
             $this->projectRepository->update(
@@ -66,8 +54,9 @@ class UpdateProjectUseCase
                 $summaryEn,
                 $summaryVi,
                 $isHighlight,
-                $newThumbnailFilePath,
-                MediaFrame::from($thumbnail['frame']),
+                $thumbnail['file_id'],
+                $thumbnail['file_name'],
+                $thumbnail['file_mime_type'],
                 $webVisibility
             );
 
@@ -79,14 +68,11 @@ class UpdateProjectUseCase
                 $newGallery = $this->galleryRepository->create($project->id, $gallery['caption']);
 
                 foreach ($gallery['media_items'] as $mediaItem) {
-                    $mediaItemFilePath = $mediaItem['file']->store(
-                        "projects/{$project->id}/{$newGallery->id}",
-                        'public'
-                    );
-
                     $this->mediaItemRepository->create(
                         $newGallery->id,
-                        $mediaItemFilePath,
+                        $mediaItem['file_id'],
+                        $mediaItem['file_name'],
+                        $mediaItem['file_mime_type'],
                         MediaFrame::from($mediaItem['frame']),
                         $mediaItem['is_banner']
                     );
@@ -97,10 +83,7 @@ class UpdateProjectUseCase
             $deletedGalleryIds = array_diff($project->galleries->pluck('id')->toArray(), array_column($galleries, 'id'));
             $deletedGalleries = $project->galleries->whereIn('id', $deletedGalleryIds);
             $deletedMediaItems = $deletedGalleries->pluck('mediaItems')->flatten();
-            $deletedMediaItemFilePaths = $deletedMediaItems->pluck('file_path')->toArray();
             $deletedMediaItemIds = $deletedMediaItems->pluck('id')->toArray();
-
-            array_push($unusedFilePaths, ...$deletedMediaItemFilePaths);
 
             $this->mediaItemRepository->bulkDelete($deletedMediaItemIds);
             $this->galleryRepository->bulkDelete($deletedGalleryIds);
@@ -129,14 +112,11 @@ class UpdateProjectUseCase
                 );
 
                 foreach ($newMediaItems as $mediaItem) {
-                    $mediaItemFilePath = $mediaItem['file']->store(
-                        "projects/{$project->id}/{$galleryId}",
-                        'public'
-                    );
-
                     $this->mediaItemRepository->create(
                         $galleryId,
-                        $mediaItemFilePath,
+                        $mediaItem['file_id'],
+                        $mediaItem['file_name'],
+                        $mediaItem['file_mime_type'],
                         MediaFrame::from($mediaItem['frame']),
                         $mediaItem['is_banner']
                     );
@@ -148,9 +128,6 @@ class UpdateProjectUseCase
                     array_column($gallery['media_items'], 'id')
                 );
                 $deletedMediaItems = $originalMediaItems->whereIn('id', $deletedMediaItemIds);
-                $deletedMediaItemFilePaths = $deletedMediaItems->pluck('file_path')->toArray();
-
-                array_push($unusedFilePaths, ...$deletedMediaItemFilePaths);
 
                 $this->mediaItemRepository->bulkDelete($deletedMediaItemIds);
 
@@ -176,8 +153,6 @@ class UpdateProjectUseCase
             }
 
             DB::commit();
-
-            Storage::disk('public')->delete($unusedFilePaths);
 
             return ['success' => true, 'message' => __('messages')['data_updated_successfully']];
         } catch (Exception $exception) {

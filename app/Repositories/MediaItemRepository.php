@@ -16,11 +16,19 @@ class MediaItemRepository extends CommonMediaItemRepository
     /**
      * Create a new media item.
      */
-    public function create(int $galleryId, string $filePath, MediaFrame $frame, bool $isBanner): MediaItem
-    {
+    public function create(
+        int $galleryId,
+        string $fileId,
+        string $fileName,
+        string $fileMimeType,
+        MediaFrame $frame,
+        bool $isBanner
+    ): MediaItem {
         return MediaItem::query()->create([
             'gallery_id' => $galleryId,
-            'file_path' => $filePath,
+            'file_id' => $fileId,
+            'file_name' => $fileName,
+            'file_mime_type' => $fileMimeType,
             'frame' => $frame,
             'is_banner' => $isBanner,
         ]);

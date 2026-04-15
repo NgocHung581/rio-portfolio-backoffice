@@ -1,5 +1,5 @@
-import { UploadedFile } from '@/@core/components/FileDropzone';
 import FormField from '@/Components/FormField';
+import GoogleDriveImage from '@/Components/GoogleDriveImage';
 import { PageProps } from '@/types';
 import { ProjectFormPageProps } from '@/types/project';
 import { usePage } from '@inertiajs/react';
@@ -18,38 +18,30 @@ import Stack from '@mui/material/Stack';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ShowBannerVisibilityCheckboxProps = {
-    showBannerVisibilityCheckbox: true;
-    isBanner: boolean;
-    onChangeIsBanner: (isBanner: boolean) => void;
-    isBannerFieldError?: string;
-};
-
-type HideBannerVisibilityCheckboxProps = {
-    showBannerVisibilityCheckbox?: false;
-};
-
-type Props = (ShowBannerVisibilityCheckboxProps | HideBannerVisibilityCheckboxProps) & {
-    mediaItem: UploadedFile;
+type Props = {
+    fileName: string;
     onDelete: () => void;
     frame: string;
     onChangeFrame: (frame: string) => void;
     frameFieldError?: string;
-    fileError?: string;
+    isBanner: boolean;
+    onChangeIsBanner: (isBanner: boolean) => void;
+    isBannerFieldError?: string;
     disabled?: boolean;
     isVideo?: boolean;
 };
 
 const MediaItemCard = ({
-    mediaItem,
+    fileName,
     onDelete,
     frame,
     onChangeFrame,
     frameFieldError,
-    fileError,
+    isBanner,
+    onChangeIsBanner,
+    isBannerFieldError,
     disabled,
     isVideo,
-    ...props
 }: Props) => {
     const { t } = useTranslation();
     const { mediaFrameOptions } = usePage<PageProps<ProjectFormPageProps>>().props;
@@ -60,12 +52,15 @@ const MediaItemCard = ({
                 <Box flex={1}>
                     {isVideo ? (
                         <Box component="video" controls width={1} height="auto" sx={{ aspectRatio: frame }}>
-                            <source src={mediaItem.url} />
+                            <source src={`${import.meta.env.VITE_APP_URL}/files/${fileName}`} />
                         </Box>
                     ) : (
-                        <Box component="img" src={mediaItem.url} width={1} height="auto" sx={{ aspectRatio: frame }} />
+                        <GoogleDriveImage
+                            fileName={fileName}
+                            containerSx={{ aspectRatio: frame }}
+                            imageSx={{ aspectRatio: frame }}
+                        />
                     )}
-                    {!!fileError && <FormHelperText error>{fileError}</FormHelperText>}
                 </Box>
                 <Stack width={1} gap={4}>
                     <FormField
@@ -93,27 +88,23 @@ const MediaItemCard = ({
             </CardContent>
             <CardActions sx={{ justifyContent: 'space-between' }}>
                 <Box>
-                    {props.showBannerVisibilityCheckbox && (
-                        <FormControl>
-                            <FormControlLabel
-                                sx={{ m: 0 }}
-                                control={
-                                    <Checkbox
-                                        edge="start"
-                                        size="small"
-                                        checked={props.isBanner}
-                                        onChange={(_, checked) => props.onChangeIsBanner(checked)}
-                                        disabled={disabled}
-                                    />
-                                }
-                                label={t('banner')}
-                                slotProps={{ typography: { variant: 'body2' } }}
-                            />
-                            {!!props.isBannerFieldError && (
-                                <FormHelperText error>{props.isBannerFieldError}</FormHelperText>
-                            )}
-                        </FormControl>
-                    )}
+                    <FormControl>
+                        <FormControlLabel
+                            sx={{ m: 0 }}
+                            control={
+                                <Checkbox
+                                    edge="start"
+                                    size="small"
+                                    checked={isBanner}
+                                    onChange={(_, checked) => onChangeIsBanner(checked)}
+                                    disabled={disabled}
+                                />
+                            }
+                            label={t('banner')}
+                            slotProps={{ typography: { variant: 'body2' } }}
+                        />
+                        {!!isBannerFieldError && <FormHelperText error>{isBannerFieldError}</FormHelperText>}
+                    </FormControl>
                 </Box>
                 <Button color="error" onClick={onDelete} disabled={disabled}>
                     {t('delete')}
