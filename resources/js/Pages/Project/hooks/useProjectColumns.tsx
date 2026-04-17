@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useTranslation } from 'react-i18next';
 import { ProjectListPageProps } from '../List';
+import Tooltip from '@mui/material/Tooltip';
 
 const ICON_MAP: Record<string, SvgIconComponent> = {
     LockOutline: LockOutlinedIcon,
@@ -29,7 +30,11 @@ const useProjectColumns = (): MRT_ColumnDef<Project>[] => {
             Cell: ({ row }) => {
                 return (
                     <Stack direction="row" alignItems="center" gap={2}>
-                        {row.original.is_highlight && <StarIcon color="warning" fontSize="small" />}
+                        {row.original.is_highlight && (
+                            <Tooltip title={t('highlight')}>
+                                <StarIcon color="warning" fontSize="small" />
+                            </Tooltip>
+                        )}
                         <Box
                             sx={{
                                 height: 40,

@@ -88,23 +88,25 @@ const MediaItemCard = ({
             </CardContent>
             <CardActions sx={{ justifyContent: 'space-between' }}>
                 <Box>
-                    <FormControl>
-                        <FormControlLabel
-                            sx={{ m: 0 }}
-                            control={
-                                <Checkbox
-                                    edge="start"
-                                    size="small"
-                                    checked={isBanner}
-                                    onChange={(_, checked) => onChangeIsBanner(checked)}
-                                    disabled={disabled}
-                                />
-                            }
-                            label={t('banner')}
-                            slotProps={{ typography: { variant: 'body2' } }}
-                        />
-                        {!!isBannerFieldError && <FormHelperText error>{isBannerFieldError}</FormHelperText>}
-                    </FormControl>
+                    {!isVideo && (
+                        <FormControl>
+                            <FormControlLabel
+                                sx={{ m: 0 }}
+                                control={
+                                    <Checkbox
+                                        edge="start"
+                                        size="small"
+                                        checked={isBanner}
+                                        onChange={(_, checked) => onChangeIsBanner(checked)}
+                                        disabled={disabled}
+                                    />
+                                }
+                                label={t('banner')}
+                                slotProps={{ typography: { variant: 'body2' } }}
+                            />
+                            {!!isBannerFieldError && <FormHelperText error>{isBannerFieldError}</FormHelperText>}
+                        </FormControl>
+                    )}
                 </Box>
                 <Button color="error" onClick={onDelete} disabled={disabled}>
                     {t('delete')}
