@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UseCases\WebsiteContentSetting;
 
+use Common\App\UseCases\WebsiteContentSetting\GetWebsiteContentSettingUseCase;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;

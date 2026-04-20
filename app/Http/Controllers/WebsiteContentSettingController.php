@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WebsiteContentSetting\SaveWebsiteContentSettingRequest;
-use App\UseCases\WebsiteContentSetting\GetWebsiteContentSettingUseCase;
 use App\UseCases\WebsiteContentSetting\SaveWebsiteContentSettingUseCase;
+use Common\App\UseCases\WebsiteContentSetting\GetWebsiteContentSettingUseCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
