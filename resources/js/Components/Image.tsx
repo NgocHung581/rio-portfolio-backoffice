@@ -5,14 +5,14 @@ import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { useState } from 'react';
 
 type Props = {
-    fileName: string;
+    src: string;
     alt?: string;
     imageSx?: SystemStyleObject<Theme>;
     containerSx?: SystemStyleObject<Theme>;
     skeletonSx?: SystemStyleObject<Theme>;
 };
 
-const GoogleDriveImage = ({ fileName, alt, containerSx, imageSx, skeletonSx }: Props) => {
+const Image = ({ src, alt, containerSx, imageSx, skeletonSx }: Props) => {
     const [isLoading, setIsLoading] = useState(true);
 
     return (
@@ -25,7 +25,7 @@ const GoogleDriveImage = ({ fileName, alt, containerSx, imageSx, skeletonSx }: P
             )}
             <Box
                 component="img"
-                src={`${import.meta.env.VITE_APP_URL}/files/${fileName}`}
+                src={src}
                 alt={alt}
                 onLoad={() => setIsLoading(false)}
                 onError={() => setIsLoading(false)}
@@ -39,4 +39,4 @@ const GoogleDriveImage = ({ fileName, alt, containerSx, imageSx, skeletonSx }: P
     );
 };
 
-export default GoogleDriveImage;
+export default Image;

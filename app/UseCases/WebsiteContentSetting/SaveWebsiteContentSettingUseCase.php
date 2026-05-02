@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UseCases\WebsiteContentSetting;
 
+use App\Helpers\FileManager;
 use Common\App\UseCases\WebsiteContentSetting\GetWebsiteContentSettingUseCase;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -26,29 +27,29 @@ class SaveWebsiteContentSettingUseCase
         string $email,
         string $introductionEn,
         string $introductionVi,
-        array $avatar,
+        string $avatarFileUrl,
         array $partnerLogos,
         string $bannerTextEn,
         string $bannerTextVi
     ): array {
-        $uploadedFilePaths = [];
+        $deletedTmpFilePaths = [];
+        $deletedPublicFilePaths = [];
         $websiteContentSetting = ($this->getWebsiteContentSettingUseCase)();
 
-        unset($websiteContentSetting['avatar']['url']);
+        unset($websiteContentSetting['avatar']['file_url']);
 
         foreach (array_keys($websiteContentSetting['partner_logos']) as $key) {
-            unset($websiteContentSetting['partner_logos'][$key]['url']);
+            unset($websiteContentSetting['partner_logos'][$key]['file_url']);
         }
 
         try {
             // Save avatar.
-            $avatarFile = $avatar['file'];
-            $avatarFilePath = $avatar['file_path'];
-
-            if (isset($avatarFile)) {
-                $avatarFilePath = $avatarFile->store(self::UPLOAD_FOLDER, 'public');
-                $uploadedFilePaths[] = $avatarFilePath;
-                $websiteContentSetting['avatar'] = ['file_path' => $avatarFilePath, 'file' => null];
+            if (str_starts_with($avatarFileUrl, config('filesystems.disks.tmp.url'))) {
+                $avatarFileName = basename($avatarFileUrl);
+                $avatarFilePath = FileManager::moveTmpToPublic($avatarFileName, self::UPLOAD_FOLDER);
+                $deletedTmpFilePaths[] = $avatarFileName;
+                $deletedPublicFilePaths[] = $websiteContentSetting['avatar']['file_path'];
+                $websiteContentSetting['avatar']['file_path'] = $avatarFilePath;
             }
 
             // Delete partner logos.
@@ -58,18 +59,23 @@ class SaveWebsiteContentSettingUseCase
             );
 
             foreach (array_keys($deletedFilePaths) as $key) {
+                $deletedPublicFilePaths[] = $websiteContentSetting['partner_logos'][$key]['file_path'];
+
                 unset($websiteContentSetting['partner_logos'][$key]);
             }
 
             // Save partner logos.
             foreach ($partnerLogos as $partnerLogo) {
-                $partnerLogoFile = $partnerLogo['file'];
-                $partnerLogoFilePath = $partnerLogo['file_path'];
+                $partnerLogoFileUrl = $partnerLogo['file_url'];
 
-                if (isset($partnerLogoFile)) {
-                    $partnerLogoFilePath = $partnerLogoFile->store(self::UPLOAD_FOLDER, 'public');
-                    $uploadedFilePaths[] = $partnerLogoFilePath;
-                    $websiteContentSetting['partner_logos'][] = ['file_path' => $partnerLogoFilePath, 'file' => null];
+                if (str_starts_with($partnerLogoFileUrl, config('filesystems.disks.tmp.url'))) {
+                    $partnerLogoFileName = basename($partnerLogoFileUrl);
+                    $partnerLogoFilePath = FileManager::moveTmpToPublic($partnerLogoFileName, self::UPLOAD_FOLDER);
+                    $deletedTmpFilePaths[] = $partnerLogoFileName;
+                    $websiteContentSetting['partner_logos'][] = [
+                        'id' => $partnerLogo['id'],
+                        'file_path' => $partnerLogoFilePath,
+                    ];
                 }
             }
 
@@ -83,7 +89,8 @@ class SaveWebsiteContentSettingUseCase
             $websiteContentSetting['partner_logos'] = array_values($websiteContentSetting['partner_logos']);
 
             Storage::put('data/website_content_setting.json', json_encode($websiteContentSetting, JSON_PRETTY_PRINT));
-            Storage::disk('public')->delete($deletedFilePaths);
+            Storage::disk('tmp')->delete($deletedTmpFilePaths);
+            Storage::disk('public')->delete($deletedPublicFilePaths);
 
             return [
                 'is_success' => true,
@@ -91,7 +98,6 @@ class SaveWebsiteContentSettingUseCase
             ];
         } catch (Exception $exception) {
             Log::error($exception);
-            Storage::disk('public')->delete($uploadedFilePaths);
 
             return [
                 'is_success' => false,

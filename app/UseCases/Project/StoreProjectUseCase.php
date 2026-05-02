@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UseCases\Project;
 
+use App\Helpers\FileManager;
 use App\Repositories\GalleryRepository;
 use App\Repositories\MediaItemRepository;
 use App\Repositories\ProjectRepository;
@@ -12,6 +13,7 @@ use Common\App\Enums\WebVisibility;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * The use case class for storing a new project.
@@ -35,12 +37,17 @@ class StoreProjectUseCase
         string $summaryVi,
         bool $isHighlight,
         WebVisibility $webVisibility,
-        array $thumbnail,
+        string $thumbnailFileUrl,
         array $galleries
     ): array {
         try {
+            $deletedTmpFilePaths = [];
+
             DB::beginTransaction();
 
+            $thumbnailFileName = basename($thumbnailFileUrl);
+            $thumbnailFilePath = FileManager::moveTmpToPublic($thumbnailFileName, 'projects/thumbnails');
+            $deletedTmpFilePaths[] = $thumbnailFileName;
             $newProject = $this->projectRepository->create(
                 $categoryId,
                 $titleEn,
@@ -50,9 +57,7 @@ class StoreProjectUseCase
                 $summaryEn,
                 $summaryVi,
                 $isHighlight,
-                $thumbnail['file_id'],
-                $thumbnail['file_name'],
-                $thumbnail['file_mime_type'],
+                $thumbnailFilePath,
                 $webVisibility
             );
 
@@ -60,16 +65,24 @@ class StoreProjectUseCase
                 $newGallery = $this->galleryRepository->create($newProject->id, $gallery['caption']);
 
                 foreach ($gallery['media_items'] as $mediaItem) {
+                    $mediaItemFileUrl = $mediaItem['file_url'];
+                    $mediaItemFileName = basename($mediaItemFileUrl);
+                    $mediaItemFilePath = FileManager::moveTmpToPublic(
+                        $mediaItemFileName,
+                        "projects/{$newProject->id}/{$newGallery->id}"
+                    );
+                    $deletedTmpFilePaths[] = $mediaItemFileName;
+
                     $this->mediaItemRepository->create(
                         $newGallery->id,
-                        $mediaItem['file_id'],
-                        $mediaItem['file_name'],
-                        $mediaItem['file_mime_type'],
+                        $mediaItemFilePath,
                         MediaFrame::from($mediaItem['frame']),
                         $mediaItem['is_banner']
                     );
                 }
             }
+
+            Storage::disk('tmp')->delete($deletedTmpFilePaths);
 
             DB::commit();
 

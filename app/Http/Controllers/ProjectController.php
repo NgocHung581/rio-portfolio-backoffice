@@ -77,7 +77,7 @@ class ProjectController extends Controller
             $request->summary_vi,
             $request->is_highlight,
             WebVisibility::from($request->web_visibility),
-            $request->thumbnail,
+            $request->thumbnail_file_url,
             $request->galleries
         );
 
@@ -123,7 +123,7 @@ class ProjectController extends Controller
             $request->summary_vi,
             $request->is_highlight,
             WebVisibility::from($request->web_visibility),
-            $request->thumbnail,
+            $request->thumbnail_file_url,
             $request->galleries
         );
 

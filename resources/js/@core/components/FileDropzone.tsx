@@ -1,28 +1,21 @@
+import CircularProgressWithLabel from '@/Components/CircularProgressWithLabel';
 import { convertBytes } from '@/utils/file';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
 import { Accept, ErrorCode, FileRejection, useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 
-export type UploadedFile = {
-    url: string;
-    file: File | undefined;
-};
-
 type SingleFileProps = {
     multiple?: false;
-    file: UploadedFile | undefined;
-    onUpload: (file: UploadedFile) => void;
+    onUpload: (file: File) => void;
 };
 
 type MultipleFilesProps = {
     multiple: true;
-    files: UploadedFile[];
-    onUpload: (files: UploadedFile[]) => void;
+    onUpload: (files: File[]) => void;
 };
 
 type Props = (SingleFileProps | MultipleFilesProps) & {
@@ -33,6 +26,7 @@ type Props = (SingleFileProps | MultipleFilesProps) & {
     maxFileSize?: number;
     onError?: (message: string) => void;
     maxFiles?: number;
+    progress?: number;
 };
 
 const FileDropzone = ({
@@ -43,26 +37,18 @@ const FileDropzone = ({
     maxFileSize,
     onError,
     maxFiles,
+    progress,
     ...props
 }: Props) => {
     const { t } = useTranslation();
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: handleDrop,
-        disabled,
+        disabled: disabled || progress !== undefined,
         accept,
         multiple: props.multiple,
         maxSize: maxFileSize,
         maxFiles,
     });
-
-    const initUploadedFiles = props.multiple ? props.files : props.file ? [props.file] : [];
-    const [uploadedFiles, setUploadedFiles] = useState(initUploadedFiles);
-
-    useEffect(() => {
-        return () => {
-            uploadedFiles.forEach((file) => URL.revokeObjectURL(file.url));
-        };
-    }, [initUploadedFiles.length]);
 
     function handleDrop(acceptedFiles: File[], fileRejections: FileRejection[]) {
         if (fileRejections.length > 0 && !!onError) {
@@ -76,25 +62,14 @@ const FileDropzone = ({
                 case ErrorCode.TooManyFiles:
                     return onError(t('messages.too_many_files', { max: maxFiles, count: maxFiles }));
                 default:
-                    return onError(t('messages.file_upload_failed'));
+                    return onError(t('messages.file_uploaded_failed'));
             }
         }
 
-        const newUploadedFiles: UploadedFile[] = acceptedFiles.map((file) => ({
-            url: URL.createObjectURL(file),
-            file,
-        }));
-
         if (props.multiple) {
-            uploadedFiles.forEach((file) => URL.revokeObjectURL(file.url));
-
-            props.onUpload(newUploadedFiles);
-            setUploadedFiles(newUploadedFiles);
+            props.onUpload(acceptedFiles);
         } else {
-            !!uploadedFiles[0] && URL.revokeObjectURL(uploadedFiles[0].url);
-
-            props.onUpload(newUploadedFiles[0]);
-            setUploadedFiles([newUploadedFiles[0]]);
+            props.onUpload(acceptedFiles[0]);
         }
     }
 
@@ -117,24 +92,28 @@ const FileDropzone = ({
             sx={{ borderStyle: 'dashed', cursor: disabled ? 'default' : 'pointer' }}
         >
             <input {...getInputProps()} />
-            <Stack alignItems="center" gap={1} mx={2}>
-                <CloudUploadOutlinedIcon fontSize="large" color={disabled ? 'disabled' : 'action'} />
-                <Typography
-                    component="p"
-                    variant="h5"
-                    sx={{ userSelect: 'none' }}
-                    color={disabled ? 'textDisabled' : 'textPrimary'}
-                    textAlign="center"
-                >
-                    {t('drag_and_drop_file_here')}
-                </Typography>
-                <Typography sx={{ userSelect: 'none' }} color={disabled ? 'textDisabled' : 'textSecondary'}>
-                    {t('or')}
-                </Typography>
-                <Button variant="outlined" size="small" disabled={disabled}>
-                    {t('browse')}
-                </Button>
-            </Stack>
+            {progress !== undefined ? (
+                <CircularProgressWithLabel value={progress} />
+            ) : (
+                <Stack alignItems="center" gap={1} mx={2}>
+                    <CloudUploadOutlinedIcon fontSize="large" color={disabled ? 'disabled' : 'action'} />
+                    <Typography
+                        component="p"
+                        variant="h5"
+                        sx={{ userSelect: 'none' }}
+                        color={disabled ? 'textDisabled' : 'textPrimary'}
+                        textAlign="center"
+                    >
+                        {t('drag_and_drop_file_here')}
+                    </Typography>
+                    <Typography sx={{ userSelect: 'none' }} color={disabled ? 'textDisabled' : 'textSecondary'}>
+                        {t('or')}
+                    </Typography>
+                    <Button variant="outlined" size="small" disabled={disabled}>
+                        {t('browse')}
+                    </Button>
+                </Stack>
+            )}
         </Box>
     );
 };

@@ -1,4 +1,4 @@
-import GoogleDriveImage from '@/Components/GoogleDriveImage';
+import Image from '@/Components/Image';
 import ProseWrapper from '@/Components/ProseWrapper';
 import MediaType, { MediaTypeValue } from '@/enums/media-type';
 import { PageProps } from '@/types';
@@ -14,7 +14,7 @@ import Fade from '@mui/material/Fade';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import { alpha } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { Fragment, MutableRefObject, ReactNode, useRef, useState } from 'react';
@@ -32,7 +32,7 @@ type ProjectInfo = Pick<
     Project,
     'title_en' | 'title_vi' | 'description_en' | 'description_vi' | 'summary_en' | 'summary_vi'
 > & {
-    galleries: (Pick<Gallery, 'caption'> & { media_items: Pick<MediaItem, 'id' | 'file_name' | 'frame'>[] })[];
+    galleries: (Pick<Gallery, 'caption'> & { media_items: Pick<MediaItem, 'file_url' | 'frame'>[] })[];
     mediaType: MediaTypeValue;
 };
 
@@ -41,6 +41,33 @@ type Props = {
     projectInfo: ProjectInfo;
     locale: PageProps['locale'];
 };
+
+const StyledCloseModalButton = styled(IconButton)(({ theme }) => ({
+    position: 'fixed',
+    top: 10,
+    right: 10,
+    backgroundColor: alpha('#000', 0.2),
+    color: 'white',
+    ':hover': {
+        backgroundColor: 'rgb(var(--mui-palette-action-activeChannel) / var(--mui-palette-action-disabledOpacity))',
+    },
+    [theme.breakpoints.up('md')]: {
+        right: 20,
+    },
+}));
+
+const StyledNavigationButton = styled(IconButton)({
+    position: 'fixed',
+    top: '50%',
+    zIndex: 1,
+    transform: 'translateY(-50%)',
+    backgroundColor: alpha('#000', 0.2),
+    color: 'white',
+    ':hover': {
+        backgroundColor: 'rgb(var(--mui-palette-action-activeChannel) / var(--mui-palette-action-disabledOpacity))',
+    },
+    '&.swiper-button-disabled': { display: 'none' },
+});
 
 const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
     const { t } = useTranslation();
@@ -61,8 +88,8 @@ const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
         setOpenModal(false);
     };
 
-    const handleOpenSubModal = (mediaItemId: number) => {
-        const index = mediaItems.findIndex((mediaItem) => mediaItem.id === mediaItemId);
+    const handleOpenSubModal = (fileUrl: string) => {
+        const index = mediaItems.findIndex((mediaItem) => mediaItem.file_url === fileUrl);
 
         setOpenSubModal(true);
         setActiveSlide(index);
@@ -117,7 +144,7 @@ const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
                                     <Grid
                                         key={mediaItemIndex}
                                         size={12 / gallery.media_items.length}
-                                        onClick={() => handleOpenSubModal(mediaItem.id)}
+                                        onClick={() => handleOpenSubModal(mediaItem.file_url)}
                                     >
                                         {projectInfo.mediaType === MediaType.Video ? (
                                             <Box
@@ -126,15 +153,13 @@ const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
                                                 width={1}
                                                 sx={{ aspectRatio: mediaItem.frame }}
                                             >
-                                                <source
-                                                    src={`${import.meta.env.VITE_APP_URL}/files/${mediaItem.file_name}`}
-                                                />
+                                                <source src={mediaItem.file_url} />
                                             </Box>
                                         ) : (
-                                            <GoogleDriveImage
-                                                fileName={mediaItem.file_name}
+                                            <Image
+                                                src={mediaItem.file_url}
                                                 containerSx={{ aspectRatio: mediaItem.frame }}
-                                                imageSx={{ aspectRatio: mediaItem.frame }}
+                                                imageSx={{ width: 1, height: 1 }}
                                             />
                                         )}
                                     </Grid>
@@ -167,23 +192,9 @@ const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
                         {t('the_end')}
                     </Typography>
                 </Stack>
-                <IconButton
-                    disableRipple
-                    sx={{
-                        position: 'fixed',
-                        top: 10,
-                        right: { xs: 10, md: 20 },
-                        backgroundColor: alpha('#000', 0.2),
-                        color: 'white',
-                        ':hover': {
-                            backgroundColor:
-                                'rgb(var(--mui-palette-action-activeChannel) / var(--mui-palette-action-disabledOpacity))',
-                        },
-                    }}
-                    onClick={handleCloseModal}
-                >
+                <StyledCloseModalButton disableRipple onClick={handleCloseModal}>
                     <ClearIcon fontSize="small" />
-                </IconButton>
+                </StyledCloseModalButton>
                 <ScrollTopButton containerRef={scrollContainerRef} />
             </Dialog>
             <Dialog
@@ -218,16 +229,21 @@ const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
                         initialSlide={activeSlide}
                     >
                         {mediaItems.map((mediaItem) => (
-                            <SwiperSlide key={mediaItem.id} style={{ textAlign: 'center', userSelect: 'none' }}>
+                            <SwiperSlide key={mediaItem.file_url} style={{ textAlign: 'center', userSelect: 'none' }}>
                                 {projectInfo.mediaType === MediaType.Video ? (
-                                    <Box component="video" controls width={1} sx={{ aspectRatio: mediaItem.frame }}>
-                                        <source src={`${import.meta.env.VITE_APP_URL}/files/${mediaItem.file_name}`} />
+                                    <Box
+                                        component="video"
+                                        controls
+                                        width={1}
+                                        sx={{ aspectRatio: mediaItem.frame, maxHeight: 1 }}
+                                    >
+                                        <source src={mediaItem.file_url} />
                                     </Box>
                                 ) : (
                                     <Box
                                         component={InnerImageZoom}
-                                        src={`${import.meta.env.VITE_APP_URL}/files/${mediaItem.file_name}`}
-                                        zoomSrc={`${import.meta.env.VITE_APP_URL}/files/${mediaItem.file_name}`}
+                                        src={mediaItem.file_url}
+                                        zoomSrc={mediaItem.file_url}
                                         fullscreenOnMobile
                                         hideHint
                                         sx={{
@@ -248,64 +264,15 @@ const ProjectViewModal = ({ renderTrigger, projectInfo, locale }: Props) => {
                         ))}
                     </Swiper>
                 </Box>
-                <IconButton
-                    disableRipple
-                    sx={{
-                        position: 'fixed',
-                        top: 10,
-                        right: { xs: 10, md: 20 },
-                        zIndex: 1,
-                        backgroundColor: alpha('#000', 0.2),
-                        color: 'white',
-                        ':hover': {
-                            backgroundColor:
-                                'rgb(var(--mui-palette-action-activeChannel) / var(--mui-palette-action-disabledOpacity))',
-                        },
-                    }}
-                    onClick={handleCloseSubModal}
-                >
+                <StyledCloseModalButton disableRipple onClick={handleCloseSubModal}>
                     <ClearIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                    disableRipple
-                    id="swiper-button-prev"
-                    sx={{
-                        position: 'fixed',
-                        left: { xs: 0, md: 20 },
-                        top: '50%',
-                        zIndex: 1,
-                        transform: 'translateY(-50%)',
-                        backgroundColor: alpha('#000', 0.2),
-                        color: 'white',
-                        ':hover': {
-                            backgroundColor:
-                                'rgb(var(--mui-palette-action-activeChannel) / var(--mui-palette-action-disabledOpacity))',
-                        },
-                        '&.swiper-button-disabled': { display: 'none' },
-                    }}
-                >
+                </StyledCloseModalButton>
+                <StyledNavigationButton disableRipple id="swiper-button-prev" sx={{ left: { xs: 0, md: 20 } }}>
                     <KeyboardArrowLeftIcon />
-                </IconButton>
-                <IconButton
-                    disableRipple
-                    id="swiper-button-next"
-                    sx={{
-                        position: 'fixed',
-                        right: { xs: 0, md: 20 },
-                        top: '50%',
-                        zIndex: 1,
-                        transform: 'translateY(-50%)',
-                        backgroundColor: alpha('#000', 0.2),
-                        color: 'white',
-                        ':hover': {
-                            backgroundColor:
-                                'rgb(var(--mui-palette-action-activeChannel) / var(--mui-palette-action-disabledOpacity))',
-                        },
-                        '&.swiper-button-disabled': { display: 'none' },
-                    }}
-                >
+                </StyledNavigationButton>
+                <StyledNavigationButton disableRipple id="swiper-button-next" sx={{ right: { xs: 0, md: 20 } }}>
                     <KeyboardArrowRightIcon />
-                </IconButton>
+                </StyledNavigationButton>
             </Dialog>
         </Fragment>
     );
