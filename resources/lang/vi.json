@@ -157,7 +157,7 @@
         "exceed_max_highlight_albums": "Bạn chỉ có thể thiết lập tối đa {{max}} album nổi bật.",
         "cannot_publish_project_without_media": "Vui lòng thêm ít nhất một hình ảnh hoặc video trước khi công khai dự án.",
         "must_select_category_to_add_gallery": "Vui lòng chọn danh mục để thêm bộ sưu tập.",
-        "cannot_change_category_due_to_gallery": "Không thể thay đổi danh mục vì dự án đã chứa các bộ sưu tập.",
+        "only_change_category_within_classification": "Bạn chỉ có thể thay đổi danh mục trong cùng một phân loại.",
         "file_uploaded_failed": "Tải tệp không thành công."
     }
 }

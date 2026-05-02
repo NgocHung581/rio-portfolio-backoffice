@@ -159,7 +159,7 @@
         "exceed_max_highlight_albums": "You can only set up to {{max}} highlighted albums.",
         "cannot_publish_project_without_media": "Please add at least one image or video before making the project public.",
         "must_select_category_to_add_gallery": "Please choose a category to add the gallery.",
-        "cannot_change_category_due_to_gallery": "The category cannot be changed because the project already contains galleries.",
+        "only_change_category_within_classification": "You can only change the category within the same classification.",
         "file_uploaded_failed": "Failed to upload file."
     }
 }

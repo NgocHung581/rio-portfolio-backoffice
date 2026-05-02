@@ -389,11 +389,10 @@ const ProjectForm = ({
                                 <Fragment>
                                     <Autocomplete
                                         options={categoryOptions}
-                                        value={
-                                            categoryOptions.find((option) => option.value === data.category_id) ?? null
-                                        }
+                                        value={selectedCategory ?? null}
                                         onChange={(_, selected) => setData('category_id', selected?.value ?? null)}
-                                        disabled={processing || !!data.galleries.length}
+                                        disabled={processing}
+                                        disableClearable={!!data.galleries.length}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -401,10 +400,14 @@ const ProjectForm = ({
                                                 helperText={errors.category_id}
                                             />
                                         )}
+                                        getOptionDisabled={(option) =>
+                                            !!data.galleries.length &&
+                                            option.media_type !== selectedCategory?.media_type
+                                        }
                                     />
                                     {!!data.galleries.length && (
                                         <FormHelperText>
-                                            {t('messages.cannot_change_category_due_to_gallery')}
+                                            {t('messages.only_change_category_within_classification')}
                                         </FormHelperText>
                                     )}
                                 </Fragment>
