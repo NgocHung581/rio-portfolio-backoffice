@@ -46,6 +46,7 @@ const StyledCloseModalButton = styled(IconButton)(({ theme }) => ({
     position: 'fixed',
     top: 10,
     right: 10,
+    zIndex: 1,
     backgroundColor: alpha('#000', 0.2),
     color: 'white',
     ':hover': {
