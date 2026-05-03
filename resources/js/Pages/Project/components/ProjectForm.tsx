@@ -339,30 +339,32 @@ const ProjectForm = ({
                     </CardContent>
                     <CardActions sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
                         <Box>
-                            <FormControl>
-                                <FormControlLabel
-                                    sx={{ m: 0 }}
-                                    control={
-                                        <Checkbox
-                                            edge="start"
-                                            size="small"
-                                            checked={mediaItem.is_banner}
-                                            onChange={(_, checked) =>
-                                                updateGalleryMediaItemField(
-                                                    galleryId,
-                                                    mediaItem.id,
-                                                    'is_banner',
-                                                    checked,
-                                                )
-                                            }
-                                            disabled={processing}
-                                        />
-                                    }
-                                    label={t('banner')}
-                                    slotProps={{ typography: { variant: 'body2' } }}
-                                />
-                                {!!isBannerError && <FormHelperText error>{isBannerError}</FormHelperText>}
-                            </FormControl>
+                            {selectedCategory?.media_type === MediaType.Image && (
+                                <FormControl>
+                                    <FormControlLabel
+                                        sx={{ m: 0 }}
+                                        control={
+                                            <Checkbox
+                                                edge="start"
+                                                size="small"
+                                                checked={mediaItem.is_banner}
+                                                onChange={(_, checked) =>
+                                                    updateGalleryMediaItemField(
+                                                        galleryId,
+                                                        mediaItem.id,
+                                                        'is_banner',
+                                                        checked,
+                                                    )
+                                                }
+                                                disabled={processing}
+                                            />
+                                        }
+                                        label={t('banner')}
+                                        slotProps={{ typography: { variant: 'body2' } }}
+                                    />
+                                    {!!isBannerError && <FormHelperText error>{isBannerError}</FormHelperText>}
+                                </FormControl>
+                            )}
                         </Box>
                         <Button
                             style={{ marginLeft: 0 }}

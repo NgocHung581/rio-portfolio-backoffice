@@ -39,7 +39,6 @@ export type Gallery = {
 export type MediaItem = {
     id: number;
     gallery_id: number;
-    file_path: string;
     file_url: string;
     frame: string;
     is_banner: boolean;
