@@ -65,9 +65,7 @@ class CreateUserCommand extends Command
                 foreach ($messages as $message) {
                     $this->error("[{$key}]: {$message}");
                 }
-
             }
-
 
             exit(1);
         }

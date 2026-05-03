@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+declare(strict_types=1);
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+use App\Console\Commands\PruneTmpFilesCommand;
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command(PruneTmpFilesCommand::class)->dailyAt('5:00');
