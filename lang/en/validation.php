@@ -160,6 +160,7 @@ return [
     'url' => 'The :attribute field must be a valid URL.',
     'ulid' => 'The :attribute field must be a valid ULID.',
     'uuid' => 'The :attribute field must be a valid UUID.',
+    'file_size_limit' => 'File is too large. Images can be up to :image_size_max MB, and videos up to :video_size_max MB.',
 
     /*
     |--------------------------------------------------------------------------

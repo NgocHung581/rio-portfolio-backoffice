@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WebsiteContentSetting\SaveWebsiteContentSettingRequest;
 use App\UseCases\WebsiteContentSetting\SaveWebsiteContentSettingUseCase;
 use Common\App\UseCases\WebsiteContentSetting\GetWebsiteContentSettingUseCase;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
 use Inertia\ResponseFactory;
@@ -28,14 +27,6 @@ class WebsiteContentSettingController extends Controller
     }
 
     /**
-     * Get the website content setting for API.
-     */
-    public function getWebsiteContentSettingApi(GetWebsiteContentSettingUseCase $useCase): JsonResponse
-    {
-        return response()->json($useCase());
-    }
-
-    /**
      * Save the website content setting.
      */
     public function save(
@@ -47,7 +38,7 @@ class WebsiteContentSettingController extends Controller
             $request->email,
             $request->introduction_en,
             $request->introduction_vi,
-            $request->avatar,
+            $request->avatar_file_url,
             $request->partner_logos,
             $request->banner_text_en,
             $request->banner_text_vi

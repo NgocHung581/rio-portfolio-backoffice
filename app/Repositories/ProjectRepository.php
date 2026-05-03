@@ -57,9 +57,7 @@ class ProjectRepository extends CommonProjectRepository
         string $summaryEn,
         string $summaryVi,
         bool $isHighlight,
-        string $thumbnailFileId,
-        string $thumbnailFileName,
-        string $thumbnailFileMimeType,
+        string $thumbnailFilePath,
         WebVisibility $webVisibility
     ): Project {
         return Project::query()->create([
@@ -71,9 +69,7 @@ class ProjectRepository extends CommonProjectRepository
             'summary_en' => $summaryEn,
             'summary_vi' => $summaryVi,
             'is_highlight' => $isHighlight,
-            'thumbnail_file_id' => $thumbnailFileId,
-            'thumbnail_file_name' => $thumbnailFileName,
-            'thumbnail_file_mime_type' => $thumbnailFileMimeType,
+            'thumbnail_file_path' => $thumbnailFilePath,
             'web_visibility' => $webVisibility,
         ]);
     }
@@ -91,9 +87,7 @@ class ProjectRepository extends CommonProjectRepository
         string $summaryEn,
         string $summaryVi,
         bool $isHighlight,
-        string $thumbnailFileId,
-        string $thumbnailFileName,
-        string $thumbnailFileMimeType,
+        string $thumbnailFilePath,
         WebVisibility $webVisibility
     ): int {
         return Project::query()->where('id', $id)->update([
@@ -105,9 +99,7 @@ class ProjectRepository extends CommonProjectRepository
             'summary_en' => $summaryEn,
             'summary_vi' => $summaryVi,
             'is_highlight' => $isHighlight,
-            'thumbnail_file_id' => $thumbnailFileId,
-            'thumbnail_file_name' => $thumbnailFileName,
-            'thumbnail_file_mime_type' => $thumbnailFileMimeType,
+            'thumbnail_file_path' => $thumbnailFilePath,
             'web_visibility' => $webVisibility,
         ]);
     }

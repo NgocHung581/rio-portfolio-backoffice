@@ -23,9 +23,7 @@ return new class() extends Migration {
             $table->text('summary_en');
             $table->text('summary_vi');
             $table->boolean('is_highlight');
-            $table->string('thumbnail_file_id');
-            $table->string('thumbnail_file_name');
-            $table->string('thumbnail_file_mime_type');
+            $table->string('thumbnail_file_path')->unique();
             $table->unsignedTinyInteger('web_visibility')->default(WebVisibility::Private);
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent();

@@ -15,9 +15,7 @@ return new class() extends Migration {
         Schema::create('media_items', function(Blueprint $table): void {
             $table->id();
             $table->foreignId('gallery_id')->constrained('galleries');
-            $table->string('file_id');
-            $table->string('file_name');
-            $table->string('file_mime_type');
+            $table->string('file_path')->unique();
             $table->string('frame', 5);
             $table->boolean('is_banner')->default(false);
             $table->dateTime('created_at')->useCurrent();

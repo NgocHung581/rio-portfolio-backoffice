@@ -1,12 +1,12 @@
+import FileDropzone from '@/@core/components/FileDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
 import FormField from '@/Components/FormField';
-import GoogleDriveImage from '@/Components/GoogleDriveImage';
+import Image from '@/Components/Image';
 import MediaType, { MediaTypeValue } from '@/enums/media-type';
 import { Option } from '@/types';
 import { Project } from '@/types/project';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm, usePage } from '@inertiajs/react';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import Alert from '@mui/material/Alert';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -17,20 +17,21 @@ import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
+import MenuItem from '@mui/material/MenuItem';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
+import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { FormEvent, Fragment, useEffect, useMemo, useState } from 'react';
-import useDrivePicker from 'react-google-drive-picker';
+import { FormEvent, Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
-import MediaItemCard from './MediaItemCard';
 import ProjectViewModal from './ProjectViewModal';
 
 type Props = {
@@ -42,23 +43,15 @@ type Props = {
 };
 
 type ProjectFormErrorKeys =
-    | `thumbnail.${string}`
+    | 'thumbnail_file'
     | `galleries.${string | number}`
     | `galleries.${string | number}.${string}`
     | `galleries.${string | number}.${string}.${string | number}`
     | `galleries.${string | number}.${string}.${string | number}.${string}`;
 
-type ProjectThumbnailData = {
-    file_id: string;
-    file_name: string;
-    file_mime_type: string;
-};
-
 type GalleryMediaItemData = {
     id: string | number;
-    file_id: string;
-    file_name: string;
-    file_mime_type: string;
+    file_url: string;
     frame: string;
     is_banner: boolean;
 };
@@ -79,7 +72,7 @@ type ProjectFormData = {
     summary_vi: string;
     is_highlight: boolean;
     web_visibility: string;
-    thumbnail: ProjectThumbnailData | undefined;
+    thumbnail_file_url: string;
     galleries: GalleryData[];
 } & Partial<Record<ProjectFormErrorKeys, string>>;
 
@@ -93,7 +86,7 @@ const ProjectForm = ({
     const { t } = useTranslation();
     const { locale } = usePage().props;
 
-    const { data, setData, errors, setError, clearErrors, post, put, processing } = useForm<ProjectFormData>({
+    const { data, setData, errors, setError, clearErrors, post, processing } = useForm<ProjectFormData>({
         category_id: project?.category_id ?? null,
         title_en: project?.title_en ?? '',
         title_vi: project?.title_vi ?? '',
@@ -103,34 +96,27 @@ const ProjectForm = ({
         summary_vi: project?.summary_vi ?? '',
         is_highlight: project?.is_highlight ?? false,
         web_visibility: (project?.web_visibility ?? webVisibilityOptions[0].value).toString(),
-        thumbnail: project
-            ? {
-                  file_id: project.thumbnail_file_id,
-                  file_name: project.thumbnail_file_name,
-                  file_mime_type: project.thumbnail_file_mime_type,
-              }
-            : undefined,
+        thumbnail_file_url: project?.thumbnail_file_url ?? '',
         galleries: project
             ? project.galleries.map<GalleryData>((gallery) => ({
                   id: gallery.id,
                   caption: gallery.caption ?? '',
                   media_items: gallery.media_items.map((mediaItem) => ({
                       id: mediaItem.id,
-                      file_id: mediaItem.file_id,
-                      file_name: mediaItem.file_name,
-                      file_mime_type: mediaItem.file_mime_type,
+                      file_url: mediaItem.file_url,
                       frame: mediaItem.frame,
                       is_banner: mediaItem.is_banner,
                   })),
               }))
             : [],
     });
+    const [uploadThumbnailPercentage, setUploadThumbnailPercentage] = useState<number | undefined>(undefined);
+    const [uploadMediaItemPercentage, setUploadMediaItemPercentage] = useState<{
+        galleryId: string | number | undefined;
+        value: number | undefined;
+    }>({ galleryId: undefined, value: undefined });
 
-    const thumbnailErrorMessage =
-        errors.thumbnail ||
-        errors['thumbnail.file_id'] ||
-        errors['thumbnail.file_name'] ||
-        errors['thumbnail.file_mime_type'];
+    const selectedCategory = categoryOptions.find((option) => option.value === data.category_id);
     const thumbnailMineTypes: string[] = import.meta.env.VITE_APP_IMAGE_MINE_TYPES?.split(',') ?? [];
     const mediaSetting = useMemo(() => {
         const foundCategory = categoryOptions.find((category) => category.value === data.category_id);
@@ -154,53 +140,25 @@ const ProjectForm = ({
         return { mineTypes: [], maxFileSize: undefined };
     }, [data.category_id]);
 
-    const [openPicker, authResponse] = useDrivePicker();
-
-    const [googleDriveAccessToken, setGoogleDriveAccessToken] = useState('');
-
-    useEffect(() => {
-        if (authResponse) {
-            setGoogleDriveAccessToken(authResponse.access_token);
-        }
-    }, [authResponse]);
-
-    const handleUploadThumbnail = () => {
-        openPicker({
-            clientId: import.meta.env.VITE_APP_GOOGLE_CLIENT_ID,
-            developerKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-            viewId: 'DOCS_IMAGES_AND_VIDEOS',
-            token: googleDriveAccessToken,
-            showUploadView: true,
-            showUploadFolders: false,
-            supportDrives: false,
-            multiselect: false,
-            disableDefaultView: false,
-            setParentFolder: import.meta.env.VITE_APP_GOOGLE_DRIVE_FOLDER_ID,
-            callbackFunction: (data) => {
-                if (data.action === 'picked') {
-                    clearErrors('thumbnail');
-
-                    const file = data.docs[0];
-
-                    if (!thumbnailMineTypes.includes(file.mimeType)) {
-                        const accept = Object.fromEntries(thumbnailMineTypes.map((mineType) => [mineType, []]));
-
-                        setError(
-                            'thumbnail',
-                            t('messages.invalid_mine_types', { mine_types: Object.keys(accept).join(', ') }),
-                        );
-
-                        return;
-                    }
-
-                    setData('thumbnail', { file_id: file.id, file_name: file.name, file_mime_type: file.mimeType });
-                }
+    const handleUploadThumbnail = (uploadedFile: File) => {
+        router.post(
+            route('files.upload'),
+            { file: uploadedFile },
+            {
+                showProgress: false,
+                preserveScroll: true,
+                preserveUrl: true,
+                preserveState: true,
+                onProgress: (e) => setUploadThumbnailPercentage(e?.percentage),
+                onStart: () => {
+                    setData('thumbnail_file_url', '');
+                    clearErrors('thumbnail_file', 'thumbnail_file_url');
+                },
+                onFinish: () => setUploadThumbnailPercentage(undefined),
+                onSuccess: (page) => setData('thumbnail_file_url', page.props.flash['fileUrl'] as string),
+                onError: (error) => toast.error(error.message),
             },
-        });
-    };
-
-    const handleDeleteThumbnail = () => {
-        setData('thumbnail', undefined);
+        );
     };
 
     const handleAddGallery = () => {
@@ -214,76 +172,43 @@ const ProjectForm = ({
         );
     };
 
-    const handleUploadGalleryMediaItems = (galleryId: string | number) => {
+    const handleUploadGalleryMediaItem = (galleryId: string | number, uploadedFile: File) => {
         const foundGalleryIndex = data.galleries.findIndex((gallery) => gallery.id === galleryId);
 
         if (foundGalleryIndex === -1) return;
 
         const foundGallery = data.galleries[foundGalleryIndex];
 
-        openPicker({
-            clientId: import.meta.env.VITE_APP_GOOGLE_CLIENT_ID,
-            developerKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-            viewId: 'DOCS_IMAGES_AND_VIDEOS',
-            token: googleDriveAccessToken,
-            showUploadView: true,
-            showUploadFolders: false,
-            supportDrives: false,
-            multiselect: true,
-            disableDefaultView: false,
-            setParentFolder: import.meta.env.VITE_APP_GOOGLE_DRIVE_FOLDER_ID,
-            callbackFunction: ({ action, docs }) => {
-                if (action === 'picked') {
-                    clearErrors(`galleries.${galleryId}.media_items`);
-
-                    const totalMediaItemsCount = foundGallery.media_items.length + docs.length;
-
-                    if (totalMediaItemsCount > maxMediaItemsCountPerGallery) {
-                        setError(
-                            `galleries.${foundGallery.id}.media_items`,
-                            t('messages.too_many_files', {
-                                max: maxMediaItemsCountPerGallery,
-                                count: maxMediaItemsCountPerGallery,
-                            }),
-                        );
-
-                        return;
-                    }
-
-                    const isValidMineType = docs.every((doc) => mediaSetting.mineTypes.includes(doc.mimeType));
-
-                    if (!isValidMineType) {
-                        const accept = Object.fromEntries(
-                            mediaSetting.mineTypes.map((mineType: string) => [mineType, []]),
-                        );
-
-                        setError(
-                            `galleries.${foundGallery.id}.media_items`,
-                            t('messages.invalid_mine_types', { mine_types: Object.keys(accept).join(', ') }),
-                        );
-
-                        return;
-                    }
-
-                    const mediaItems = [
+        router.post(
+            route('files.upload'),
+            { file: uploadedFile },
+            {
+                showProgress: false,
+                preserveScroll: true,
+                preserveUrl: true,
+                preserveState: true,
+                onProgress: (e) => setUploadMediaItemPercentage({ galleryId, value: e?.percentage }),
+                onStart: () => clearErrors(`galleries.${galleryId}.media_items`),
+                onFinish: () => setUploadMediaItemPercentage({ galleryId: undefined, value: undefined }),
+                onSuccess: (page) => {
+                    const mediaItems: GalleryMediaItemData[] = [
                         ...foundGallery.media_items,
-                        ...docs.map<GalleryMediaItemData>((doc) => ({
+                        {
                             id: uuidv4(),
-                            file_id: doc.id,
-                            file_mime_type: doc.mimeType,
-                            file_name: doc.name,
+                            file_url: page.props.flash['fileUrl'] as string,
                             frame: mediaFrameOptions[0].value,
                             is_banner: false,
-                        })),
+                        },
                     ];
 
                     setData(
                         'galleries',
                         data.galleries.with(foundGalleryIndex, { ...foundGallery, media_items: mediaItems }),
                     );
-                }
+                },
+                onError: (error) => toast.error(error.message),
             },
-        });
+        );
     };
 
     const updateGalleryMediaItemField = <T extends keyof Pick<GalleryMediaItemData, 'frame' | 'is_banner'>>(
@@ -343,13 +268,116 @@ const ProjectForm = ({
         e.preventDefault();
 
         const url = !project ? route('projects.store') : route('projects.update', project);
-        const method = !project ? post : put;
 
-        method(url, {
+        post(url, {
             onStart: () => clearErrors(),
             onSuccess: ({ props: { message } }) => toast.success(message),
             onError: (error) => toast.error(error.message),
         });
+    };
+
+    const renderMediaItemCard = (galleryId: string | number, mediaItem: GalleryMediaItemData) => {
+        const isVideo = selectedCategory?.media_type === MediaType.Video;
+        const fileUrlError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.file_url`];
+        const frameError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.frame`];
+        const isBannerError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.is_banner`];
+
+        return (
+            <Grid key={mediaItem.id} size={{ xs: 12, sm: 12 / maxMediaItemsCountPerGallery }}>
+                <Card variant="outlined" component={Stack} height={1}>
+                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <Box flex={1}>
+                            {isVideo ? (
+                                <Box
+                                    component="video"
+                                    controls
+                                    width={1}
+                                    height="auto"
+                                    sx={{ aspectRatio: mediaItem.frame }}
+                                >
+                                    <source src={mediaItem.file_url} />
+                                </Box>
+                            ) : (
+                                <Image
+                                    src={mediaItem.file_url}
+                                    containerSx={{ aspectRatio: mediaItem.frame }}
+                                    imageSx={{ width: 1, height: 1 }}
+                                />
+                            )}
+                            {!!fileUrlError && <FormHelperText error>{fileUrlError}</FormHelperText>}
+                        </Box>
+                        <Stack width={1} gap={4}>
+                            <FormField
+                                control={
+                                    <Fragment>
+                                        <Select
+                                            value={mediaItem.frame}
+                                            onChange={(e) =>
+                                                updateGalleryMediaItemField(
+                                                    galleryId,
+                                                    mediaItem.id,
+                                                    'frame',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            disabled={processing}
+                                        >
+                                            {mediaFrameOptions.map((option) => (
+                                                <MenuItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                        {!!frameError && <FormHelperText error>{frameError}</FormHelperText>}
+                                    </Fragment>
+                                }
+                                label={t('frame')}
+                                required
+                                direction="column"
+                            />
+                        </Stack>
+                    </CardContent>
+                    <CardActions sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+                        <Box>
+                            {selectedCategory?.media_type === MediaType.Image && (
+                                <FormControl>
+                                    <FormControlLabel
+                                        sx={{ m: 0 }}
+                                        control={
+                                            <Checkbox
+                                                edge="start"
+                                                size="small"
+                                                checked={mediaItem.is_banner}
+                                                onChange={(_, checked) =>
+                                                    updateGalleryMediaItemField(
+                                                        galleryId,
+                                                        mediaItem.id,
+                                                        'is_banner',
+                                                        checked,
+                                                    )
+                                                }
+                                                disabled={processing}
+                                            />
+                                        }
+                                        label={t('banner')}
+                                        slotProps={{ typography: { variant: 'body2' } }}
+                                    />
+                                    {!!isBannerError && <FormHelperText error>{isBannerError}</FormHelperText>}
+                                </FormControl>
+                            )}
+                        </Box>
+                        <Button
+                            style={{ marginLeft: 0 }}
+                            color="error"
+                            onClick={() => handleDeleteGalleryMediaItem(galleryId, mediaItem.id)}
+                            disabled={processing}
+                        >
+                            {t('delete')}
+                        </Button>
+                    </CardActions>
+                </Card>
+            </Grid>
+        );
     };
 
     return (
@@ -363,11 +391,10 @@ const ProjectForm = ({
                                 <Fragment>
                                     <Autocomplete
                                         options={categoryOptions}
-                                        value={
-                                            categoryOptions.find((option) => option.value === data.category_id) ?? null
-                                        }
+                                        value={selectedCategory ?? null}
                                         onChange={(_, selected) => setData('category_id', selected?.value ?? null)}
-                                        disabled={processing || !!data.galleries.length}
+                                        disabled={processing}
+                                        disableClearable={!!data.galleries.length}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -375,10 +402,14 @@ const ProjectForm = ({
                                                 helperText={errors.category_id}
                                             />
                                         )}
+                                        getOptionDisabled={(option) =>
+                                            !!data.galleries.length &&
+                                            option.media_type !== selectedCategory?.media_type
+                                        }
                                     />
                                     {!!data.galleries.length && (
                                         <FormHelperText>
-                                            {t('messages.cannot_change_category_due_to_gallery')}
+                                            {t('messages.only_change_category_within_classification')}
                                         </FormHelperText>
                                     )}
                                 </Fragment>
@@ -542,38 +573,60 @@ const ProjectForm = ({
                 </Grid>
             </CardContent>
             <Divider sx={{ my: 4 }} />
-            <CardHeader
-                title={t('thumbnail')}
-                action={
-                    <Stack direction="row" gap={4}>
-                        {!!data.thumbnail && (
-                            <Button color="error" onClick={handleDeleteThumbnail} disabled={processing}>
-                                {t('delete')}
-                            </Button>
-                        )}
-                        <Button
-                            startIcon={<CloudUploadOutlinedIcon />}
-                            onClick={handleUploadThumbnail}
-                            disabled={processing}
-                        >
-                            {t('upload')}
-                        </Button>
-                    </Stack>
-                }
-                slotProps={{ title: { variant: 'h3' } }}
-                sx={{ flexWrap: 'wrap', gap: 4 }}
-            />
+            <CardHeader title={t('thumbnail')} slotProps={{ title: { variant: 'h3' } }} />
             <CardContent>
-                {data.thumbnail ? (
-                    <GoogleDriveImage
-                        fileName={data.thumbnail.file_name}
-                        containerSx={{ width: { xs: '70vw', sm: '50vw', lg: '30vw' }, mx: 'auto', aspectRatio: '4/5' }}
-                        imageSx={{ aspectRatio: '4/5' }}
-                    />
-                ) : (
-                    <Alert severity="error">{t('no_files_uploaded')}</Alert>
-                )}
-                {!!thumbnailErrorMessage && <FormHelperText error>{thumbnailErrorMessage}</FormHelperText>}
+                <Stack gap={4}>
+                    <Box>
+                        <FormField
+                            control={
+                                <FileDropzone
+                                    maxFileSize={Number(import.meta.env.VITE_APP_IMAGE_SIZE_LIMIT)}
+                                    accept={Object.fromEntries(thumbnailMineTypes.map((mineType) => [mineType, []]))}
+                                    onUpload={handleUploadThumbnail}
+                                    disabled={
+                                        processing ||
+                                        uploadThumbnailPercentage !== undefined ||
+                                        uploadMediaItemPercentage.value !== undefined
+                                    }
+                                    onError={(message) => setError('thumbnail_file', message)}
+                                    hasError={!!errors.thumbnail_file}
+                                    progress={uploadThumbnailPercentage}
+                                />
+                            }
+                            label={t('file')}
+                            required
+                            direction="column"
+                        />
+                        {!!errors[`thumbnail_file`] && (
+                            <FormHelperText error>{errors[`thumbnail_file`]}</FormHelperText>
+                        )}
+                    </Box>
+                    {!!data.thumbnail_file_url && (
+                        <Stack width={{ xs: 1, sm: '50vw', lg: '25vw' }} gap={4} alignSelf="center">
+                            <Card variant="outlined" component={Stack} height={1}>
+                                <CardContent>
+                                    <Image
+                                        src={data.thumbnail_file_url}
+                                        containerSx={{ aspectRatio: '4/5' }}
+                                        imageSx={{ width: 1, height: 1 }}
+                                    />
+                                    {!!errors.thumbnail_file_url && (
+                                        <FormHelperText error>{errors.thumbnail_file_url}</FormHelperText>
+                                    )}
+                                </CardContent>
+                                <CardActions sx={{ justifyContent: 'end' }}>
+                                    <Button
+                                        color="error"
+                                        onClick={() => setData('thumbnail_file_url', '')}
+                                        disabled={processing}
+                                    >
+                                        {t('delete')}
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        </Stack>
+                    )}
+                </Stack>
             </CardContent>
             <Divider sx={{ my: 4 }} />
             <CardHeader title={t('galleries')} slotProps={{ title: { variant: 'h3' } }} />
@@ -592,83 +645,65 @@ const ProjectForm = ({
                                             gap={4}
                                         >
                                             <Typography variant="h4" fontWeight={600}>{`#${index + 1}`}</Typography>
-                                            <Stack direction="row" gap={4}>
-                                                <Button
-                                                    color="error"
-                                                    onClick={() => handleDeleteGallery(gallery.id)}
-                                                    disabled={processing}
-                                                >
-                                                    {t('delete')}
-                                                </Button>
-                                                <Button
-                                                    startIcon={<CloudUploadOutlinedIcon />}
-                                                    onClick={() => handleUploadGalleryMediaItems(gallery.id)}
-                                                    disabled={processing}
-                                                >
-                                                    {t('upload')}
-                                                </Button>
-                                            </Stack>
+                                            <Button
+                                                color="error"
+                                                onClick={() => handleDeleteGallery(gallery.id)}
+                                                disabled={processing}
+                                            >
+                                                {t('delete')}
+                                            </Button>
                                         </Stack>
                                     }
                                 />
                                 <CardContent>
-                                    {gallery.media_items.length ? (
-                                        <Stack gap={4}>
+                                    <Stack gap={4}>
+                                        <Box>
+                                            <FormField
+                                                control={
+                                                    <FileDropzone
+                                                        maxFileSize={mediaSetting?.maxFileSize}
+                                                        accept={Object.fromEntries(
+                                                            mediaSetting.mineTypes.map((mineType: string[]) => [
+                                                                mineType,
+                                                                [],
+                                                            ]),
+                                                        )}
+                                                        maxFiles={maxMediaItemsCountPerGallery}
+                                                        onUpload={(selected) =>
+                                                            handleUploadGalleryMediaItem(gallery.id, selected)
+                                                        }
+                                                        disabled={
+                                                            processing ||
+                                                            uploadThumbnailPercentage !== undefined ||
+                                                            uploadMediaItemPercentage.value !== undefined
+                                                        }
+                                                        onError={(message) =>
+                                                            setError(`galleries.${gallery.id}.media_items`, message)
+                                                        }
+                                                        hasError={!!errors[`galleries.${gallery.id}.media_items`]}
+                                                        {...(uploadMediaItemPercentage?.galleryId === gallery.id && {
+                                                            progress: uploadMediaItemPercentage.value,
+                                                        })}
+                                                    />
+                                                }
+                                                label={t('file')}
+                                                required
+                                                direction="column"
+                                            />
+                                            {!!errors[`galleries.${gallery.id}.media_items`] && (
+                                                <FormHelperText error>
+                                                    {errors[`galleries.${gallery.id}.media_items`]}
+                                                </FormHelperText>
+                                            )}
+                                        </Box>
+                                        {!!gallery.media_items.length && (
                                             <Grid container spacing={2}>
-                                                {gallery.media_items.map((mediaItem) => (
-                                                    <Grid key={mediaItem.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-                                                        <MediaItemCard
-                                                            fileName={mediaItem.file_name}
-                                                            onDelete={() =>
-                                                                handleDeleteGalleryMediaItem(gallery.id, mediaItem.id)
-                                                            }
-                                                            frame={mediaItem.frame}
-                                                            onChangeFrame={(frame) =>
-                                                                updateGalleryMediaItemField(
-                                                                    gallery.id,
-                                                                    mediaItem.id,
-                                                                    'frame',
-                                                                    frame,
-                                                                )
-                                                            }
-                                                            frameFieldError={
-                                                                errors[
-                                                                    `galleries.${gallery.id}.media_items.${mediaItem.id}.frame`
-                                                                ]
-                                                            }
-                                                            isBanner={mediaItem.is_banner}
-                                                            onChangeIsBanner={(isBanner) =>
-                                                                updateGalleryMediaItemField(
-                                                                    gallery.id,
-                                                                    mediaItem.id,
-                                                                    'is_banner',
-                                                                    isBanner,
-                                                                )
-                                                            }
-                                                            isBannerFieldError={
-                                                                errors[
-                                                                    `galleries.${gallery.id}.media_items.${mediaItem.id}.is_banner`
-                                                                ]
-                                                            }
-                                                            disabled={processing}
-                                                            isVideo={
-                                                                categoryOptions.find(
-                                                                    (category) => category.value === data.category_id,
-                                                                )?.media_type === MediaType.Video
-                                                            }
-                                                        />
-                                                    </Grid>
-                                                ))}
+                                                {gallery.media_items.map((mediaItem) =>
+                                                    renderMediaItemCard(gallery.id, mediaItem),
+                                                )}
                                             </Grid>
-                                        </Stack>
-                                    ) : (
-                                        <Alert severity="error">{t('no_files_uploaded')}</Alert>
-                                    )}
-                                    {!!errors[`galleries.${gallery.id}.media_items`] && (
-                                        <FormHelperText error>
-                                            {errors[`galleries.${gallery.id}.media_items`]}
-                                        </FormHelperText>
-                                    )}
+                                        )}
+                                    </Stack>
                                 </CardContent>
                                 <CardActions>
                                     <Box width={{ xs: 1, lg: 0.5 }}>
@@ -741,8 +776,7 @@ const ProjectForm = ({
                                 galleries: data.galleries.map((gallery) => ({
                                     caption: gallery.caption,
                                     media_items: gallery.media_items.map((mediaItem) => ({
-                                        id: mediaItem.id as number,
-                                        file_name: mediaItem.file_name,
+                                        file_url: mediaItem.file_url,
                                         frame: mediaItem.frame,
                                     })),
                                 })),

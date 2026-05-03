@@ -13,9 +13,7 @@ class MediaItem extends CommonMediaItem
 {
     protected $fillable = [
         'gallery_id',
-        'file_id',
-        'file_name',
-        'file_mime_type',
+        'file_path',
         'frame',
         'is_banner',
     ];

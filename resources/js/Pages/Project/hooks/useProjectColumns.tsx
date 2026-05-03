@@ -1,18 +1,18 @@
-import GoogleDriveImage from '@/Components/GoogleDriveImage';
 import { Project } from '@/types/project';
 import { usePage } from '@inertiajs/react';
 import { SvgIconComponent } from '@mui/icons-material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 import StarIcon from '@mui/icons-material/Star';
-import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
 import Chip, { ChipProps } from '@mui/material/Chip';
+import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useTranslation } from 'react-i18next';
 import { ProjectListPageProps } from '../List';
-import Tooltip from '@mui/material/Tooltip';
 
 const ICON_MAP: Record<string, SvgIconComponent> = {
     LockOutline: LockOutlinedIcon,
@@ -35,24 +35,13 @@ const useProjectColumns = (): MRT_ColumnDef<Project>[] => {
                                 <StarIcon color="warning" fontSize="small" />
                             </Tooltip>
                         )}
-                        <Box
-                            sx={{
-                                height: 40,
-                                width: 40,
-                                border: 1,
-                                borderColor: 'divider',
-                                p: 1,
-                                borderRadius: 1,
-                                flexShrink: 0,
-                            }}
-                        >
-                            <GoogleDriveImage
-                                fileName={row.original.thumbnail_file_name}
-                                containerSx={{ aspectRatio: '1/1' }}
-                                skeletonSx={{ borderRadius: 0.5 }}
-                                imageSx={{ aspectRatio: '1/1', borderRadius: 0.5 }}
-                            />
-                        </Box>
+                        <Avatar
+                            variant="rounded"
+                            alt={row.original[`title_${locale}`]}
+                            src={row.original.thumbnail_file_url}
+                            sx={{ border: 1, borderColor: 'divider', p: 1, bgcolor: grey[50] }}
+                            slotProps={{ img: { sx: { borderRadius: 0.5 } } }}
+                        />
                         <Typography>{row.original[`title_${locale}`]}</Typography>
                     </Stack>
                 );

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Project;
 
+use App\Constants\MediaSetting;
 use App\Models\Category;
 use App\Models\Project;
 use App\Repositories\CategoryRepository;
@@ -14,8 +15,8 @@ use Common\App\Enums\WebVisibility;
 use Common\App\Traits\NumberHelper;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 
 /**
  * The common request class for storing and updating a project.
@@ -25,8 +26,20 @@ class ProjectFormRequest extends FormRequest
     use NumberHelper;
     use ValidationHelper;
 
+    private array $validImageMimeTypes;
+
+    private array $validVideoMimeTypes;
+
+    private int $imageSizeLimit;
+
+    private int $videoSizeLimit;
+
     public function __construct(private readonly CategoryRepository $categoryRepository)
     {
+        $this->validImageMimeTypes = explode(',', config('app.image_mine_types'));
+        $this->validVideoMimeTypes = explode(',', config('app.video_mine_types'));
+        $this->imageSizeLimit = config('app.image_size_limit');
+        $this->videoSizeLimit = config('app.video_size_limit');
     }
 
     /**
@@ -84,23 +97,6 @@ class ProjectFormRequest extends FormRequest
                 'required',
                 'string',
             ],
-            'thumbnail' => [
-                'required',
-                'array',
-            ],
-            'thumbnail.file_id' => [
-                'required',
-                'string',
-            ],
-            'thumbnail.file_name' => [
-                'required',
-                'string',
-            ],
-            'thumbnail.file_mime_type' => [
-                'required',
-                'string',
-                Rule::in(explode(',', config('app.image_mine_types'))),
-            ],
             'galleries' => [
                 'nullable',
                 'array',
@@ -112,21 +108,12 @@ class ProjectFormRequest extends FormRequest
             'galleries.*.media_items' => [
                 'required',
                 'array',
-                'max:5',
+                'max:' . MediaSetting::MAX_MEDIA_COUNT_PER_GALLERY,
             ],
             'galleries.*.media_items.*' => [
                 'required',
                 'array',
             ],
-            'galleries.*.media_items.*.file_id' => [
-                'required',
-                'string',
-            ],
-            'galleries.*.media_items.*.file_name' => [
-                'required',
-                'string',
-            ],
-            'galleries.*.media_items.*.file_mime_type' => $this->getMediaItemFileMimeTypeRules(),
             'galleries.*.media_items.*.frame' => [
                 'required',
                 'string',
@@ -145,13 +132,23 @@ class ProjectFormRequest extends FormRequest
     }
 
     /**
+     * Add additional validation logic after the default validation rules are applied.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function(Validator $validator): void {
+            $this->validateThumbnailFile($validator);
+            $this->validateMediaItemFiles($validator);
+        });
+    }
+
+    /**
      * Prepare the data for validation.
      */
     protected function prepareForValidation(): void
     {
         $this->merge([
             'category_id' => $this->parseInt($this->category_id),
-            'is_highlight' => filter_var($this->is_highlight, FILTER_VALIDATE_BOOLEAN),
             'web_visibility' => $this->parseInt($this->web_visibility),
         ]);
     }
@@ -167,21 +164,98 @@ class ProjectFormRequest extends FormRequest
     }
 
     /**
-     * Returns an array of validation rules for the media item file.
+     * Validate the thumbnail file.
      */
-    private function getMediaItemFileMimeTypeRules(): array
+    private function validateThumbnailFile(Validator $validator): void
     {
-        $rules = ['required', 'string'];
-        $foundCategory = $this->categoryRepository->findById((int) $this->category_id);
-
-        if (isset($foundCategory)) {
-            if ($foundCategory->media_type === MediaType::Image) {
-                $rules[] = Rule::in(explode(',', config('app.image_mine_types')));
-            } else {
-                $rules[] = Rule::in(explode(',', config('app.video_mine_types')));
-            }
+        if (str_starts_with($this->thumbnail_file_url, config('filesystems.disks.public.url'))) {
+            return;
         }
 
-        return $rules;
+        if (empty($this->thumbnail_file_url)) {
+            $validator->errors()->add('thumbnail_file', __('validation.required'));
+
+            return;
+        }
+
+        $disk = Storage::disk('tmp');
+        $fileName = basename($this->thumbnail_file_url);
+
+        if (!$disk->exists($fileName)) {
+            $validator->errors()->add('thumbnail_file_url', __('messages')['file_uploaded_failed']);
+
+            return;
+        }
+
+        $mimeType = $disk->mimeType($fileName);
+        $size = $disk->size($fileName);
+
+        // Validate mime.
+        if (!in_array($mimeType, $this->validImageMimeTypes)) {
+            $validator->errors()->add('thumbnail_file_url', __('validation.mimetypes', [
+                'values' => implode(', ', $this->validImageMimeTypes),
+            ]));
+        }
+
+        // Validate size.
+        if ($size > $this->imageSizeLimit) {
+            $validator->errors()->add('thumbnail_file_url', __('validation.file_size_limit', [
+                'image_size_max' => $this->imageSizeLimit / (1024 ** 2),
+                'video_size_max' => $this->videoSizeLimit / (1024 ** 2),
+            ]));
+        }
+    }
+
+    /**
+     * Validate the media item files.
+     */
+    private function validateMediaItemFiles(Validator $validator): void
+    {
+        if ($validator->errors()->has('category_id')) {
+            return;
+        }
+
+        $selectedCategory = $this->categoryRepository->findById($this->category_id);
+        $rules = $selectedCategory->media_type === MediaType::Image
+                ? ['mimes' => $this->validImageMimeTypes, 'size_limit' => $this->imageSizeLimit]
+                : ['mimes' => $this->validVideoMimeTypes, 'size_limit' => $this->videoSizeLimit];
+        $disk = Storage::disk('tmp');
+
+        foreach ($this->galleries as $galleryKey => $gallery) {
+            foreach ($gallery['media_items'] as $mediaItemKey => $mediaItem) {
+                $mediaItemFileUrl = $mediaItem['file_url'];
+
+                if (str_starts_with($mediaItemFileUrl, config('filesystems.disks.public.url'))) {
+                    continue;
+                }
+
+                $errorKey = "galleries.{$galleryKey}.media_items.{$mediaItemKey}.file_url";
+                $fileName = basename($mediaItemFileUrl);
+
+                if (!$disk->exists($fileName)) {
+                    $validator->errors()->add($errorKey, __('messages')['file_uploaded_failed']);
+
+                    continue;
+                }
+
+                $mimeType = $disk->mimeType($fileName);
+                $size = $disk->size($fileName);
+
+                // Validate mime.
+                if (!in_array($mimeType, $rules['mimes'])) {
+                    $validator->errors()->add($errorKey, __('validation.mimetypes', [
+                        'values' => implode(', ', $rules['mimes']),
+                    ]));
+                }
+
+                // Validate size.
+                if ($size > $rules['size_limit']) {
+                    $validator->errors()->add($errorKey, __('validation.file_size_limit', [
+                        'image_size_max' => $this->imageSizeLimit / (1024 ** 2),
+                        'video_size_max' => $this->videoSizeLimit / (1024 ** 2),
+                    ]));
+                }
+            }
+        }
     }
 }

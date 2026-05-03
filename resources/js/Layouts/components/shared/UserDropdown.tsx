@@ -4,11 +4,15 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Fragment, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import ListItemButton from '@mui/material/ListItemButton';
 
 const UserDropdown = () => {
     const { t } = useTranslation();
@@ -58,6 +62,13 @@ const UserDropdown = () => {
                         </Stack>
                     </Stack>
                 </ListItem>
+                <Divider sx={{ my: 1 }} />
+                <ListItemButton sx={{ gap: 2 }}>
+                    <ListItemIcon>
+                        <PersonOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={t('my_profile')} />
+                </ListItemButton>
                 <Divider sx={{ my: 1 }} />
                 <ListItem>
                     <Button

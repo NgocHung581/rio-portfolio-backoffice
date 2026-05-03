@@ -126,6 +126,7 @@ return [
     'uploaded' => 'Trường :attribute tải lên thất bại.',
     'url' => 'Trường :attribute không giống với định dạng một URL.',
     'uuid' => 'Trường :attribute phải là một chuỗi UUID hợp lệ.',
+    'file_size_limit' => 'File quá lớn. Ảnh chỉ được tối đa :image_size_max MB, video tối đa :video_size_max MB.',
 
     /*
     |--------------------------------------------------------------------------

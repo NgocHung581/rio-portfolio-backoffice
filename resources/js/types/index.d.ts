@@ -9,13 +9,12 @@ export interface User {
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-    auth: {
-        user: User;
-    };
+    auth: { user: User };
     ziggy: Config & { location: string };
     message: string;
     localeOptions: Option<string>[];
     locale: 'en' | 'vi';
+    flash: Record<string, unknown>;
 };
 
 export type PropsWithChildren<T = unknown> = T & { children: ReactNode };
