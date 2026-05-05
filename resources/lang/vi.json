@@ -92,7 +92,7 @@
     "password_reset_prompt": "Nhập email của bạn và chúng tôi sẽ gửi cho bạn liên kết đặt lại mật khẩu.",
     "send": "Gửi",
     "reset_password": "Cập nhật mật khẩu",
-    "confirm_password": "Xác nhận mật khẩu",
+    "password_confirmation": "Xác nhận mật khẩu",
     "list_of_categories": "Danh sách danh mục",
     "add_a_new_category": "Thêm danh mục mới",
     "close": "Đóng",
@@ -135,6 +135,7 @@
     "no_files_uploaded": "Chưa có tệp nào được tải lên.",
     "scroll_to_top": "Cuộn lên đầu trang",
     "my_profile": "Trang cá nhân",
+    "edit_profile": "Chịnh sửa trang cá nhân",
     "messages": {
         "invalid_link": "Đường dẫn này không hợp lệ.",
         "file_too_large": "Tệp không được lớn hơn {{max}} KB.",

@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SendResetPasswordLinkRequest;
 use App\Http\Requests\Auth\StorePasswordRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
+use App\UseCases\Auth\UpdateProfileUseCase;
 use App\UseCases\User\FindUserByEmailUseCase;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
@@ -113,5 +115,19 @@ class AuthController extends Controller
         }
 
         return back()->withErrors(['message' => __($status)]);
+    }
+
+    /**
+     * Update the profile.
+     */
+    public function updateProfile(UpdateProfileRequest $request, UpdateProfileUseCase $useCase): RedirectResponse
+    {
+        $result = $useCase($request->name, $request->password);
+
+        if (!$result['success']) {
+            return back()->withErrors(['message' => $result['message']]);
+        }
+
+        return back()->with('message', $result['message']);
     }
 }

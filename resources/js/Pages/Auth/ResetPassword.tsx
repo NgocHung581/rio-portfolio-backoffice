@@ -89,7 +89,7 @@ const ResetPasswordPage = ({ email, token }: Props) => {
             />
             <TextField
                 type={showPassword ? 'text' : 'password'}
-                label={t('confirm_password')}
+                label={t('password_confirmation')}
                 name="password_confirmation"
                 value={data.password_confirmation}
                 onChange={handleChangeInput}

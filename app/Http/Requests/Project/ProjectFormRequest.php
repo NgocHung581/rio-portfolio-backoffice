@@ -12,6 +12,7 @@ use App\Traits\ValidationHelper;
 use Common\App\Enums\MediaFrame;
 use Common\App\Enums\MediaType;
 use Common\App\Enums\WebVisibility;
+use Common\App\Helpers\FileManager;
 use Common\App\Traits\NumberHelper;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -168,7 +169,7 @@ class ProjectFormRequest extends FormRequest
      */
     private function validateThumbnailFile(Validator $validator): void
     {
-        if (str_starts_with($this->thumbnail_file_url, config('filesystems.disks.public.url'))) {
+        if (str_starts_with($this->thumbnail_file_url, FileManager::getPublicStorageUrl(''))) {
             return;
         }
 
@@ -225,7 +226,7 @@ class ProjectFormRequest extends FormRequest
             foreach ($gallery['media_items'] as $mediaItemKey => $mediaItem) {
                 $mediaItemFileUrl = $mediaItem['file_url'];
 
-                if (str_starts_with($mediaItemFileUrl, config('filesystems.disks.public.url'))) {
+                if (str_starts_with($mediaItemFileUrl, FileManager::getPublicStorageUrl(''))) {
                     continue;
                 }
 

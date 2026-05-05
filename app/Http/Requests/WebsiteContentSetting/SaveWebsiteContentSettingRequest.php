@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\WebsiteContentSetting;
 
 use App\Traits\ValidationHelper;
+use Common\App\Helpers\FileManager;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -147,7 +148,7 @@ class SaveWebsiteContentSettingRequest extends FormRequest
      */
     private function validateTmpImageFile(Validator $validator, string $fileUrl, string $errorKey): void
     {
-        if (str_starts_with($fileUrl, config('filesystems.disks.public.url'))) {
+        if (str_starts_with($fileUrl, FileManager::getPublicStorageUrl(''))) {
             return;
         }
 

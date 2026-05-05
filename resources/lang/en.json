@@ -93,7 +93,7 @@
     "password_reset_prompt": "Enter your email and we will send you a password reset link.",
     "send": "Send",
     "reset_password": "Reset password",
-    "confirm_password": "Confirm password",
+    "password_confirmation": "Password confirmation",
     "list_of_categories": "List of categories",
     "add_a_new_category": "Add a new category",
     "close": "Close",
@@ -136,6 +136,7 @@
     "no_files_uploaded": "No files have been uploaded yet.",
     "scroll_to_top": "Scroll to top",
     "my_profile": "My profile",
+    "edit_profile": "Edit profile",
     "messages": {
         "invalid_link": "The link is invalid.",
         "file_too_large": "The file must not be greater than {{max}} KB.",
