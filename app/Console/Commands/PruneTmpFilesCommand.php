@@ -30,8 +30,6 @@ class PruneTmpFilesCommand extends Command
      */
     public function handle(): void
     {
-        Log::info('Pruning temporary files...');
-
         $executionDatetime = $this->parseExecutionDatetime();
         $threshold = $executionDatetime->subDay();
         $tmpDisk = Storage::disk('tmp');
