@@ -161,6 +161,7 @@
         "cannot_publish_project_without_media": "Please add at least one image or video before making the project public.",
         "must_select_category_to_add_gallery": "Please choose a category to add the gallery.",
         "only_change_category_within_classification": "You can only change the category within the same classification.",
-        "file_uploaded_failed": "Failed to upload file."
+        "file_uploaded_failed": "Failed to upload file.",
+        "media_type_locked": "The classification cannot be changed because this category already contains projects."
     }
 }
