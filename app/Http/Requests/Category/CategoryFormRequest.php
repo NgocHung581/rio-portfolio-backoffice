@@ -38,7 +38,7 @@ class CategoryFormRequest extends FormRequest
                 'integer',
                 Rule::enum(MediaType::class),
                 function(string $attribute, mixed $value, Closure $fail): void {
-                    if ($this?->category->projects->isNotEmpty() && $value !== $this?->category->media_type->value) {
+                    if ($this->category?->projects->isNotEmpty() && $value !== $this->category?->media_type->value) {
                         $fail(__('messages')['media_type_locked']);
                     }
                 },
