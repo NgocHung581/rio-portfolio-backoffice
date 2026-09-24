@@ -169,7 +169,7 @@ class ProjectFormRequest extends FormRequest
      */
     private function validateThumbnailFile(Validator $validator): void
     {
-        if (str_starts_with($this->thumbnail_file_url, FileManager::getPublicStorageUrl(''))) {
+        if (str_starts_with($this->thumbnail_file_url ?? '', FileManager::getPublicStorageUrl(''))) {
             return;
         }
 
