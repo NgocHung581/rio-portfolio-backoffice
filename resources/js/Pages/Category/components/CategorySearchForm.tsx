@@ -1,15 +1,9 @@
-import FormField from '@/Components/FormField';
 import { useForm, usePage } from '@inertiajs/react';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
+import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import useCategoryListPage from '../hooks/useCategoryListPage';
@@ -17,6 +11,9 @@ import { CategoryListPageProps, CategoryListPageQuery } from '../List';
 
 type CategorySearchFormData = Required<Pick<CategoryListPageQuery, 'keyword'>>;
 
+/**
+ * A compact search by name, placed in the toolbar of the category table.
+ */
 const CategorySearchForm = () => {
     const { t } = useTranslation();
     const { query } = usePage<CategoryListPageProps>().props;
@@ -41,49 +38,39 @@ const CategorySearchForm = () => {
     };
 
     return (
-        <Card component="form" onSubmit={handleSearch}>
-            <CardContent>
-                <Stack gap={4}>
-                    <FormField
-                        label={
-                            <Typography
-                                component="span"
-                                fontWeight="inherit"
-                                fontSize="inherit"
-                                display="flex"
-                                alignItems="center"
-                                gap={1}
-                            >
-                                {t('keyword')}
-                                <Tooltip
-                                    title={t('search_keyword_explanation', {
-                                        information: [t('name_en'), t('name_vi')].join(', '),
-                                    })}
-                                    placement="right"
-                                >
-                                    <InfoOutlinedIcon fontSize="small" />
-                                </Tooltip>
-                            </Typography>
-                        }
-                        control={
-                            <TextField
-                                name="keyword"
-                                value={data.keyword}
-                                onChange={(e) => setData('keyword', e.target.value)}
-                                disabled={processing}
-                                error={!!errors.keyword}
-                                helperText={errors.keyword}
-                            />
-                        }
-                    />
-                </Stack>
-            </CardContent>
-            <CardActions>
-                <Button type="submit" startIcon={<SearchIcon />} loading={processing}>
-                    {t('search')}
-                </Button>
-            </CardActions>
-        </Card>
+        <Stack
+            component="form"
+            role="search"
+            onSubmit={handleSearch}
+            direction="row"
+            alignItems="flex-start"
+            gap={2}
+            width={{ xs: 1, sm: 420 }}
+        >
+            <TextField
+                type="search"
+                name="keyword"
+                value={data.keyword}
+                onChange={(e) => setData('keyword', e.target.value)}
+                disabled={processing}
+                error={!!errors.keyword}
+                helperText={errors.keyword}
+                placeholder={t('search_categories_placeholder')}
+                slotProps={{
+                    htmlInput: { 'aria-label': t('search') },
+                    input: {
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon fontSize="small" />
+                            </InputAdornment>
+                        ),
+                    },
+                }}
+            />
+            <Button type="submit" variant="outlined" loading={processing} sx={{ flexShrink: 0 }}>
+                {t('search')}
+            </Button>
+        </Stack>
     );
 };
 

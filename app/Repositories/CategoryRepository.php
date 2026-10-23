@@ -17,6 +17,9 @@ use Illuminate\Support\Str;
  */
 class CategoryRepository extends CommonCategoryRepository
 {
+    // The number of project covers to preview for each category in the list.
+    private const PREVIEW_PROJECTS_LIMIT = 4;
+
     /**
      * Get a paginated list of categories.
      */
@@ -29,8 +32,26 @@ class CategoryRepository extends CommonCategoryRepository
                 isset($keyword),
                 fn ($query) => $query->whereLike('name_en', "%{$keyword}%")->orWhereLike('name_vi', "%{$keyword}%")
             )
+            ->withCount('projects')
+            ->with([
+                // A few covers per category, without the galleries a project loads by default.
+                'projects' => fn ($query) => $query
+                    ->setEagerLoads([])
+                    ->select(['id', 'category_id', 'title_en', 'title_vi', 'thumbnail_file_path'])
+                    ->orderBy('updated_at', 'desc')
+                    ->orderBy('id', 'desc')
+                    ->limit(self::PREVIEW_PROJECTS_LIMIT),
+            ])
             ->orderBy('id', 'desc')
             ->paginate($perPage->value);
+    }
+
+    /**
+     * Check if any of the given categories has projects.
+     */
+    public function hasProjects(array $ids): bool
+    {
+        return Category::query()->whereIn('id', $ids)->has('projects')->exists();
     }
 
     /**
@@ -39,6 +60,18 @@ class CategoryRepository extends CommonCategoryRepository
     public function findAll(): Collection
     {
         return Category::all();
+    }
+
+    /**
+     * Get all categories with their projects count, the ones with the most projects first.
+     */
+    public function findAllWithProjectsCount(): Collection
+    {
+        return Category::query()
+            ->withCount('projects')
+            ->orderBy('projects_count', 'desc')
+            ->orderBy('id')
+            ->get();
     }
 
     /**

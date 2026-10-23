@@ -19,6 +19,11 @@ class BulkDeleteCategoriesUseCase
 
     public function __invoke(array $ids): array
     {
+        // Projects keep a reference to their category, so a category in use cannot be deleted.
+        if ($this->categoryRepository->hasProjects($ids)) {
+            return ['success' => false, 'message' => __('messages')['cannot_delete_categories_with_projects']];
+        }
+
         try {
             $this->categoryRepository->bulkDelete($ids);
 

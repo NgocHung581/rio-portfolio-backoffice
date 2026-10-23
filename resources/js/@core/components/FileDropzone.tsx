@@ -22,7 +22,9 @@ type Props = (SingleFileProps | MultipleFilesProps) & {
     accept?: Accept;
     hasError?: boolean;
     disabled?: boolean;
-    height?: number;
+    height?: number | string;
+    /** Show a smaller prompt, for tight spaces like a grid tile. */
+    compact?: boolean;
     maxFileSize?: number;
     onError?: (message: string) => void;
     maxFiles?: number;
@@ -34,6 +36,7 @@ const FileDropzone = ({
     hasError,
     disabled,
     height = 300,
+    compact,
     maxFileSize,
     onError,
     maxFiles,
@@ -89,11 +92,31 @@ const FileDropzone = ({
             alignItems="center"
             justifyContent="center"
             height={height}
-            sx={{ borderStyle: 'dashed', cursor: disabled ? 'default' : 'pointer' }}
+            bgcolor={isDragActive ? 'action.hover' : 'background.paper'}
+            sx={{
+                borderStyle: 'dashed',
+                cursor: disabled ? 'default' : 'pointer',
+                '&:focus-visible': {
+                    outline: '2px solid var(--mui-palette-primary-main)',
+                    outlineOffset: 2,
+                },
+            }}
         >
             <input {...getInputProps()} />
             {progress !== undefined ? (
                 <CircularProgressWithLabel value={progress} />
+            ) : compact ? (
+                <Stack alignItems="center" gap={1} mx={2}>
+                    <CloudUploadOutlinedIcon color={disabled ? 'disabled' : 'action'} />
+                    <Typography
+                        variant="body2"
+                        textAlign="center"
+                        sx={{ userSelect: 'none' }}
+                        color={disabled ? 'textDisabled' : 'textSecondary'}
+                    >
+                        {t('drop_or_click_to_upload')}
+                    </Typography>
+                </Stack>
             ) : (
                 <Stack alignItems="center" gap={1} mx={2}>
                     <CloudUploadOutlinedIcon fontSize="large" color={disabled ? 'disabled' : 'action'} />

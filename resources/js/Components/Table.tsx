@@ -90,6 +90,7 @@ const Table = <TData extends MRT_RowData>({
                 </Stack>
             ),
         displayColumnDefOptions: {
+            ...rest.displayColumnDefOptions,
             'mrt-row-numbers': {
                 muiTableHeadCellProps: {
                     align: 'center',
@@ -98,6 +99,7 @@ const Table = <TData extends MRT_RowData>({
                 muiTableBodyCellProps: {
                     align: 'center',
                 },
+                ...rest.displayColumnDefOptions?.['mrt-row-numbers'],
             },
             'mrt-row-select': {
                 muiTableHeadCellProps: {
@@ -107,6 +109,7 @@ const Table = <TData extends MRT_RowData>({
                 muiTableBodyCellProps: {
                     align: 'center',
                 },
+                ...rest.displayColumnDefOptions?.['mrt-row-select'],
             },
         },
         renderEmptyRowsFallback: () => (

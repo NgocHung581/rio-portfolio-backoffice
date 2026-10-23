@@ -1,25 +1,35 @@
 import FileDropzone from '@/@core/components/FileDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
+import FormActionBar from '@/Components/FormActionBar';
 import FormField from '@/Components/FormField';
 import Image from '@/Components/Image';
+import LanguageTabs, { findLanguageToShow, OtherLanguageErrorAlerts } from '@/Components/LanguageTabs';
+import LeavePageConfirmation from '@/Components/LeavePageConfirmation';
+import SortableItem, { moveArrayItem, SortableHandle } from '@/Components/SortableItem';
+import { Language } from '@/enums/language';
 import { PageProps } from '@/types';
+import { describeFileRequirements } from '@/utils/file';
 import { Head, router, useForm } from '@inertiajs/react';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader';
 import FormHelperText from '@mui/material/FormHelperText';
+import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid2';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-type FormErrorKeys = 'avatar_file' | `partner_logos.${string}.${string}`;
+type FormErrorKeys = 'avatar_file' | 'avatar_file_url' | `partner_logos.${string}.${string}`;
 
 type PartnerLogoData = {
     id: string;
@@ -53,32 +63,55 @@ type Props = {
 };
 
 const IMAGE_SIZE_LIMIT = Number(import.meta.env.VITE_APP_IMAGE_SIZE_LIMIT);
-const VALID_IMAGE_MIME_TYPES = Object.fromEntries(
-    import.meta.env.VITE_APP_IMAGE_MINE_TYPES.split(',').map((mineType: string) => [mineType, []]),
-);
+const IMAGE_MIME_TYPES: string[] = import.meta.env.VITE_APP_IMAGE_MINE_TYPES.split(',');
+const VALID_IMAGE_MIME_TYPES = Object.fromEntries(IMAGE_MIME_TYPES.map((mineType) => [mineType, []]));
+const BANNER_TEXT_MAX_LENGTH = 200;
+const TRANSLATABLE_FIELDS = ['banner_text', 'introduction'] as const;
+const PARTNER_LOGOS_SORTABLE_GROUP = 'partner-logos';
+
+const toFormData = (setting: WebsiteContentSettingData): FormData => ({
+    phone_number: setting.phone_number,
+    email: setting.email,
+    avatar_file_url: setting.avatar.file_url,
+    introduction_en: setting.introduction_en,
+    introduction_vi: setting.introduction_vi,
+    partner_logos: setting.partner_logos.map(({ id, file_url }) => ({ id, file_url })),
+    banner_text_en: setting.banner_text_en,
+    banner_text_vi: setting.banner_text_vi,
+});
+
+const sectionHeaderProps: Pick<CardHeaderProps, 'slotProps'> = {
+    slotProps: {
+        title: { variant: 'h4', component: 'h2' },
+        subheader: { variant: 'body2' },
+    },
+};
+
+const deleteOverlayButtonSx = {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    bgcolor: 'background.paper',
+    boxShadow: 1,
+    '&:hover': { bgcolor: 'background.paper', color: 'error.main' },
+} as const;
 
 const WebsiteContentSettingPage = ({ websiteContentSetting }: PageProps<Props>) => {
     const { t } = useTranslation();
 
-    const { data, setData, errors, setError, clearErrors, processing, post, wasSuccessful } = useForm<FormData>({
-        phone_number: websiteContentSetting.phone_number,
-        email: websiteContentSetting.email,
-        avatar_file_url: websiteContentSetting.avatar.file_url,
-        introduction_en: websiteContentSetting.introduction_en,
-        introduction_vi: websiteContentSetting.introduction_vi,
-        partner_logos: websiteContentSetting.partner_logos,
-        banner_text_en: websiteContentSetting.banner_text_en,
-        banner_text_vi: websiteContentSetting.banner_text_vi,
-    });
+    const { data, setData, setDefaults, errors, setError, clearErrors, processing, post, isDirty } = useForm<FormData>(
+        toFormData(websiteContentSetting),
+    );
 
+    const [contentLanguage, setContentLanguage] = useState<Language>(Language.English);
     const [uploadAvatarPercentage, setUploadAvatarPercentage] = useState<number | undefined>(undefined);
     const [uploadPartnerLogoPercentage, setUploadPartnerLogoPercentage] = useState<number | undefined>(undefined);
 
-    useEffect(() => {
-        if (wasSuccessful) {
-            setData({ ...websiteContentSetting, avatar_file_url: websiteContentSetting.avatar.file_url });
-        }
-    }, [wasSuccessful]);
+    const errorMessages = errors as Partial<Record<string, string>>;
+    const hasErrors = Object.keys(errors).some((key) => key !== 'message');
+    const isUploading = uploadAvatarPercentage !== undefined || uploadPartnerLogoPercentage !== undefined;
+    const isPartnerLogosSortable = data.partner_logos.length > 1;
+    const imageRequirements = t('file_requirements', describeFileRequirements(IMAGE_MIME_TYPES, IMAGE_SIZE_LIMIT));
 
     const handleUploadAvatar = (uploadedFile: File) => {
         router.post(
@@ -124,272 +157,358 @@ const WebsiteContentSettingPage = ({ websiteContentSetting }: PageProps<Props>) 
         );
     };
 
+    const handleSortPartnerLogos = (fromIndex: number, toIndex: number) => {
+        setData('partner_logos', moveArrayItem(data.partner_logos, fromIndex, toIndex));
+    };
+
+    const handleDeletePartnerLogo = (partnerLogoId: string) => {
+        setData(
+            'partner_logos',
+            data.partner_logos.filter((partnerLogo) => partnerLogo.id !== partnerLogoId),
+        );
+    };
+
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         post(route('settings.websiteContent.save'), {
             onStart: () => clearErrors(),
-            onSuccess: ({ props: { message } }) => toast.success(message),
-            onError: (error) => toast.error(error.message),
+            onSuccess: (page) => {
+                // The server moves uploaded files out of temporary storage, so take the saved values as the new baseline.
+                const savedData = toFormData(page.props.websiteContentSetting as WebsiteContentSettingData);
+
+                setData(savedData);
+                setDefaults(savedData);
+                toast.success(page.props.message);
+            },
+            onError: (error) => {
+                toast.error(error.message);
+                setContentLanguage(findLanguageToShow(error, TRANSLATABLE_FIELDS, contentLanguage));
+            },
         });
+    };
+
+    const renderTranslatableFields = (language: Language) => {
+        const bannerTextKey = `banner_text_${language}` as const;
+        const introductionKey = `introduction_${language}` as const;
+        const bannerTextLength = data[bannerTextKey].length;
+
+        return (
+            <>
+                <FormField
+                    control={
+                        <TextField
+                            multiline
+                            minRows={2}
+                            value={data[bannerTextKey]}
+                            onChange={(e) => setData(bannerTextKey, e.target.value)}
+                            disabled={processing}
+                            error={!!errors[bannerTextKey] || bannerTextLength > BANNER_TEXT_MAX_LENGTH}
+                            helperText={
+                                errors[bannerTextKey] ??
+                                t('character_count', { count: bannerTextLength, max: BANNER_TEXT_MAX_LENGTH })
+                            }
+                        />
+                    }
+                    label={t('welcome_message')}
+                    required
+                    direction="column"
+                />
+                <FormField
+                    control={
+                        <TiptapEditor
+                            characterLimit={5000}
+                            value={data[introductionKey]}
+                            onChange={(content) => setData(introductionKey, content)}
+                            disabled={processing}
+                            error={!!errors[introductionKey]}
+                            helperText={errors[introductionKey]}
+                            height={400}
+                        />
+                    }
+                    label={t('introduction')}
+                    required
+                    direction="column"
+                />
+            </>
+        );
     };
 
     return (
         <Stack gap={{ xs: 4, sm: 6 }}>
             <Head title={t('website_content_setting')} />
-            <Typography variant="h1">{t('website_content_setting')}</Typography>
-            <Card component="form" onSubmit={handleSubmit} sx={{ overflow: 'visible' }}>
-                <CardContent>
-                    <Grid container spacing={4}>
-                        <Grid size={{ xs: 12, sm: 6 }}>
-                            <FormField
-                                control={
-                                    <TextField
-                                        name="email"
-                                        value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        disabled={processing}
-                                        error={!!errors.email}
-                                        helperText={errors.email}
-                                    />
-                                }
-                                label={t('email')}
-                                required
-                                direction="column"
+            <Stack component="header" gap={2}>
+                <Typography variant="h1">{t('website_content_setting')}</Typography>
+                <Typography color="textSecondary" maxWidth="65ch">
+                    {t('website_content_setting_description')}
+                </Typography>
+            </Stack>
+
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+                <LeavePageConfirmation when={isDirty && !processing} />
+                <Grid container spacing={6}>
+                    {/* Introduction: the words visitors read first, one language at a time. */}
+                    <Grid size={{ xs: 12, lg: 8 }}>
+                        <Card>
+                            <CardHeader
+                                title={t('introduction')}
+                                subheader={t('introduction_section_description')}
+                                {...sectionHeaderProps}
                             />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6 }}>
-                            <FormField
-                                control={
-                                    <TextField
-                                        name="phone_number"
-                                        value={data.phone_number}
-                                        onChange={(e) => setData('phone_number', e.target.value)}
-                                        disabled={processing}
-                                        error={!!errors.phone_number}
-                                        helperText={errors.phone_number}
-                                    />
-                                }
-                                label={t('phone_number')}
-                                required
-                                direction="column"
+                            <LanguageTabs
+                                value={contentLanguage}
+                                onChange={setContentLanguage}
+                                errors={errorMessages}
+                                fields={TRANSLATABLE_FIELDS}
                             />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6 }}>
-                            <FormField
-                                control={
-                                    <TiptapEditor
-                                        characterLimit={5000}
-                                        value={data.introduction_en}
-                                        onChange={(content) => setData('introduction_en', content)}
-                                        disabled={processing}
-                                        error={!!errors.introduction_en}
-                                        helperText={errors.introduction_en}
-                                        height={400}
+                            <CardContent>
+                                <Stack gap={6} pt={2}>
+                                    <OtherLanguageErrorAlerts
+                                        value={contentLanguage}
+                                        onChange={setContentLanguage}
+                                        errors={errorMessages}
+                                        fields={TRANSLATABLE_FIELDS}
                                     />
-                                }
-                                label={t('introduction_en')}
-                                required
-                                direction="column"
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6 }}>
-                            <FormField
-                                control={
-                                    <TiptapEditor
-                                        characterLimit={5000}
-                                        value={data.introduction_vi}
-                                        onChange={(content) => setData('introduction_vi', content)}
-                                        disabled={processing}
-                                        error={!!errors.introduction_vi}
-                                        helperText={errors.introduction_vi}
-                                        height={400}
-                                    />
-                                }
-                                label={t('introduction_vi')}
-                                required
-                                direction="column"
-                            />
-                        </Grid>
-                        <Grid size={12}>
-                            <Stack gap={4}>
-                                <Box>
-                                    <FormField
-                                        control={
+                                    <Stack key={contentLanguage} gap={6}>
+                                        {renderTranslatableFields(contentLanguage)}
+                                    </Stack>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid size={{ xs: 12, lg: 4 }}>
+                        <Stack gap={6}>
+                            {/* Avatar: previewed in the same 3:2 frame it is shown in on the website. */}
+                            <Card>
+                                <CardHeader
+                                    title={
+                                        <FormLabel required component="span" sx={{ font: 'inherit', color: 'inherit' }}>
+                                            {t('avatar')}
+                                        </FormLabel>
+                                    }
+                                    subheader={t('avatar_description')}
+                                    {...sectionHeaderProps}
+                                />
+                                <CardContent>
+                                    {data.avatar_file_url ? (
+                                        <Box
+                                            position="relative"
+                                            overflow="hidden"
+                                            borderRadius={1}
+                                            border={1}
+                                            borderColor={errors.avatar_file_url ? 'error.main' : 'divider'}
+                                        >
+                                            <Image
+                                                src={data.avatar_file_url}
+                                                alt={t('avatar')}
+                                                containerSx={{ aspectRatio: '3/2' }}
+                                                imageSx={{ width: 1, height: 1, objectFit: 'cover', display: 'block' }}
+                                            />
+                                            <Tooltip title={t('delete')}>
+                                                <IconButton
+                                                    size="small"
+                                                    aria-label={t('delete')}
+                                                    onClick={() => setData('avatar_file_url', '')}
+                                                    disabled={processing}
+                                                    sx={deleteOverlayButtonSx}
+                                                >
+                                                    <DeleteOutlineIcon fontSize="small" />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Box>
+                                    ) : (
+                                        <Box sx={{ aspectRatio: '3/2' }}>
                                             <FileDropzone
+                                                compact
+                                                height="100%"
                                                 maxFileSize={IMAGE_SIZE_LIMIT}
                                                 accept={VALID_IMAGE_MIME_TYPES}
                                                 onUpload={handleUploadAvatar}
-                                                disabled={
-                                                    processing ||
-                                                    uploadAvatarPercentage !== undefined ||
-                                                    uploadPartnerLogoPercentage !== undefined
-                                                }
+                                                disabled={processing || isUploading}
                                                 onError={(message) => setError('avatar_file', message)}
                                                 hasError={!!errors.avatar_file}
                                                 progress={uploadAvatarPercentage}
                                             />
-                                        }
-                                        label={t('avatar')}
-                                        required
-                                        direction="column"
-                                    />
-                                    {!!errors[`avatar_file`] && (
-                                        <FormHelperText error>{errors[`avatar_file`]}</FormHelperText>
+                                        </Box>
                                     )}
-                                </Box>
-                                {!!data.avatar_file_url && (
-                                    <Stack width={{ xs: 1, sm: '75vw', lg: '50vw' }} gap={4} alignSelf="center">
-                                        <Card variant="outlined">
-                                            <CardContent>
-                                                <Image
-                                                    src={data.avatar_file_url}
-                                                    containerSx={{ aspectRatio: '3/2' }}
-                                                    imageSx={{ width: 1, height: 1 }}
-                                                />
-                                                {!!errors.avatar_file_url && (
-                                                    <FormHelperText error>{errors.avatar_file_url}</FormHelperText>
-                                                )}
-                                            </CardContent>
-                                            <CardActions sx={{ justifyContent: 'end' }}>
-                                                <Button
-                                                    color="error"
+                                    {errors.avatar_file || errors.avatar_file_url ? (
+                                        <FormHelperText error>
+                                            {errors.avatar_file ?? errors.avatar_file_url}
+                                        </FormHelperText>
+                                    ) : (
+                                        !data.avatar_file_url && <FormHelperText>{imageRequirements}</FormHelperText>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            {/* Contact: how visitors reach out. */}
+                            <Card>
+                                <CardHeader
+                                    title={t('contact')}
+                                    subheader={t('contact_description')}
+                                    {...sectionHeaderProps}
+                                />
+                                <CardContent>
+                                    <Stack gap={5}>
+                                        <FormField
+                                            control={
+                                                <TextField
+                                                    type="email"
+                                                    name="email"
+                                                    autoComplete="email"
+                                                    value={data.email}
+                                                    onChange={(e) => setData('email', e.target.value)}
                                                     disabled={processing}
-                                                    onClick={() => setData('avatar_file_url', '')}
-                                                >
-                                                    {t('delete')}
-                                                </Button>
-                                            </CardActions>
-                                        </Card>
+                                                    error={!!errors.email}
+                                                    helperText={errors.email}
+                                                />
+                                            }
+                                            label={t('email')}
+                                            required
+                                            direction="column"
+                                        />
+                                        <FormField
+                                            control={
+                                                <TextField
+                                                    type="tel"
+                                                    name="phone_number"
+                                                    autoComplete="tel"
+                                                    value={data.phone_number}
+                                                    onChange={(e) => setData('phone_number', e.target.value)}
+                                                    disabled={processing}
+                                                    error={!!errors.phone_number}
+                                                    helperText={errors.phone_number ?? t('phone_number_hint')}
+                                                    slotProps={{ htmlInput: { inputMode: 'numeric' } }}
+                                                />
+                                            }
+                                            label={t('phone_number')}
+                                            required
+                                            direction="column"
+                                        />
                                     </Stack>
-                                )}
-                            </Stack>
-                        </Grid>
-                        <Grid size={12}>
-                            <Stack gap={4}>
-                                <Stack>
-                                    <FormField
-                                        control={
-                                            <FileDropzone
-                                                maxFileSize={IMAGE_SIZE_LIMIT}
-                                                accept={VALID_IMAGE_MIME_TYPES}
-                                                onUpload={(selected) => handleUploadPartnerLogo(selected)}
-                                                disabled={
-                                                    processing ||
-                                                    uploadAvatarPercentage !== undefined ||
-                                                    uploadPartnerLogoPercentage !== undefined
-                                                }
-                                                onError={(message) => setError('partner_logos', message)}
-                                                hasError={!!errors.partner_logos}
-                                                progress={uploadPartnerLogoPercentage}
-                                            />
-                                        }
-                                        label={t('partner_logos')}
-                                        direction="column"
-                                    />
-                                    {!!errors.partner_logos && (
-                                        <FormHelperText error>{errors.partner_logos}</FormHelperText>
-                                    )}
-                                </Stack>
-                                {!!data.partner_logos.length && (
-                                    <Grid container spacing={2}>
-                                        {data.partner_logos.map((partnerLogo) => (
-                                            <Grid key={partnerLogo.id} size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
-                                                <Card
-                                                    variant="outlined"
-                                                    sx={{ height: 1, display: 'flex', flexDirection: 'column' }}
-                                                >
-                                                    <CardContent sx={{ flex: 1 }}>
-                                                        <Image
-                                                            src={partnerLogo.file_url}
-                                                            containerSx={{ aspectRatio: 1, width: 1 }}
-                                                            imageSx={{ width: 1, height: 1 }}
-                                                        />
-                                                        {!!errors[`partner_logos.${partnerLogo.id}.file_url`] && (
-                                                            <FormHelperText error>
-                                                                {errors[`partner_logos.${partnerLogo.id}.file_url`]}
-                                                            </FormHelperText>
-                                                        )}
-                                                    </CardContent>
-                                                    <CardActions>
-                                                        <Button
-                                                            fullWidth
-                                                            color="error"
-                                                            disabled={processing}
-                                                            onClick={() =>
-                                                                setData(
-                                                                    'partner_logos',
-                                                                    data.partner_logos.filter(
-                                                                        (item) => item.id !== partnerLogo.id,
-                                                                    ),
-                                                                )
-                                                            }
-                                                        >
-                                                            {t('delete')}
-                                                        </Button>
-                                                    </CardActions>
-                                                </Card>
-                                            </Grid>
-                                        ))}
-                                    </Grid>
-                                )}
-                            </Stack>
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6 }}>
-                            <FormField
-                                control={
-                                    <TextField
-                                        multiline
-                                        name="banner_text_en"
-                                        value={data.banner_text_en}
-                                        onChange={(e) => setData('banner_text_en', e.target.value)}
-                                        disabled={processing}
-                                        error={!!errors.banner_text_en}
-                                        helperText={errors.banner_text_en}
-                                    />
-                                }
-                                label={t('welcome_message_en')}
-                                required
-                                direction="column"
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6 }}>
-                            <FormField
-                                control={
-                                    <TextField
-                                        multiline
-                                        name="banner_text_vi"
-                                        value={data.banner_text_vi}
-                                        onChange={(e) => setData('banner_text_vi', e.target.value)}
-                                        disabled={processing}
-                                        error={!!errors.banner_text_vi}
-                                        helperText={errors.banner_text_vi}
-                                    />
-                                }
-                                label={t('welcome_message_vi')}
-                                required
-                                direction="column"
-                            />
-                        </Grid>
+                                </CardContent>
+                            </Card>
+                        </Stack>
                     </Grid>
-                </CardContent>
-                <CardActions
-                    sx={{
-                        justifyContent: 'center',
-                        position: 'sticky',
-                        bottom: 0,
-                        backgroundColor: 'background.paper',
-                        borderTop: 1,
-                        borderColor: 'divider',
-                        borderBottomLeftRadius: 'inherit',
-                        borderBottomRightRadius: 'inherit',
-                    }}
-                >
-                    <Button type="submit" loading={processing}>
+
+                    {/* Partner logos: a logo wall, with each logo kept in its original shape. */}
+                    <Grid size={12}>
+                        <Card>
+                            <CardHeader
+                                title={t('partner_logos')}
+                                subheader={t('partner_logos_description')}
+                                action={
+                                    <Typography variant="body2" color="textSecondary" sx={{ mt: 2, mr: 2 }}>
+                                        {t('logos_count', { count: data.partner_logos.length })}
+                                    </Typography>
+                                }
+                                {...sectionHeaderProps}
+                            />
+                            <CardContent>
+                                <Box
+                                    display="grid"
+                                    gap={{ xs: 2, sm: 3 }}
+                                    p={{ xs: 2, sm: 3 }}
+                                    bgcolor="action.hover"
+                                    borderRadius={1}
+                                    sx={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}
+                                >
+                                    {data.partner_logos.map((partnerLogo, index) => {
+                                        const fileUrlError = errorMessages[`partner_logos.${partnerLogo.id}.file_url`];
+
+                                        return (
+                                            <SortableItem
+                                                key={partnerLogo.id}
+                                                group={PARTNER_LOGOS_SORTABLE_GROUP}
+                                                index={index}
+                                                onSort={handleSortPartnerLogos}
+                                                disabled={processing || !isPartnerLogosSortable}
+                                            >
+                                                <Box
+                                                    position="relative"
+                                                    bgcolor="background.paper"
+                                                    border={1}
+                                                    borderColor={fileUrlError ? 'error.main' : 'divider'}
+                                                    borderRadius={1}
+                                                >
+                                                    <Image
+                                                        src={partnerLogo.file_url}
+                                                        alt={t('partner_logo')}
+                                                        containerSx={{ aspectRatio: 1, p: 4 }}
+                                                        imageSx={{
+                                                            width: 1,
+                                                            height: 1,
+                                                            objectFit: 'contain',
+                                                            display: 'block',
+                                                        }}
+                                                        skeletonSx={{ borderRadius: 1 }}
+                                                    />
+                                                    {isPartnerLogosSortable && (
+                                                        <Box
+                                                            position="absolute"
+                                                            top={6}
+                                                            left={6}
+                                                            display="flex"
+                                                            p={0.5}
+                                                            bgcolor="background.paper"
+                                                            borderRadius="50%"
+                                                            boxShadow={1}
+                                                        >
+                                                            <SortableHandle
+                                                                group={PARTNER_LOGOS_SORTABLE_GROUP}
+                                                                disabled={processing}
+                                                            />
+                                                        </Box>
+                                                    )}
+                                                    <Tooltip title={t('delete')}>
+                                                        <IconButton
+                                                            size="small"
+                                                            aria-label={t('delete')}
+                                                            onClick={() => handleDeletePartnerLogo(partnerLogo.id)}
+                                                            disabled={processing}
+                                                            sx={deleteOverlayButtonSx}
+                                                        >
+                                                            <DeleteOutlineIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Box>
+                                                {!!fileUrlError && (
+                                                    <FormHelperText error sx={{ m: 0, mt: 1 }}>
+                                                        {fileUrlError}
+                                                    </FormHelperText>
+                                                )}
+                                            </SortableItem>
+                                        );
+                                    })}
+                                    <Box sx={{ aspectRatio: 1 }}>
+                                        <FileDropzone
+                                            compact
+                                            height="100%"
+                                            maxFileSize={IMAGE_SIZE_LIMIT}
+                                            accept={VALID_IMAGE_MIME_TYPES}
+                                            onUpload={handleUploadPartnerLogo}
+                                            disabled={processing || isUploading}
+                                            onError={(message) => setError('partner_logos', message)}
+                                            hasError={!!errors.partner_logos}
+                                            progress={uploadPartnerLogoPercentage}
+                                        />
+                                    </Box>
+                                </Box>
+                                <FormHelperText error={!!errors.partner_logos}>
+                                    {errors.partner_logos ?? imageRequirements}
+                                </FormHelperText>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+
+                <FormActionBar hasErrors={hasErrors}>
+                    <Button type="submit" loading={processing} disabled={!isDirty}>
                         {t('save')}
                     </Button>
-                </CardActions>
-            </Card>
+                </FormActionBar>
+            </Box>
         </Stack>
     );
 };

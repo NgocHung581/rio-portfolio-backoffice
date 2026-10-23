@@ -7,6 +7,9 @@ const GROUP_ATTRIBUTE = 'data-sortable-group';
 const HANDLE_ATTRIBUTE = 'data-sortable-handle';
 const TRANSITION = 'transform 200ms cubic-bezier(0.2, 0, 0, 1)';
 const CONTENT_TRANSITION = `${TRANSITION}, box-shadow 200ms`;
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+const getTransition = (transition: string) => (window.matchMedia(REDUCED_MOTION_QUERY).matches ? 'none' : transition);
 
 type Props = {
     group: string;
@@ -74,7 +77,7 @@ const SortableItem = ({ group, index, onSort, axis = 'both', disabled, children,
         content.style.transition = 'none';
         content.style.transform = `translate(${droppedRect.left - rect.left}px, ${droppedRect.top - rect.top}px)`;
         content.getBoundingClientRect();
-        content.style.transition = CONTENT_TRANSITION;
+        content.style.transition = getTransition(CONTENT_TRANSITION);
         content.style.transform = '';
     });
 
@@ -115,7 +118,7 @@ const SortableItem = ({ group, index, onSort, axis = 'both', disabled, children,
         const items = Array.from(document.querySelectorAll<HTMLElement>(`[${GROUP_ATTRIBUTE}="${group}"]`));
 
         items.forEach((item) => {
-            if (item !== nodeRef.current) item.style.transition = TRANSITION;
+            if (item !== nodeRef.current) item.style.transition = getTransition(TRANSITION);
         });
 
         sessionRef.current = {
@@ -189,6 +192,7 @@ const SortableItem = ({ group, index, onSort, axis = 'both', disabled, children,
                     sx={{
                         borderRadius: 1,
                         transition: CONTENT_TRANSITION,
+                        [`@media ${REDUCED_MOTION_QUERY}`]: { transition: 'none' },
                         ...(isDragging && { transform: 'scale(1.02)', boxShadow: 8, opacity: 0.9 }),
                     }}
                 >

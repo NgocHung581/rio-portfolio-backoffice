@@ -1,38 +1,46 @@
 import FileDropzone from '@/@core/components/FileDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
+import FormActionBar from '@/Components/FormActionBar';
 import FormField from '@/Components/FormField';
 import Image from '@/Components/Image';
-import SortableItem, { moveArrayItem, SortableHandle } from '@/Components/SortableItem';
+import LanguageTabs, { findLanguageToShow, OtherLanguageErrorAlerts } from '@/Components/LanguageTabs';
+import LeavePageConfirmation from '@/Components/LeavePageConfirmation';
+import { moveArrayItem } from '@/Components/SortableItem';
+import { Language } from '@/enums/language';
 import MediaType, { MediaTypeValue } from '@/enums/media-type';
+import WebVisibility from '@/enums/web-visibility';
 import { Option } from '@/types';
 import { Project } from '@/types/project';
+import { describeFileRequirements } from '@/utils/file';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import Alert from '@mui/material/Alert';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import CollectionsOutlinedIcon from '@mui/icons-material/CollectionsOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
+import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid2';
-import MenuItem from '@mui/material/MenuItem';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import Select from '@mui/material/Select';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { FormEvent, Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
+import { GalleryData, GalleryMediaItemData } from '../types';
+import GalleryBlock from './GalleryBlock';
 import ProjectViewModal from './ProjectViewModal';
 
 type Props = {
@@ -50,19 +58,6 @@ type ProjectFormErrorKeys =
     | `galleries.${string | number}.${string}.${string | number}`
     | `galleries.${string | number}.${string}.${string | number}.${string}`;
 
-type GalleryMediaItemData = {
-    id: string | number;
-    file_url: string;
-    frame: string;
-    is_banner: boolean;
-};
-
-type GalleryData = {
-    id: string | number;
-    media_items: GalleryMediaItemData[];
-    caption: string;
-};
-
 type ProjectFormData = {
     category_id: number | null;
     title_en: string;
@@ -77,6 +72,10 @@ type ProjectFormData = {
     galleries: GalleryData[];
 } & Partial<Record<ProjectFormErrorKeys, string>>;
 
+type TranslatableField = 'title' | 'description' | 'summary';
+
+const TRANSLATABLE_FIELDS = ['title', 'description', 'summary'] as const;
+
 const ProjectForm = ({
     categoryOptions,
     maxMediaItemsCountPerGallery,
@@ -87,7 +86,7 @@ const ProjectForm = ({
     const { t } = useTranslation();
     const { locale } = usePage().props;
 
-    const { data, setData, errors, setError, clearErrors, post, processing } = useForm<ProjectFormData>({
+    const { data, setData, errors, setError, clearErrors, post, processing, isDirty } = useForm<ProjectFormData>({
         category_id: project?.category_id ?? null,
         title_en: project?.title_en ?? '',
         title_vi: project?.title_vi ?? '',
@@ -111,6 +110,7 @@ const ProjectForm = ({
               }))
             : [],
     });
+    const [contentLanguage, setContentLanguage] = useState<Language>(Language.English);
     const [uploadThumbnailPercentage, setUploadThumbnailPercentage] = useState<number | undefined>(undefined);
     const [uploadMediaItemPercentage, setUploadMediaItemPercentage] = useState<{
         galleryId: string | number | undefined;
@@ -118,7 +118,12 @@ const ProjectForm = ({
     }>({ galleryId: undefined, value: undefined });
 
     const selectedCategory = categoryOptions.find((option) => option.value === data.category_id);
+    const isVideo = selectedCategory?.media_type === MediaType.Video;
+    const isUploading = uploadThumbnailPercentage !== undefined || uploadMediaItemPercentage.value !== undefined;
+    const errorMessages = errors as Partial<Record<string, string>>;
+    const hasErrors = Object.keys(errors).some((key) => key !== 'message');
     const thumbnailMineTypes: string[] = import.meta.env.VITE_APP_IMAGE_MINE_TYPES?.split(',') ?? [];
+    const thumbnailMaxFileSize = Number(import.meta.env.VITE_APP_IMAGE_SIZE_LIMIT);
     const mediaSetting = useMemo(() => {
         const foundCategory = categoryOptions.find((category) => category.value === data.category_id);
 
@@ -293,564 +298,432 @@ const ProjectForm = ({
         post(url, {
             onStart: () => clearErrors(),
             onSuccess: ({ props: { message } }) => toast.success(message),
-            onError: (error) => toast.error(error.message),
+            onError: (error) => {
+                toast.error(error.message);
+                setContentLanguage(findLanguageToShow(error, TRANSLATABLE_FIELDS, contentLanguage));
+            },
         });
     };
 
-    const renderMediaItemCard = (
-        galleryId: string | number,
-        mediaItem: GalleryMediaItemData,
-        index: number,
-        isSortable: boolean,
-    ) => {
-        const isVideo = selectedCategory?.media_type === MediaType.Video;
-        const fileUrlError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.file_url`];
-        const frameError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.frame`];
-        const isBannerError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.is_banner`];
-        const sortableGroup = `gallery-${galleryId}-media-items`;
+    const renderTranslatableField = (field: TranslatableField, language: Language) => {
+        const key = `${field}_${language}` as `${TranslatableField}_${Language}`;
+
+        if (field === 'title') {
+            return (
+                <FormField
+                    control={
+                        <TextField
+                            value={data[key]}
+                            onChange={(e) => setData(key, e.target.value)}
+                            disabled={processing}
+                            error={!!errors[key]}
+                            helperText={errors[key]}
+                        />
+                    }
+                    label={t('title')}
+                    required
+                    direction="column"
+                />
+            );
+        }
 
         return (
-            <Grid key={mediaItem.id} size={{ xs: 12, sm: 12 / maxMediaItemsCountPerGallery }}>
-                <SortableItem
-                    group={sortableGroup}
-                    index={index}
-                    onSort={(fromIndex, toIndex) => handleSortGalleryMediaItems(galleryId, fromIndex, toIndex)}
-                    disabled={processing || !isSortable}
-                    height={1}
-                >
-                    <Card variant="outlined" component={Stack} height={1}>
-                        <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                            <Box flex={1}>
-                                {isVideo ? (
-                                    <Box
-                                        component="video"
-                                        controls
-                                        width={1}
-                                        height="auto"
-                                        sx={{ aspectRatio: mediaItem.frame }}
-                                    >
-                                        <source src={mediaItem.file_url} />
-                                    </Box>
-                                ) : (
-                                    <Image
-                                        src={mediaItem.file_url}
-                                        containerSx={{ aspectRatio: mediaItem.frame }}
-                                        imageSx={{ width: 1, height: 1 }}
-                                    />
-                                )}
-                                {!!fileUrlError && <FormHelperText error>{fileUrlError}</FormHelperText>}
-                            </Box>
-                            <Stack width={1} gap={4}>
-                                <FormField
-                                    control={
-                                        <Fragment>
-                                            <Select
-                                                value={mediaItem.frame}
-                                                onChange={(e) =>
-                                                    updateGalleryMediaItemField(
-                                                        galleryId,
-                                                        mediaItem.id,
-                                                        'frame',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                disabled={processing}
-                                            >
-                                                {mediaFrameOptions.map((option) => (
-                                                    <MenuItem key={option.value} value={option.value}>
-                                                        {option.label}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                            {!!frameError && <FormHelperText error>{frameError}</FormHelperText>}
-                                        </Fragment>
-                                    }
-                                    label={t('frame')}
-                                    required
-                                    direction="column"
-                                />
-                            </Stack>
-                        </CardContent>
-                        <CardActions sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-                            <Stack direction="row" alignItems="center" gap={2}>
-                                {isSortable && <SortableHandle group={sortableGroup} disabled={processing} />}
-                                {selectedCategory?.media_type === MediaType.Image && (
-                                    <FormControl>
-                                        <FormControlLabel
-                                            sx={{ m: 0 }}
-                                            control={
-                                                <Checkbox
-                                                    edge="start"
-                                                    size="small"
-                                                    checked={mediaItem.is_banner}
-                                                    onChange={(_, checked) =>
-                                                        updateGalleryMediaItemField(
-                                                            galleryId,
-                                                            mediaItem.id,
-                                                            'is_banner',
-                                                            checked,
-                                                        )
-                                                    }
-                                                    disabled={processing}
-                                                />
-                                            }
-                                            label={t('banner')}
-                                            slotProps={{ typography: { variant: 'body2' } }}
-                                        />
-                                        {!!isBannerError && <FormHelperText error>{isBannerError}</FormHelperText>}
-                                    </FormControl>
-                                )}
-                            </Stack>
-                            <Button
-                                style={{ marginLeft: 0 }}
-                                color="error"
-                                onClick={() => handleDeleteGalleryMediaItem(galleryId, mediaItem.id)}
-                                disabled={processing}
-                            >
-                                {t('delete')}
-                            </Button>
-                        </CardActions>
-                    </Card>
-                </SortableItem>
-            </Grid>
+            <FormField
+                control={
+                    <TiptapEditor
+                        characterLimit={5000}
+                        value={data[key]}
+                        onChange={(content) => setData(key, content)}
+                        disabled={processing}
+                        error={!!errors[key]}
+                        helperText={errors[key]}
+                    />
+                }
+                label={t(field)}
+                required
+                direction="column"
+            />
         );
     };
 
+    const thumbnailRequirements = t(
+        'file_requirements',
+        describeFileRequirements(thumbnailMineTypes, thumbnailMaxFileSize),
+    );
+    const mediaRequirements = t(
+        'file_requirements',
+        describeFileRequirements(mediaSetting.mineTypes, mediaSetting.maxFileSize),
+    );
+
     return (
-        <Card component="form" onSubmit={handleSubmit} sx={{ overflow: 'visible', position: 'relative' }}>
-            <CardHeader title={t('basic_information')} slotProps={{ title: { variant: 'h3' } }} />
-            <CardContent>
-                <Grid container spacing={4}>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <FormField
-                            control={
-                                <Fragment>
-                                    <Autocomplete
-                                        options={categoryOptions}
-                                        value={selectedCategory ?? null}
-                                        onChange={(_, selected) => setData('category_id', selected?.value ?? null)}
-                                        disabled={processing}
-                                        disableClearable={!!data.galleries.length}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                error={!!errors.category_id}
-                                                helperText={errors.category_id}
-                                            />
-                                        )}
-                                        getOptionDisabled={(option) =>
-                                            !!data.galleries.length &&
-                                            option.media_type !== selectedCategory?.media_type
-                                        }
-                                    />
-                                    {!!data.galleries.length && (
-                                        <FormHelperText>
-                                            {t('messages.only_change_category_within_classification')}
-                                        </FormHelperText>
-                                    )}
-                                </Fragment>
-                            }
-                            direction="column"
-                            label={t('category')}
-                            required
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+            <LeavePageConfirmation when={isDirty && !processing} />
+            <Grid container spacing={6}>
+                {/* Content: one language at a time, so long rich-text fields stay readable. */}
+                <Grid size={{ xs: 12, lg: 8 }}>
+                    <Card>
+                        <CardHeader
+                            title={t('content')}
+                            subheader={t('content_description')}
+                            slotProps={{
+                                title: { variant: 'h4', component: 'h2' },
+                                subheader: { variant: 'body2' },
+                            }}
                         />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }} container spacing={4}>
-                        <Grid size={{ xs: 6 }}>
-                            <FormField
-                                control={
-                                    <Fragment>
-                                        <RadioGroup
+                        <LanguageTabs
+                            value={contentLanguage}
+                            onChange={setContentLanguage}
+                            errors={errorMessages}
+                            fields={TRANSLATABLE_FIELDS}
+                        />
+                        <CardContent>
+                            <Stack gap={6} pt={2}>
+                                <OtherLanguageErrorAlerts
+                                    value={contentLanguage}
+                                    onChange={setContentLanguage}
+                                    errors={errorMessages}
+                                    fields={TRANSLATABLE_FIELDS}
+                                />
+                                {TRANSLATABLE_FIELDS.map((field) => (
+                                    <Fragment key={`${field}_${contentLanguage}`}>
+                                        {renderTranslatableField(field, contentLanguage)}
+                                    </Fragment>
+                                ))}
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                <Grid size={{ xs: 12, lg: 4 }}>
+                    <Stack gap={6}>
+                        {/* Publishing: everything that decides where and how the project shows up. */}
+                        <Card>
+                            <CardHeader
+                                title={t('publishing')}
+                                slotProps={{ title: { variant: 'h4', component: 'h2' } }}
+                            />
+                            <CardContent>
+                                <Stack gap={5}>
+                                    <FormField
+                                        control={
+                                            <Fragment>
+                                                <Autocomplete
+                                                    options={categoryOptions}
+                                                    value={selectedCategory ?? null}
+                                                    onChange={(_, selected) =>
+                                                        setData('category_id', selected?.value ?? null)
+                                                    }
+                                                    disabled={processing}
+                                                    disableClearable={!!data.galleries.length}
+                                                    renderInput={(params) => (
+                                                        <TextField
+                                                            {...params}
+                                                            placeholder={t('select_category')}
+                                                            error={!!errors.category_id}
+                                                            helperText={errors.category_id}
+                                                        />
+                                                    )}
+                                                    getOptionDisabled={(option) =>
+                                                        !!data.galleries.length &&
+                                                        option.media_type !== selectedCategory?.media_type
+                                                    }
+                                                />
+                                                {!!data.galleries.length && (
+                                                    <FormHelperText>
+                                                        {t('messages.only_change_category_within_classification')}
+                                                    </FormHelperText>
+                                                )}
+                                            </Fragment>
+                                        }
+                                        direction="column"
+                                        label={t('category')}
+                                        required
+                                    />
+                                    <Box>
+                                        <FormLabel id="web-visibility-label" required>
+                                            {t('web_visibility')}
+                                        </FormLabel>
+                                        <ToggleButtonGroup
+                                            exclusive
+                                            fullWidth
+                                            size="small"
+                                            color="primary"
                                             value={data.web_visibility}
-                                            onChange={(_, selected) => setData('web_visibility', selected)}
-                                            sx={{ flexDirection: 'row' }}
+                                            onChange={(_, selected: string | null) =>
+                                                selected !== null && setData('web_visibility', selected)
+                                            }
+                                            disabled={processing}
+                                            aria-labelledby="web-visibility-label"
+                                            sx={{ mt: 1 }}
                                         >
                                             {webVisibilityOptions.map((option) => (
-                                                <FormControlLabel
+                                                <ToggleButton
                                                     key={option.value}
-                                                    value={option.value}
-                                                    control={<Radio />}
-                                                    label={option.label}
-                                                    disabled={processing}
-                                                />
+                                                    value={option.value.toString()}
+                                                    sx={{ gap: 2, textTransform: 'none', fontSize: 14 }}
+                                                >
+                                                    {option.value === WebVisibility.Public ? (
+                                                        <PublicOutlinedIcon fontSize="small" />
+                                                    ) : (
+                                                        <LockOutlinedIcon fontSize="small" />
+                                                    )}
+                                                    {option.label}
+                                                </ToggleButton>
                                             ))}
-                                        </RadioGroup>
-                                        {!!errors.web_visibility && (
-                                            <FormHelperText error>{errors.web_visibility}</FormHelperText>
-                                        )}
-                                    </Fragment>
-                                }
-                                label={t('web_visibility')}
-                                direction="column"
-                                required
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 6 }}>
-                            <FormField
-                                control={
-                                    <Fragment>
-                                        <Checkbox
-                                            edge="start"
+                                        </ToggleButtonGroup>
+                                        <FormHelperText error={!!errors.web_visibility}>
+                                            {errors.web_visibility ??
+                                                t(
+                                                    Number(data.web_visibility) === WebVisibility.Public
+                                                        ? 'public_description'
+                                                        : 'private_description',
+                                                )}
+                                        </FormHelperText>
+                                    </Box>
+                                    <Stack direction="row" alignItems="center" justifyContent="space-between" gap={4}>
+                                        <Box>
+                                            <FormLabel htmlFor="is-highlight" sx={{ display: 'block', mb: 0.5 }}>
+                                                {t('highlight')}
+                                            </FormLabel>
+                                            <Typography variant="body2" color="textSecondary">
+                                                {t('highlight_description')}
+                                            </Typography>
+                                        </Box>
+                                        <Switch
+                                            id="is-highlight"
                                             checked={data.is_highlight}
                                             onChange={(_, checked) => setData('is_highlight', checked)}
                                             disabled={processing}
                                         />
-                                        {!!errors.is_highlight && (
-                                            <FormHelperText error>{errors.is_highlight}</FormHelperText>
-                                        )}
-                                    </Fragment>
-                                }
-                                label={t('highlight')}
-                                direction="column"
-                                required
-                            />
-                        </Grid>
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <FormField
-                            control={
-                                <TextField
-                                    value={data.title_en}
-                                    onChange={(e) => setData('title_en', e.target.value)}
-                                    disabled={processing}
-                                    error={!!errors.title_en}
-                                    helperText={errors.title_en}
-                                />
-                            }
-                            label={t('title_en')}
-                            required
-                            direction="column"
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <FormField
-                            control={
-                                <TextField
-                                    value={data.title_vi}
-                                    onChange={(e) => setData('title_vi', e.target.value)}
-                                    disabled={processing}
-                                    error={!!errors.title_vi}
-                                    helperText={errors.title_vi}
-                                />
-                            }
-                            label={t('title_vi')}
-                            required
-                            direction="column"
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <FormField
-                            control={
-                                <TiptapEditor
-                                    characterLimit={5000}
-                                    value={data.description_en}
-                                    onChange={(content) => setData('description_en', content)}
-                                    disabled={processing}
-                                    error={!!errors.description_en}
-                                    helperText={errors.description_en}
-                                />
-                            }
-                            label={t('description_en')}
-                            required
-                            direction="column"
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <FormField
-                            control={
-                                <TiptapEditor
-                                    characterLimit={5000}
-                                    value={data.description_vi}
-                                    onChange={(content) => setData('description_vi', content)}
-                                    disabled={processing}
-                                    error={!!errors.description_vi}
-                                    helperText={errors.description_vi}
-                                />
-                            }
-                            label={t('description_vi')}
-                            required
-                            direction="column"
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <FormField
-                            control={
-                                <TiptapEditor
-                                    characterLimit={5000}
-                                    value={data.summary_en}
-                                    onChange={(content) => setData('summary_en', content)}
-                                    disabled={processing}
-                                    error={!!errors.summary_en}
-                                    helperText={errors.summary_en}
-                                />
-                            }
-                            label={t('summary_en')}
-                            required
-                            direction="column"
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <FormField
-                            control={
-                                <TiptapEditor
-                                    characterLimit={5000}
-                                    value={data.summary_vi}
-                                    onChange={(content) => setData('summary_vi', content)}
-                                    disabled={processing}
-                                    error={!!errors.summary_vi}
-                                    helperText={errors.summary_vi}
-                                />
-                            }
-                            label={t('summary_vi')}
-                            required
-                            direction="column"
-                        />
-                    </Grid>
-                </Grid>
-            </CardContent>
-            <Divider sx={{ my: 4 }} />
-            <CardHeader title={t('thumbnail')} slotProps={{ title: { variant: 'h3' } }} />
-            <CardContent>
-                <Stack gap={4}>
-                    <Box>
-                        <FormField
-                            control={
-                                <FileDropzone
-                                    maxFileSize={Number(import.meta.env.VITE_APP_IMAGE_SIZE_LIMIT)}
-                                    accept={Object.fromEntries(thumbnailMineTypes.map((mineType) => [mineType, []]))}
-                                    onUpload={handleUploadThumbnail}
-                                    disabled={
-                                        processing ||
-                                        uploadThumbnailPercentage !== undefined ||
-                                        uploadMediaItemPercentage.value !== undefined
-                                    }
-                                    onError={(message) => setError('thumbnail_file', message)}
-                                    hasError={!!errors.thumbnail_file}
-                                    progress={uploadThumbnailPercentage}
-                                />
-                            }
-                            label={t('file')}
-                            required
-                            direction="column"
-                        />
-                        {!!errors[`thumbnail_file`] && (
-                            <FormHelperText error>{errors[`thumbnail_file`]}</FormHelperText>
-                        )}
-                    </Box>
-                    {!!data.thumbnail_file_url && (
-                        <Stack width={{ xs: 1, sm: '50vw', lg: '25vw' }} gap={4} alignSelf="center">
-                            <Card variant="outlined" component={Stack} height={1}>
-                                <CardContent>
-                                    <Image
-                                        src={data.thumbnail_file_url}
-                                        containerSx={{ aspectRatio: '4/5' }}
-                                        imageSx={{ width: 1, height: 1 }}
-                                    />
-                                    {!!errors.thumbnail_file_url && (
-                                        <FormHelperText error>{errors.thumbnail_file_url}</FormHelperText>
+                                    </Stack>
+                                    {!!errors.is_highlight && (
+                                        <FormHelperText error sx={{ mt: -3 }}>
+                                            {errors.is_highlight}
+                                        </FormHelperText>
                                     )}
-                                </CardContent>
-                                <CardActions sx={{ justifyContent: 'end' }}>
-                                    <Button
-                                        color="error"
-                                        onClick={() => setData('thumbnail_file_url', '')}
-                                        disabled={processing}
-                                    >
-                                        {t('delete')}
-                                    </Button>
-                                </CardActions>
-                            </Card>
-                        </Stack>
-                    )}
-                </Stack>
-            </CardContent>
-            <Divider sx={{ my: 4 }} />
-            <CardHeader title={t('galleries')} slotProps={{ title: { variant: 'h3' } }} />
-            <CardContent>
-                {data.category_id ? (
-                    <Stack gap={4}>
-                        {data.galleries.map((gallery, index) => (
-                            <SortableItem
-                                key={gallery.id}
-                                group="galleries"
-                                index={index}
-                                onSort={handleSortGalleries}
-                                axis="y"
-                                disabled={processing || data.galleries.length < 2}
-                            >
-                                <Card variant="outlined">
-                                    <CardHeader
-                                        disableTypography
-                                        title={
-                                            <Stack
-                                                direction="row"
-                                                alignItems="center"
-                                                justifyContent="space-between"
-                                                gap={4}
-                                            >
-                                                <Stack direction="row" alignItems="center" gap={2}>
-                                                    {data.galleries.length > 1 && (
-                                                        <SortableHandle group="galleries" disabled={processing} />
-                                                    )}
-                                                    <Typography
-                                                        variant="h4"
-                                                        fontWeight={600}
-                                                    >{`#${index + 1}`}</Typography>
-                                                </Stack>
-                                                <Button
-                                                    color="error"
-                                                    onClick={() => handleDeleteGallery(gallery.id)}
+                                </Stack>
+                            </CardContent>
+                        </Card>
+
+                        {/* Thumbnail: previewed in the same 4:5 frame it is shown in on the website. */}
+                        <Card>
+                            <CardHeader
+                                title={
+                                    <FormLabel required component="span" sx={{ font: 'inherit', color: 'inherit' }}>
+                                        {t('thumbnail')}
+                                    </FormLabel>
+                                }
+                                subheader={t('thumbnail_description')}
+                                slotProps={{
+                                    title: { variant: 'h4', component: 'h2' },
+                                    subheader: { variant: 'body2' },
+                                }}
+                            />
+                            <CardContent>
+                                <Box maxWidth={{ xs: 320, lg: 1 }} mx="auto">
+                                    {data.thumbnail_file_url ? (
+                                        <Box
+                                            position="relative"
+                                            overflow="hidden"
+                                            borderRadius={1}
+                                            border={1}
+                                            borderColor={errors.thumbnail_file_url ? 'error.main' : 'divider'}
+                                        >
+                                            <Image
+                                                src={data.thumbnail_file_url}
+                                                alt={t('thumbnail')}
+                                                containerSx={{ aspectRatio: '4/5' }}
+                                                imageSx={{ width: 1, height: 1, objectFit: 'cover', display: 'block' }}
+                                            />
+                                            <Tooltip title={t('delete')}>
+                                                <IconButton
+                                                    size="small"
+                                                    aria-label={t('delete')}
+                                                    onClick={() => setData('thumbnail_file_url', '')}
                                                     disabled={processing}
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: 8,
+                                                        right: 8,
+                                                        bgcolor: 'background.paper',
+                                                        boxShadow: 1,
+                                                        '&:hover': { bgcolor: 'background.paper', color: 'error.main' },
+                                                    }}
                                                 >
-                                                    {t('delete')}
-                                                </Button>
-                                            </Stack>
-                                        }
-                                    />
-                                    <CardContent>
-                                        <Stack gap={4}>
-                                            <Box>
-                                                <FormField
-                                                    control={
-                                                        <FileDropzone
-                                                            maxFileSize={mediaSetting?.maxFileSize}
-                                                            accept={Object.fromEntries(
-                                                                mediaSetting.mineTypes.map((mineType: string[]) => [
-                                                                    mineType,
-                                                                    [],
-                                                                ]),
-                                                            )}
-                                                            maxFiles={maxMediaItemsCountPerGallery}
-                                                            onUpload={(selected) =>
-                                                                handleUploadGalleryMediaItem(gallery.id, selected)
-                                                            }
-                                                            disabled={
-                                                                processing ||
-                                                                uploadThumbnailPercentage !== undefined ||
-                                                                uploadMediaItemPercentage.value !== undefined
-                                                            }
-                                                            onError={(message) =>
-                                                                setError(`galleries.${gallery.id}.media_items`, message)
-                                                            }
-                                                            hasError={!!errors[`galleries.${gallery.id}.media_items`]}
-                                                            {...(uploadMediaItemPercentage?.galleryId ===
-                                                                gallery.id && {
-                                                                progress: uploadMediaItemPercentage.value,
-                                                            })}
-                                                        />
-                                                    }
-                                                    label={t('file')}
-                                                    required
-                                                    direction="column"
-                                                />
-                                                {!!errors[`galleries.${gallery.id}.media_items`] && (
-                                                    <FormHelperText error>
-                                                        {errors[`galleries.${gallery.id}.media_items`]}
-                                                    </FormHelperText>
+                                                    <DeleteOutlineIcon fontSize="small" />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Box>
+                                    ) : (
+                                        <Box sx={{ aspectRatio: '4/5' }}>
+                                            <FileDropzone
+                                                compact
+                                                height="100%"
+                                                maxFileSize={thumbnailMaxFileSize}
+                                                accept={Object.fromEntries(
+                                                    thumbnailMineTypes.map((mineType) => [mineType, []]),
                                                 )}
-                                            </Box>
-                                            {!!gallery.media_items.length && (
-                                                <Grid container spacing={2}>
-                                                    {gallery.media_items.map((mediaItem, mediaItemIndex) =>
-                                                        renderMediaItemCard(
-                                                            gallery.id,
-                                                            mediaItem,
-                                                            mediaItemIndex,
-                                                            gallery.media_items.length > 1,
-                                                        ),
-                                                    )}
-                                                </Grid>
-                                            )}
-                                        </Stack>
-                                    </CardContent>
-                                    <CardActions>
-                                        <Box width={{ xs: 1, lg: 0.5 }}>
-                                            <FormField
-                                                control={
-                                                    <TextField
-                                                        multiline
-                                                        maxRows={4}
-                                                        value={gallery.caption}
-                                                        onChange={(e) =>
-                                                            handleChangeGalleryCaption(gallery.id, e.target.value)
-                                                        }
-                                                        disabled={processing}
-                                                        error={!!errors[`galleries.${gallery.id}.caption`]}
-                                                        helperText={errors[`galleries.${gallery.id}.caption`]}
-                                                    />
-                                                }
-                                                label={t('caption')}
-                                                direction="column"
+                                                onUpload={handleUploadThumbnail}
+                                                disabled={processing || isUploading}
+                                                onError={(message) => setError('thumbnail_file', message)}
+                                                hasError={!!errors.thumbnail_file}
+                                                progress={uploadThumbnailPercentage}
                                             />
                                         </Box>
-                                    </CardActions>
-                                </Card>
-                            </SortableItem>
-                        ))}
-                        <Box textAlign="center">
-                            <Button
-                                variant="text"
-                                startIcon={<AddCircleOutlineOutlinedIcon />}
-                                onClick={handleAddGallery}
-                                disabled={processing}
-                            >
-                                {t('add')}
-                            </Button>
-                        </Box>
+                                    )}
+                                    {errors.thumbnail_file || errors.thumbnail_file_url ? (
+                                        <FormHelperText error>
+                                            {errors.thumbnail_file ?? errors.thumbnail_file_url}
+                                        </FormHelperText>
+                                    ) : (
+                                        !data.thumbnail_file_url && (
+                                            <FormHelperText>{thumbnailRequirements}</FormHelperText>
+                                        )
+                                    )}
+                                </Box>
+                            </CardContent>
+                        </Card>
                     </Stack>
-                ) : (
-                    <Alert severity="info">{t('messages.must_select_category_to_add_gallery')}</Alert>
-                )}
-            </CardContent>
-            <CardActions
-                sx={{
-                    justifyContent: 'space-between',
-                    position: 'sticky',
-                    bottom: 0,
-                    backgroundColor: 'background.paper',
-                    borderTop: 1,
-                    borderColor: 'divider',
-                    borderBottomLeftRadius: 'inherit',
-                    borderBottomRightRadius: 'inherit',
-                }}
-            >
-                <Button variant="outlined" LinkComponent={Link} href={route('projects.index')} disabled={processing}>
-                    {t('cancel')}
-                </Button>
-                <Stack direction="row" alignItems="center" gap={2}>
-                    {!!data.category_id && (
-                        <ProjectViewModal
-                            renderTrigger={({ openModal }) => (
-                                <Button variant="outlined" color="secondary" onClick={openModal} disabled={processing}>
-                                    {t('preview')}
-                                </Button>
-                            )}
-                            projectInfo={{
-                                title_en: data.title_en,
-                                title_vi: data.title_vi,
-                                description_en: data.description_en,
-                                description_vi: data.description_vi,
-                                summary_en: data.summary_en,
-                                summary_vi: data.summary_vi,
-                                galleries: data.galleries.map((gallery) => ({
-                                    caption: gallery.caption,
-                                    media_items: gallery.media_items.map((mediaItem) => ({
-                                        file_url: mediaItem.file_url,
-                                        frame: mediaItem.frame,
-                                    })),
-                                })),
-                                mediaType: categoryOptions.find((category) => category.value === data.category_id)!
-                                    .media_type,
+                </Grid>
+
+                {/* Galleries: each gallery is one row of media on the project page. */}
+                <Grid size={12}>
+                    <Card>
+                        <CardHeader
+                            title={t('galleries')}
+                            subheader={t('galleries_description', { max: maxMediaItemsCountPerGallery })}
+                            slotProps={{
+                                title: { variant: 'h4', component: 'h2' },
+                                subheader: { variant: 'body2' },
                             }}
-                            locale={locale}
                         />
-                    )}
-                    <Button type="submit" loading={processing}>
-                        {t('save')}
+                        <CardContent>
+                            {data.category_id && data.galleries.length ? (
+                                <Stack gap={4}>
+                                    {data.galleries.map((gallery, index) => (
+                                        <GalleryBlock
+                                            key={gallery.id}
+                                            gallery={gallery}
+                                            index={index}
+                                            isSortable={data.galleries.length > 1}
+                                            isVideo={isVideo}
+                                            maxMediaItemsCount={maxMediaItemsCountPerGallery}
+                                            frameOptions={mediaFrameOptions}
+                                            accept={Object.fromEntries(
+                                                mediaSetting.mineTypes.map((mineType: string) => [mineType, []]),
+                                            )}
+                                            maxFileSize={mediaSetting.maxFileSize}
+                                            requirements={mediaRequirements}
+                                            disabled={processing}
+                                            isUploadDisabled={processing || isUploading}
+                                            uploadProgress={
+                                                uploadMediaItemPercentage.galleryId === gallery.id
+                                                    ? uploadMediaItemPercentage.value
+                                                    : undefined
+                                            }
+                                            getError={(key) => errorMessages[key]}
+                                            onSort={handleSortGalleries}
+                                            onDelete={() => handleDeleteGallery(gallery.id)}
+                                            onUpload={(file) => handleUploadGalleryMediaItem(gallery.id, file)}
+                                            onUploadError={(message) =>
+                                                setError(`galleries.${gallery.id}.media_items`, message)
+                                            }
+                                            onSortMediaItems={(fromIndex, toIndex) =>
+                                                handleSortGalleryMediaItems(gallery.id, fromIndex, toIndex)
+                                            }
+                                            onChangeMediaItem={(mediaItemId, field, value) =>
+                                                updateGalleryMediaItemField(gallery.id, mediaItemId, field, value)
+                                            }
+                                            onDeleteMediaItem={(mediaItemId) =>
+                                                handleDeleteGalleryMediaItem(gallery.id, mediaItemId)
+                                            }
+                                            onChangeCaption={(caption) =>
+                                                handleChangeGalleryCaption(gallery.id, caption)
+                                            }
+                                        />
+                                    ))}
+                                    <Button
+                                        variant="outlined"
+                                        size="large"
+                                        startIcon={<AddOutlinedIcon />}
+                                        onClick={handleAddGallery}
+                                        disabled={processing}
+                                        sx={{ borderStyle: 'dashed', '&:hover': { borderStyle: 'dashed' } }}
+                                    >
+                                        {t('add_gallery')}
+                                    </Button>
+                                </Stack>
+                            ) : (
+                                <Stack
+                                    alignItems="center"
+                                    textAlign="center"
+                                    gap={3}
+                                    py={10}
+                                    px={4}
+                                    bgcolor="action.hover"
+                                    borderRadius={1}
+                                >
+                                    <CollectionsOutlinedIcon fontSize="large" color="action" />
+                                    <Typography color="textSecondary" maxWidth={420}>
+                                        {data.category_id
+                                            ? t('no_galleries_yet')
+                                            : t('messages.must_select_category_to_add_gallery')}
+                                    </Typography>
+                                    {!!data.category_id && (
+                                        <Button
+                                            startIcon={<AddOutlinedIcon />}
+                                            onClick={handleAddGallery}
+                                            disabled={processing}
+                                        >
+                                            {t('add_gallery')}
+                                        </Button>
+                                    )}
+                                </Stack>
+                            )}
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+
+            <FormActionBar
+                hasErrors={hasErrors}
+                start={
+                    <Button variant="text" LinkComponent={Link} href={route('projects.index')} disabled={processing}>
+                        {t('cancel')}
                     </Button>
-                </Stack>
-            </CardActions>
-        </Card>
+                }
+            >
+                {!!selectedCategory && (
+                    <ProjectViewModal
+                        renderTrigger={({ openModal }) => (
+                            <Button variant="outlined" onClick={openModal} disabled={processing}>
+                                {t('preview')}
+                            </Button>
+                        )}
+                        projectInfo={{
+                            title_en: data.title_en,
+                            title_vi: data.title_vi,
+                            description_en: data.description_en,
+                            description_vi: data.description_vi,
+                            summary_en: data.summary_en,
+                            summary_vi: data.summary_vi,
+                            galleries: data.galleries.map((gallery) => ({
+                                caption: gallery.caption,
+                                media_items: gallery.media_items.map((mediaItem) => ({
+                                    file_url: mediaItem.file_url,
+                                    frame: mediaItem.frame,
+                                })),
+                            })),
+                            mediaType: selectedCategory.media_type,
+                        }}
+                        locale={locale}
+                    />
+                )}
+                <Button type="submit" loading={processing}>
+                    {t('save')}
+                </Button>
+            </FormActionBar>
+        </Box>
     );
 };
 
