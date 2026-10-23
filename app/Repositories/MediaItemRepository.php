@@ -20,24 +20,27 @@ class MediaItemRepository extends CommonMediaItemRepository
         int $galleryId,
         string $filePath,
         MediaFrame $frame,
-        bool $isBanner
+        bool $isBanner,
+        int $displayOrder
     ): MediaItem {
         return MediaItem::query()->create([
             'gallery_id' => $galleryId,
             'file_path' => $filePath,
             'frame' => $frame,
             'is_banner' => $isBanner,
+            'display_order' => $displayOrder,
         ]);
     }
 
     /**
      * Update a media item by ID.
      */
-    public function update(int $id, MediaFrame $frame, bool $isBanner): int
+    public function update(int $id, MediaFrame $frame, bool $isBanner, int $displayOrder): int
     {
         return MediaItem::query()->where('id', $id)->update([
             'frame' => $frame,
             'is_banner' => $isBanner,
+            'display_order' => $displayOrder,
         ]);
     }
 

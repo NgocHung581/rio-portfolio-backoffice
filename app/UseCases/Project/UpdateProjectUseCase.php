@@ -45,6 +45,8 @@ class UpdateProjectUseCase
         try {
             $deletedTmpFilePaths = [];
             $deletedPublicFilePaths = [];
+            // The display order of galleries and media items follows their order in the request, starting from 1.
+            $galleries = array_values($galleries);
 
             DB::beginTransaction();
 
@@ -79,10 +81,10 @@ class UpdateProjectUseCase
             $newGalleryIds = array_diff(array_column($galleries, 'id'), $originalGalleryIds);
             $newGalleries = array_filter($galleries, fn ($gallery) => in_array($gallery['id'], $newGalleryIds));
 
-            foreach ($newGalleries as $gallery) {
-                $newGallery = $this->galleryRepository->create($project->id, $gallery['caption']);
+            foreach ($newGalleries as $galleryIndex => $gallery) {
+                $newGallery = $this->galleryRepository->create($project->id, $gallery['caption'], $galleryIndex + 1);
 
-                foreach ($gallery['media_items'] as $mediaItem) {
+                foreach (array_values($gallery['media_items']) as $mediaItemIndex => $mediaItem) {
                     $mediaItemFileUrl = $mediaItem['file_url'];
                     $mediaItemFileName = basename($mediaItemFileUrl);
                     $mediaItemFilePath = FileManager::moveTmpToPublic(
@@ -95,7 +97,8 @@ class UpdateProjectUseCase
                         $newGallery->id,
                         $mediaItemFilePath,
                         MediaFrame::from($mediaItem['frame']),
-                        $mediaItem['is_banner']
+                        $mediaItem['is_banner'],
+                        $mediaItemIndex + 1
                     );
                 }
             }
@@ -119,21 +122,22 @@ class UpdateProjectUseCase
             $updatedGalleryIds = array_intersect(array_column($galleries, 'id'), $originalGalleryIds);
             $updatedGalleries = array_filter($galleries, fn ($gallery) => in_array($gallery['id'], $updatedGalleryIds));
 
-            foreach ($updatedGalleries as $gallery) {
+            foreach ($updatedGalleries as $galleryIndex => $gallery) {
                 $galleryId = (int) $gallery['id'];
+                $mediaItems = array_values($gallery['media_items']);
                 $originalMediaItems = $project->galleries->firstWhere('id', $galleryId)->mediaItems;
                 $originalMediaItemIds = $originalMediaItems->pluck('id')->all();
 
-                $this->galleryRepository->update($galleryId, $gallery['caption']);
+                $this->galleryRepository->update($galleryId, $gallery['caption'], $galleryIndex + 1);
 
                 // Case: Add new media items.
-                $newMediaItemIds = array_diff(array_column($gallery['media_items'], 'id'), $originalMediaItemIds);
+                $newMediaItemIds = array_diff(array_column($mediaItems, 'id'), $originalMediaItemIds);
                 $newMediaItems = array_filter(
-                    $gallery['media_items'],
+                    $mediaItems,
                     fn ($mediaItem) => in_array($mediaItem['id'], $newMediaItemIds)
                 );
 
-                foreach ($newMediaItems as $mediaItem) {
+                foreach ($newMediaItems as $mediaItemIndex => $mediaItem) {
                     $mediaItemFileUrl = $mediaItem['file_url'];
                     $mediaItemFileName = basename($mediaItemFileUrl);
                     $mediaItemFilePath = FileManager::moveTmpToPublic(
@@ -146,12 +150,13 @@ class UpdateProjectUseCase
                         $galleryId,
                         $mediaItemFilePath,
                         MediaFrame::from($mediaItem['frame']),
-                        $mediaItem['is_banner']
+                        $mediaItem['is_banner'],
+                        $mediaItemIndex + 1
                     );
                 }
 
                 // Case: Delete media items.
-                $deletedMediaItemIds = array_diff($originalMediaItemIds, array_column($gallery['media_items'], 'id'));
+                $deletedMediaItemIds = array_diff($originalMediaItemIds, array_column($mediaItems, 'id'));
                 $deletedMediaItems = $originalMediaItems->whereIn('id', $deletedMediaItemIds);
                 $deletedMediaItemFilePaths = $deletedMediaItems->pluck('file_path')->toArray();
 
@@ -160,19 +165,20 @@ class UpdateProjectUseCase
                 $this->mediaItemRepository->bulkDelete($deletedMediaItemIds);
 
                 // Case: Update media items.
-                $updatedMediaItemIds = array_intersect(array_column($gallery['media_items'], 'id'), $originalMediaItemIds);
+                $updatedMediaItemIds = array_intersect(array_column($mediaItems, 'id'), $originalMediaItemIds);
                 $updatedMediaItems = array_filter(
-                    $gallery['media_items'],
+                    $mediaItems,
                     fn ($mediaItem) => in_array($mediaItem['id'], $updatedMediaItemIds)
                 );
 
-                foreach ($updatedMediaItems as $mediaItem) {
+                foreach ($updatedMediaItems as $mediaItemIndex => $mediaItem) {
                     $mediaItemId = (int) $mediaItem['id'];
 
                     $this->mediaItemRepository->update(
                         $mediaItemId,
                         MediaFrame::from($mediaItem['frame']),
-                        $mediaItem['is_banner']
+                        $mediaItem['is_banner'],
+                        $mediaItemIndex + 1
                     );
                 }
             }

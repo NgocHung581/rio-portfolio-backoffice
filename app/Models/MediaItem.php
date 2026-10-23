@@ -16,5 +16,6 @@ class MediaItem extends CommonMediaItem
         'file_path',
         'frame',
         'is_banner',
+        'display_order',
     ];
 }

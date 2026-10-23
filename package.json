@@ -49,6 +49,7 @@
         "i18next-browser-languagedetector": "^8.0.2",
         "i18next-http-backend": "^3.0.2",
         "material-react-table": "^3.2.0",
+        "react-draggable": "^4.7.2",
         "react-dropzone": "^14.3.5",
         "react-i18next": "^15.4.0",
         "react-inner-image-zoom": "^4.0.1",

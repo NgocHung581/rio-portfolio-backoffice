@@ -2,6 +2,7 @@ import FileDropzone from '@/@core/components/FileDropzone';
 import TiptapEditor from '@/@core/components/TiptapEditor';
 import FormField from '@/Components/FormField';
 import Image from '@/Components/Image';
+import SortableItem, { moveArrayItem, SortableHandle } from '@/Components/SortableItem';
 import MediaType, { MediaTypeValue } from '@/enums/media-type';
 import { Option } from '@/types';
 import { Project } from '@/types/project';
@@ -172,6 +173,26 @@ const ProjectForm = ({
         );
     };
 
+    const handleSortGalleries = (fromIndex: number, toIndex: number) => {
+        setData('galleries', moveArrayItem(data.galleries, fromIndex, toIndex));
+    };
+
+    const handleSortGalleryMediaItems = (galleryId: string | number, fromIndex: number, toIndex: number) => {
+        const foundGalleryIndex = data.galleries.findIndex((gallery) => gallery.id === galleryId);
+
+        if (foundGalleryIndex === -1) return;
+
+        const foundGallery = data.galleries[foundGalleryIndex];
+
+        setData(
+            'galleries',
+            data.galleries.with(foundGalleryIndex, {
+                ...foundGallery,
+                media_items: moveArrayItem(foundGallery.media_items, fromIndex, toIndex),
+            }),
+        );
+    };
+
     const handleUploadGalleryMediaItem = (galleryId: string | number, uploadedFile: File) => {
         const foundGalleryIndex = data.galleries.findIndex((gallery) => gallery.id === galleryId);
 
@@ -276,106 +297,121 @@ const ProjectForm = ({
         });
     };
 
-    const renderMediaItemCard = (galleryId: string | number, mediaItem: GalleryMediaItemData) => {
+    const renderMediaItemCard = (
+        galleryId: string | number,
+        mediaItem: GalleryMediaItemData,
+        index: number,
+        isSortable: boolean,
+    ) => {
         const isVideo = selectedCategory?.media_type === MediaType.Video;
         const fileUrlError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.file_url`];
         const frameError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.frame`];
         const isBannerError = errors[`galleries.${galleryId}.media_items.${mediaItem.id}.is_banner`];
+        const sortableGroup = `gallery-${galleryId}-media-items`;
 
         return (
             <Grid key={mediaItem.id} size={{ xs: 12, sm: 12 / maxMediaItemsCountPerGallery }}>
-                <Card variant="outlined" component={Stack} height={1}>
-                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <Box flex={1}>
-                            {isVideo ? (
-                                <Box
-                                    component="video"
-                                    controls
-                                    width={1}
-                                    height="auto"
-                                    sx={{ aspectRatio: mediaItem.frame }}
-                                >
-                                    <source src={mediaItem.file_url} />
-                                </Box>
-                            ) : (
-                                <Image
-                                    src={mediaItem.file_url}
-                                    containerSx={{ aspectRatio: mediaItem.frame }}
-                                    imageSx={{ width: 1, height: 1 }}
-                                />
-                            )}
-                            {!!fileUrlError && <FormHelperText error>{fileUrlError}</FormHelperText>}
-                        </Box>
-                        <Stack width={1} gap={4}>
-                            <FormField
-                                control={
-                                    <Fragment>
-                                        <Select
-                                            value={mediaItem.frame}
-                                            onChange={(e) =>
-                                                updateGalleryMediaItemField(
-                                                    galleryId,
-                                                    mediaItem.id,
-                                                    'frame',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            disabled={processing}
-                                        >
-                                            {mediaFrameOptions.map((option) => (
-                                                <MenuItem key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                        {!!frameError && <FormHelperText error>{frameError}</FormHelperText>}
-                                    </Fragment>
-                                }
-                                label={t('frame')}
-                                required
-                                direction="column"
-                            />
-                        </Stack>
-                    </CardContent>
-                    <CardActions sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-                        <Box>
-                            {selectedCategory?.media_type === MediaType.Image && (
-                                <FormControl>
-                                    <FormControlLabel
-                                        sx={{ m: 0 }}
-                                        control={
-                                            <Checkbox
-                                                edge="start"
-                                                size="small"
-                                                checked={mediaItem.is_banner}
-                                                onChange={(_, checked) =>
+                <SortableItem
+                    group={sortableGroup}
+                    index={index}
+                    onSort={(fromIndex, toIndex) => handleSortGalleryMediaItems(galleryId, fromIndex, toIndex)}
+                    disabled={processing || !isSortable}
+                    height={1}
+                >
+                    <Card variant="outlined" component={Stack} height={1}>
+                        <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <Box flex={1}>
+                                {isVideo ? (
+                                    <Box
+                                        component="video"
+                                        controls
+                                        width={1}
+                                        height="auto"
+                                        sx={{ aspectRatio: mediaItem.frame }}
+                                    >
+                                        <source src={mediaItem.file_url} />
+                                    </Box>
+                                ) : (
+                                    <Image
+                                        src={mediaItem.file_url}
+                                        containerSx={{ aspectRatio: mediaItem.frame }}
+                                        imageSx={{ width: 1, height: 1 }}
+                                    />
+                                )}
+                                {!!fileUrlError && <FormHelperText error>{fileUrlError}</FormHelperText>}
+                            </Box>
+                            <Stack width={1} gap={4}>
+                                <FormField
+                                    control={
+                                        <Fragment>
+                                            <Select
+                                                value={mediaItem.frame}
+                                                onChange={(e) =>
                                                     updateGalleryMediaItemField(
                                                         galleryId,
                                                         mediaItem.id,
-                                                        'is_banner',
-                                                        checked,
+                                                        'frame',
+                                                        e.target.value,
                                                     )
                                                 }
                                                 disabled={processing}
-                                            />
-                                        }
-                                        label={t('banner')}
-                                        slotProps={{ typography: { variant: 'body2' } }}
-                                    />
-                                    {!!isBannerError && <FormHelperText error>{isBannerError}</FormHelperText>}
-                                </FormControl>
-                            )}
-                        </Box>
-                        <Button
-                            style={{ marginLeft: 0 }}
-                            color="error"
-                            onClick={() => handleDeleteGalleryMediaItem(galleryId, mediaItem.id)}
-                            disabled={processing}
-                        >
-                            {t('delete')}
-                        </Button>
-                    </CardActions>
-                </Card>
+                                            >
+                                                {mediaFrameOptions.map((option) => (
+                                                    <MenuItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                            {!!frameError && <FormHelperText error>{frameError}</FormHelperText>}
+                                        </Fragment>
+                                    }
+                                    label={t('frame')}
+                                    required
+                                    direction="column"
+                                />
+                            </Stack>
+                        </CardContent>
+                        <CardActions sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+                            <Stack direction="row" alignItems="center" gap={2}>
+                                {isSortable && <SortableHandle group={sortableGroup} disabled={processing} />}
+                                {selectedCategory?.media_type === MediaType.Image && (
+                                    <FormControl>
+                                        <FormControlLabel
+                                            sx={{ m: 0 }}
+                                            control={
+                                                <Checkbox
+                                                    edge="start"
+                                                    size="small"
+                                                    checked={mediaItem.is_banner}
+                                                    onChange={(_, checked) =>
+                                                        updateGalleryMediaItemField(
+                                                            galleryId,
+                                                            mediaItem.id,
+                                                            'is_banner',
+                                                            checked,
+                                                        )
+                                                    }
+                                                    disabled={processing}
+                                                />
+                                            }
+                                            label={t('banner')}
+                                            slotProps={{ typography: { variant: 'body2' } }}
+                                        />
+                                        {!!isBannerError && <FormHelperText error>{isBannerError}</FormHelperText>}
+                                    </FormControl>
+                                )}
+                            </Stack>
+                            <Button
+                                style={{ marginLeft: 0 }}
+                                color="error"
+                                onClick={() => handleDeleteGalleryMediaItem(galleryId, mediaItem.id)}
+                                disabled={processing}
+                            >
+                                {t('delete')}
+                            </Button>
+                        </CardActions>
+                    </Card>
+                </SortableItem>
             </Grid>
         );
     };
@@ -634,99 +670,122 @@ const ProjectForm = ({
                 {data.category_id ? (
                     <Stack gap={4}>
                         {data.galleries.map((gallery, index) => (
-                            <Card key={gallery.id} variant="outlined">
-                                <CardHeader
-                                    disableTypography
-                                    title={
-                                        <Stack
-                                            direction="row"
-                                            alignItems="center"
-                                            justifyContent="space-between"
-                                            gap={4}
-                                        >
-                                            <Typography variant="h4" fontWeight={600}>{`#${index + 1}`}</Typography>
-                                            <Button
-                                                color="error"
-                                                onClick={() => handleDeleteGallery(gallery.id)}
-                                                disabled={processing}
+                            <SortableItem
+                                key={gallery.id}
+                                group="galleries"
+                                index={index}
+                                onSort={handleSortGalleries}
+                                axis="y"
+                                disabled={processing || data.galleries.length < 2}
+                            >
+                                <Card variant="outlined">
+                                    <CardHeader
+                                        disableTypography
+                                        title={
+                                            <Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                gap={4}
                                             >
-                                                {t('delete')}
-                                            </Button>
+                                                <Stack direction="row" alignItems="center" gap={2}>
+                                                    {data.galleries.length > 1 && (
+                                                        <SortableHandle group="galleries" disabled={processing} />
+                                                    )}
+                                                    <Typography
+                                                        variant="h4"
+                                                        fontWeight={600}
+                                                    >{`#${index + 1}`}</Typography>
+                                                </Stack>
+                                                <Button
+                                                    color="error"
+                                                    onClick={() => handleDeleteGallery(gallery.id)}
+                                                    disabled={processing}
+                                                >
+                                                    {t('delete')}
+                                                </Button>
+                                            </Stack>
+                                        }
+                                    />
+                                    <CardContent>
+                                        <Stack gap={4}>
+                                            <Box>
+                                                <FormField
+                                                    control={
+                                                        <FileDropzone
+                                                            maxFileSize={mediaSetting?.maxFileSize}
+                                                            accept={Object.fromEntries(
+                                                                mediaSetting.mineTypes.map((mineType: string[]) => [
+                                                                    mineType,
+                                                                    [],
+                                                                ]),
+                                                            )}
+                                                            maxFiles={maxMediaItemsCountPerGallery}
+                                                            onUpload={(selected) =>
+                                                                handleUploadGalleryMediaItem(gallery.id, selected)
+                                                            }
+                                                            disabled={
+                                                                processing ||
+                                                                uploadThumbnailPercentage !== undefined ||
+                                                                uploadMediaItemPercentage.value !== undefined
+                                                            }
+                                                            onError={(message) =>
+                                                                setError(`galleries.${gallery.id}.media_items`, message)
+                                                            }
+                                                            hasError={!!errors[`galleries.${gallery.id}.media_items`]}
+                                                            {...(uploadMediaItemPercentage?.galleryId ===
+                                                                gallery.id && {
+                                                                progress: uploadMediaItemPercentage.value,
+                                                            })}
+                                                        />
+                                                    }
+                                                    label={t('file')}
+                                                    required
+                                                    direction="column"
+                                                />
+                                                {!!errors[`galleries.${gallery.id}.media_items`] && (
+                                                    <FormHelperText error>
+                                                        {errors[`galleries.${gallery.id}.media_items`]}
+                                                    </FormHelperText>
+                                                )}
+                                            </Box>
+                                            {!!gallery.media_items.length && (
+                                                <Grid container spacing={2}>
+                                                    {gallery.media_items.map((mediaItem, mediaItemIndex) =>
+                                                        renderMediaItemCard(
+                                                            gallery.id,
+                                                            mediaItem,
+                                                            mediaItemIndex,
+                                                            gallery.media_items.length > 1,
+                                                        ),
+                                                    )}
+                                                </Grid>
+                                            )}
                                         </Stack>
-                                    }
-                                />
-                                <CardContent>
-                                    <Stack gap={4}>
-                                        <Box>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Box width={{ xs: 1, lg: 0.5 }}>
                                             <FormField
                                                 control={
-                                                    <FileDropzone
-                                                        maxFileSize={mediaSetting?.maxFileSize}
-                                                        accept={Object.fromEntries(
-                                                            mediaSetting.mineTypes.map((mineType: string[]) => [
-                                                                mineType,
-                                                                [],
-                                                            ]),
-                                                        )}
-                                                        maxFiles={maxMediaItemsCountPerGallery}
-                                                        onUpload={(selected) =>
-                                                            handleUploadGalleryMediaItem(gallery.id, selected)
+                                                    <TextField
+                                                        multiline
+                                                        maxRows={4}
+                                                        value={gallery.caption}
+                                                        onChange={(e) =>
+                                                            handleChangeGalleryCaption(gallery.id, e.target.value)
                                                         }
-                                                        disabled={
-                                                            processing ||
-                                                            uploadThumbnailPercentage !== undefined ||
-                                                            uploadMediaItemPercentage.value !== undefined
-                                                        }
-                                                        onError={(message) =>
-                                                            setError(`galleries.${gallery.id}.media_items`, message)
-                                                        }
-                                                        hasError={!!errors[`galleries.${gallery.id}.media_items`]}
-                                                        {...(uploadMediaItemPercentage?.galleryId === gallery.id && {
-                                                            progress: uploadMediaItemPercentage.value,
-                                                        })}
+                                                        disabled={processing}
+                                                        error={!!errors[`galleries.${gallery.id}.caption`]}
+                                                        helperText={errors[`galleries.${gallery.id}.caption`]}
                                                     />
                                                 }
-                                                label={t('file')}
-                                                required
+                                                label={t('caption')}
                                                 direction="column"
                                             />
-                                            {!!errors[`galleries.${gallery.id}.media_items`] && (
-                                                <FormHelperText error>
-                                                    {errors[`galleries.${gallery.id}.media_items`]}
-                                                </FormHelperText>
-                                            )}
                                         </Box>
-                                        {!!gallery.media_items.length && (
-                                            <Grid container spacing={2}>
-                                                {gallery.media_items.map((mediaItem) =>
-                                                    renderMediaItemCard(gallery.id, mediaItem),
-                                                )}
-                                            </Grid>
-                                        )}
-                                    </Stack>
-                                </CardContent>
-                                <CardActions>
-                                    <Box width={{ xs: 1, lg: 0.5 }}>
-                                        <FormField
-                                            control={
-                                                <TextField
-                                                    multiline
-                                                    maxRows={4}
-                                                    value={gallery.caption}
-                                                    onChange={(e) =>
-                                                        handleChangeGalleryCaption(gallery.id, e.target.value)
-                                                    }
-                                                    disabled={processing}
-                                                    error={!!errors[`galleries.${gallery.id}.caption`]}
-                                                    helperText={errors[`galleries.${gallery.id}.caption`]}
-                                                />
-                                            }
-                                            label={t('caption')}
-                                            direction="column"
-                                        />
-                                    </Box>
-                                </CardActions>
-                            </Card>
+                                    </CardActions>
+                                </Card>
+                            </SortableItem>
                         ))}
                         <Box textAlign="center">
                             <Button
