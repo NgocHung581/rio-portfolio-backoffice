@@ -110,7 +110,7 @@ const ProjectSearchForm = () => {
                             slotProps={{ htmlInput: { ...params.inputProps, 'aria-label': t('category') } }}
                         />
                     )}
-                    sx={{ width: { md: 280 }, flexShrink: 0 }}
+                    sx={{ width: { md: 300 }, flexShrink: 0 }}
                 />
                 <Button type="submit" variant="outlined" loading={isBusy} sx={{ flexShrink: 0 }}>
                     {t('search')}
