@@ -14,5 +14,6 @@ class Gallery extends CommonGallery
     protected $fillable = [
         'project_id',
         'caption',
+        'display_order',
     ];
 }

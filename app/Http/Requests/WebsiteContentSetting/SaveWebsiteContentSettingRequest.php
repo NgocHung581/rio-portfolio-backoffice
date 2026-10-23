@@ -75,6 +75,14 @@ class SaveWebsiteContentSettingRequest extends FormRequest
                 'required',
                 'array',
             ],
+            'partner_logos.*.id' => [
+                'required',
+                'distinct',
+            ],
+            'partner_logos.*.file_url' => [
+                'required',
+                'string',
+            ],
             'banner_text_en' => [
                 'required',
                 'string',

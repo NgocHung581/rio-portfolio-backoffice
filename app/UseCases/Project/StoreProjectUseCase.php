@@ -61,10 +61,15 @@ class StoreProjectUseCase
                 $webVisibility
             );
 
-            foreach ($galleries as $gallery) {
-                $newGallery = $this->galleryRepository->create($newProject->id, $gallery['caption']);
+            // The display order of galleries and media items follows their order in the request, starting from 1.
+            foreach (array_values($galleries) as $galleryIndex => $gallery) {
+                $newGallery = $this->galleryRepository->create(
+                    $newProject->id,
+                    $gallery['caption'],
+                    $galleryIndex + 1
+                );
 
-                foreach ($gallery['media_items'] as $mediaItem) {
+                foreach (array_values($gallery['media_items']) as $mediaItemIndex => $mediaItem) {
                     $mediaItemFileUrl = $mediaItem['file_url'];
                     $mediaItemFileName = basename($mediaItemFileUrl);
                     $mediaItemFilePath = FileManager::moveTmpToPublic(
@@ -77,7 +82,8 @@ class StoreProjectUseCase
                         $newGallery->id,
                         $mediaItemFilePath,
                         MediaFrame::from($mediaItem['frame']),
-                        $mediaItem['is_banner']
+                        $mediaItem['is_banner'],
+                        $mediaItemIndex + 1
                     );
                 }
             }

@@ -2,7 +2,6 @@ import ConfirmationModal, { ConfirmationModalProps } from '@/Components/Confirma
 import Pagination from '@/Components/Pagination';
 import Table from '@/Components/Table';
 import { Link, router, usePage } from '@inertiajs/react';
-import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -19,6 +18,7 @@ import { toast } from 'react-toastify';
 import useProjectColumns from '../hooks/useProjectColumns';
 import useProjectListPage from '../hooks/useProjectListPage';
 import { ProjectListPageProps } from '../List';
+import ProjectSearchForm from './ProjectSearchForm';
 import ProjectViewModal from './ProjectViewModal';
 
 const ProjectTable = () => {
@@ -70,18 +70,22 @@ const ProjectTable = () => {
 
     const renderTopToolbar = () => {
         return (
-            <Stack direction="row" alignItems="center" justifyContent="space-between" gap={4} flexWrap="wrap">
+            <Stack direction="row" alignItems="flex-start" justifyContent="space-between" gap={4} flexWrap="wrap">
+                <ProjectSearchForm />
                 <ConfirmationModal
-                    renderTrigger={({ openModal }) => (
-                        <Button
-                            color="error"
-                            startIcon={<DeleteOutlinedIcon />}
-                            onClick={openModal}
-                            disabled={isSearching || !selectedProjectIds.length}
-                        >
-                            {t('delete')}
-                        </Button>
-                    )}
+                    renderTrigger={({ openModal }) =>
+                        !!selectedProjectIds.length && (
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                startIcon={<DeleteOutlinedIcon />}
+                                onClick={openModal}
+                                disabled={isSearching}
+                            >
+                                {t('delete_selected_projects', { count: selectedProjectIds.length })}
+                            </Button>
+                        )
+                    }
                     content={
                         <DialogContentText>
                             <Trans
@@ -97,9 +101,6 @@ const ProjectTable = () => {
                     onConfirm={handleDelete}
                     isLoading={isDeleting}
                 />
-                <Button LinkComponent={Link} href={route('projects.create')} startIcon={<AddIcon />}>
-                    {t('add_new')}
-                </Button>
             </Stack>
         );
     };
@@ -134,7 +135,7 @@ const ProjectTable = () => {
                     key={`view-${row.original.id}`}
                     renderTrigger={({ openModal }) => (
                         <Tooltip title={t('view')}>
-                            <IconButton size="small" onClick={openModal}>
+                            <IconButton size="small" onClick={openModal} aria-label={t('preview')}>
                                 <VisibilityOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -148,6 +149,7 @@ const ProjectTable = () => {
                         href={route('projects.edit', row.original.id)}
                         size="small"
                         color="info"
+                        aria-label={t('edit')}
                     >
                         <EditOutlinedIcon />
                     </IconButton>

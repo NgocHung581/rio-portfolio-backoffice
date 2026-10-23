@@ -52,19 +52,10 @@ class SaveWebsiteContentSettingUseCase
                 $websiteContentSetting['avatar']['file_path'] = $avatarFilePath;
             }
 
-            // Delete partner logos.
-            $deletedFilePaths = array_diff(
-                array_column($websiteContentSetting['partner_logos'], 'file_path'),
-                array_column($partnerLogos, 'file_path')
-            );
+            // Save partner logos, matched by ID and kept in the order of the request.
+            $originalPartnerLogos = array_column($websiteContentSetting['partner_logos'], null, 'id');
+            $savedPartnerLogos = [];
 
-            foreach (array_keys($deletedFilePaths) as $key) {
-                $deletedPublicFilePaths[] = $websiteContentSetting['partner_logos'][$key]['file_path'];
-
-                unset($websiteContentSetting['partner_logos'][$key]);
-            }
-
-            // Save partner logos.
             foreach ($partnerLogos as $partnerLogo) {
                 $partnerLogoFileUrl = $partnerLogo['file_url'];
 
@@ -72,21 +63,32 @@ class SaveWebsiteContentSettingUseCase
                     $partnerLogoFileName = basename($partnerLogoFileUrl);
                     $partnerLogoFilePath = FileManager::moveTmpToPublic($partnerLogoFileName, self::UPLOAD_FOLDER);
                     $deletedTmpFilePaths[] = $partnerLogoFileName;
-                    $websiteContentSetting['partner_logos'][] = [
+                    $savedPartnerLogos[] = [
                         'id' => $partnerLogo['id'],
                         'file_path' => $partnerLogoFilePath,
                     ];
+                } elseif (isset($originalPartnerLogos[$partnerLogo['id']])) {
+                    $savedPartnerLogos[] = $originalPartnerLogos[$partnerLogo['id']];
                 }
             }
 
-            // Save other fields.
+            // Delete the files of removed partner logos.
+            $savedPartnerLogoIds = array_column($savedPartnerLogos, 'id');
+
+            foreach ($originalPartnerLogos as $id => $originalPartnerLogo) {
+                if (!in_array($id, $savedPartnerLogoIds)) {
+                    $deletedPublicFilePaths[] = $originalPartnerLogo['file_path'];
+                }
+            }
+
+            // Save fields.
             $websiteContentSetting['phone_number'] = $phoneNumber;
             $websiteContentSetting['email'] = $email;
             $websiteContentSetting['introduction_en'] = $introductionEn;
             $websiteContentSetting['introduction_vi'] = $introductionVi;
             $websiteContentSetting['banner_text_en'] = $bannerTextEn;
             $websiteContentSetting['banner_text_vi'] = $bannerTextVi;
-            $websiteContentSetting['partner_logos'] = array_values($websiteContentSetting['partner_logos']);
+            $websiteContentSetting['partner_logos'] = $savedPartnerLogos;
 
             Storage::put('data/website_content_setting.json', json_encode($websiteContentSetting, JSON_PRETTY_PRINT));
             Storage::disk('tmp')->delete($deletedTmpFilePaths);

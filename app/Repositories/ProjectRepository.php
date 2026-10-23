@@ -38,6 +38,40 @@ class ProjectRepository extends CommonProjectRepository
     }
 
     /**
+     * Count projects for each web visibility, keyed by the visibility value.
+     */
+    public function countByWebVisibility(): array
+    {
+        return Project::query()
+            ->toBase()
+            ->selectRaw('web_visibility, count(*) as total')
+            ->groupBy('web_visibility')
+            ->pluck('total', 'web_visibility')
+            ->all();
+    }
+
+    /**
+     * Count highlighted projects.
+     */
+    public function countHighlighted(): int
+    {
+        return Project::query()->toBase()->where('is_highlight', true)->count();
+    }
+
+    /**
+     * Find the most recently updated projects.
+     */
+    public function findLatestUpdated(int $limit, ?WebVisibility $webVisibility = null): Collection
+    {
+        return Project::query()
+            ->when(isset($webVisibility), fn ($query) => $query->where('web_visibility', $webVisibility))
+            ->orderBy('updated_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Find many projects by IDs.
      */
     public function findManyByIds(array $ids): Collection

@@ -2,16 +2,16 @@ import ConfirmationModal, { ConfirmationModalProps } from '@/Components/Confirma
 import Pagination from '@/Components/Pagination';
 import Table from '@/Components/Table';
 import { router, usePage } from '@inertiajs/react';
-import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogContentText from '@mui/material/DialogContentText';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { MRT_RowSelectionState } from 'material-react-table';
+import { MRT_RowSelectionState, MRT_SelectCheckbox } from 'material-react-table';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -19,6 +19,7 @@ import useCategoryColumns from '../hooks/useCategoryColumns';
 import useCategoryListPage from '../hooks/useCategoryListPage';
 import { CategoryListPageProps } from '../List';
 import CategoryFormModal from './CategoryFormModal';
+import CategorySearchForm from './CategorySearchForm';
 
 const CategoryTable = () => {
     const { t } = useTranslation();
@@ -69,18 +70,22 @@ const CategoryTable = () => {
 
     const renderTopToolbar = () => {
         return (
-            <Stack direction="row" alignItems="center" justifyContent="space-between" gap={4} flexWrap="wrap">
+            <Stack direction="row" alignItems="flex-start" justifyContent="space-between" gap={4} flexWrap="wrap">
+                <CategorySearchForm />
                 <ConfirmationModal
-                    renderTrigger={({ openModal }) => (
-                        <Button
-                            color="error"
-                            startIcon={<DeleteOutlinedIcon />}
-                            onClick={openModal}
-                            disabled={isSearching || !selectedCategoryIds.length}
-                        >
-                            {t('delete')}
-                        </Button>
-                    )}
+                    renderTrigger={({ openModal }) =>
+                        !!selectedCategoryIds.length && (
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                startIcon={<DeleteOutlinedIcon />}
+                                onClick={openModal}
+                                disabled={isSearching}
+                            >
+                                {t('delete_selected', { count: selectedCategoryIds.length })}
+                            </Button>
+                        )
+                    }
                     content={
                         <DialogContentText>
                             <Trans
@@ -95,13 +100,6 @@ const CategoryTable = () => {
                     }
                     onConfirm={handleDelete}
                     isLoading={isDeleting}
-                />
-                <CategoryFormModal
-                    renderTrigger={({ openModal }) => (
-                        <Button startIcon={<AddIcon />} onClick={openModal} disabled={isSearching}>
-                            {t('add_new')}
-                        </Button>
-                    )}
                 />
             </Stack>
         );
@@ -130,14 +128,30 @@ const CategoryTable = () => {
             data={categories.data}
             renderTopToolbar={renderTopToolbar}
             renderBottomToolbar={!!categories.total && renderBottomToolbar}
-            enableRowSelection
+            // A category that still has projects cannot be deleted, so it cannot be selected either.
+            enableRowSelection={(row) => !row.original.projects_count}
+            displayColumnDefOptions={{
+                'mrt-row-select': {
+                    Cell: ({ row, table }) =>
+                        row.original.projects_count ? (
+                            // A disabled checkbox ignores the pointer, so the wrapper receives the hover instead.
+                            <Tooltip title={t('category_has_projects_cannot_delete')}>
+                                <Box component="span" display="inline-flex">
+                                    <MRT_SelectCheckbox row={row} table={table} />
+                                </Box>
+                            </Tooltip>
+                        ) : (
+                            <MRT_SelectCheckbox row={row} table={table} />
+                        ),
+                },
+            }}
             positionActionsColumn="last"
             renderRowActions={({ row }) => [
                 <CategoryFormModal
                     key={`edit-${row.original.id}`}
                     renderTrigger={({ openModal }) => (
                         <Tooltip title={t('edit')}>
-                            <IconButton color="info" size="small" onClick={openModal}>
+                            <IconButton color="info" size="small" onClick={openModal} aria-label={t('edit')}>
                                 <EditOutlinedIcon />
                             </IconButton>
                         </Tooltip>

@@ -1,10 +1,11 @@
 import { Option, PageProps, PaginatedData } from '@/types';
 import { Project } from '@/types/project';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import AddIcon from '@mui/icons-material/Add';
+import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import ProjectSearchForm from './components/ProjectSearchForm';
 import ProjectTable from './components/ProjectTable';
 import { ProjectListPageProvider } from './contexts/projectListPageContext';
 
@@ -30,8 +31,28 @@ const ProjectListPage = () => {
         <ProjectListPageProvider>
             <Stack gap={{ xs: 4, sm: 6 }}>
                 <Head title={t('list_of_projects')} />
-                <Typography variant="h1">{t('list_of_projects')}</Typography>
-                <ProjectSearchForm />
+                <Stack
+                    component="header"
+                    direction={{ xs: 'column', sm: 'row' }}
+                    alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
+                    justifyContent="space-between"
+                    gap={4}
+                >
+                    <Stack gap={2}>
+                        <Typography variant="h1">{t('list_of_projects')}</Typography>
+                        <Typography color="textSecondary" maxWidth="65ch">
+                            {t('projects_description')}
+                        </Typography>
+                    </Stack>
+                    <Button
+                        LinkComponent={Link}
+                        href={route('projects.create')}
+                        startIcon={<AddIcon />}
+                        sx={{ flexShrink: 0 }}
+                    >
+                        {t('add_a_new_project')}
+                    </Button>
+                </Stack>
                 <ProjectTable />
             </Stack>
         </ProjectListPageProvider>
