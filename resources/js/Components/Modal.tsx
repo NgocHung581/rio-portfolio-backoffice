@@ -4,7 +4,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Breakpoint } from '@mui/material/styles';
-import { ReactNode } from 'react';
+import { FormEvent, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
@@ -18,6 +18,8 @@ type Props = {
     onOk?: () => void;
     isLoading?: boolean;
     hideOkButton?: boolean;
+    /** Render the dialog as a form, so pressing Enter in a field triggers `onOk`. */
+    asForm?: boolean;
 };
 
 const Modal = ({
@@ -31,6 +33,7 @@ const Modal = ({
     onOk,
     isLoading,
     hideOkButton,
+    asForm,
 }: Props) => {
     const { t } = useTranslation();
 
@@ -41,7 +44,27 @@ const Modal = ({
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth={maxWidth}>
+        <Dialog
+            open={open}
+            onClose={(_, reason) => {
+                if (reason === 'backdropClick') return;
+
+                handleClose();
+            }}
+            fullWidth
+            maxWidth={maxWidth}
+            {...(asForm && {
+                PaperProps: {
+                    component: 'form',
+                    noValidate: true,
+                    onSubmit: (e: FormEvent<HTMLFormElement>) => {
+                        e.preventDefault();
+
+                        if (!isLoading) onOk?.();
+                    },
+                },
+            })}
+        >
             <DialogTitle variant="h4">{title}</DialogTitle>
             <DialogContent dividers>{children}</DialogContent>
             <DialogActions>
@@ -49,7 +72,10 @@ const Modal = ({
                     {!closeText ? t('close') : closeText}
                 </Button>
                 {!hideOkButton && (
-                    <Button onClick={!onOk ? handleClose : onOk} loading={isLoading}>
+                    <Button
+                        {...(asForm ? { type: 'submit' } : { onClick: !onOk ? handleClose : onOk })}
+                        loading={isLoading}
+                    >
                         {!okText ? t('ok') : okText}
                     </Button>
                 )}

@@ -1,17 +1,22 @@
 import FormField from '@/Components/FormField';
 import Modal from '@/Components/Modal';
-import { Category } from '@/types/category';
+import MediaType from '@/enums/media-type';
 import { useForm, usePage } from '@inertiajs/react';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
+import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
+import Box from '@mui/material/Box';
 import FormHelperText from '@mui/material/FormHelperText';
+import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { Fragment, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { CategoryListPageProps } from '../List';
+import { CategoryListItem, CategoryListPageProps } from '../List';
 
 type RenderTriggerProps = {
     openModal: () => void;
@@ -19,7 +24,7 @@ type RenderTriggerProps = {
 
 type Props = {
     renderTrigger: (props: RenderTriggerProps) => ReactNode;
-    category?: Category;
+    category?: CategoryListItem;
 };
 
 type CategoryFormData = {
@@ -42,6 +47,9 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
 
     const [openModal, setOpenModal] = useState(false);
 
+    // The server keeps the classification of a category in use, since its projects hold that kind of media.
+    const isMediaTypeLocked = !!category?.projects_count;
+
     const handleOpenModal = () => {
         reset();
         clearErrors();
@@ -52,18 +60,6 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
         if (processing) return;
 
         setOpenModal(false);
-    };
-
-    const updateFormField = (name: keyof CategoryFormData, value: CategoryFormData[keyof CategoryFormData]) => {
-        const numericFieldNames: (keyof CategoryFormData)[] = ['media_type'];
-
-        numericFieldNames.forEach((numericFieldName) => {
-            if (name === numericFieldName && !isNaN(Number(value))) {
-                value = Number(value);
-            }
-        });
-
-        setData(name, value);
     };
 
     const handleSave = () => {
@@ -86,6 +82,7 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
         <Fragment>
             {renderTrigger({ openModal: handleOpenModal })}
             <Modal
+                asForm
                 open={openModal}
                 onClose={handleCloseModal}
                 title={!category ? t('add_a_new_category') : t('edit_category')}
@@ -93,14 +90,14 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
                 closeText={t('cancel')}
                 onOk={handleSave}
                 isLoading={processing}
+                maxWidth="sm"
             >
-                <Stack gap={4}>
+                <Stack gap={5}>
                     <FormField
                         control={
                             <TextField
-                                fullWidth
                                 value={data.name_en}
-                                onChange={(e) => updateFormField('name_en', e.target.value)}
+                                onChange={(e) => setData('name_en', e.target.value)}
                                 error={!!errors.name_en}
                                 helperText={errors.name_en}
                                 disabled={processing}
@@ -108,15 +105,13 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
                         }
                         label={t('name_en')}
                         required
-                        labelSize={{ lg: 4 }}
-                        controlSize={{ lg: 8 }}
+                        direction="column"
                     />
                     <FormField
                         control={
                             <TextField
-                                fullWidth
                                 value={data.name_vi}
-                                onChange={(e) => updateFormField('name_vi', e.target.value)}
+                                onChange={(e) => setData('name_vi', e.target.value)}
                                 error={!!errors.name_vi}
                                 helperText={errors.name_vi}
                                 disabled={processing}
@@ -124,35 +119,94 @@ const CategoryFormModal = ({ renderTrigger, category }: Props) => {
                         }
                         label={t('name_vi')}
                         required
-                        labelSize={{ lg: 4 }}
-                        controlSize={{ lg: 8 }}
+                        direction="column"
                     />
-                    <FormField
-                        control={
-                            <Fragment>
-                                <RadioGroup
-                                    value={data.media_type}
-                                    onChange={(_, value) => updateFormField('media_type', value)}
-                                    sx={{ flexDirection: 'row' }}
-                                >
-                                    {mediaTypeOptions.map((option) => (
-                                        <FormControlLabel
-                                            key={option.value}
+                    <Box>
+                        <FormLabel id="category-media-type-label" required>
+                            {t('classification')}
+                        </FormLabel>
+                        {/* Each option is a card, so the difference between photos and videos is clear at a glance. */}
+                        <RadioGroup
+                            aria-labelledby="category-media-type-label"
+                            value={data.media_type}
+                            onChange={(_, value) => setData('media_type', Number(value))}
+                            sx={{
+                                mt: 1,
+                                display: 'grid',
+                                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                                gap: 3,
+                            }}
+                        >
+                            {mediaTypeOptions.map((option) => {
+                                const isVideo = option.value === MediaType.Video;
+                                const isSelected = data.media_type === option.value;
+                                const isDisabled = processing || isMediaTypeLocked;
+                                const color = isVideo ? 'secondary' : 'primary';
+
+                                return (
+                                    <Stack
+                                        key={option.value}
+                                        component="label"
+                                        direction="row"
+                                        alignItems="flex-start"
+                                        gap={3}
+                                        p={3}
+                                        border={isSelected ? 2 : 1}
+                                        borderColor={isSelected ? `${color}.main` : 'divider'}
+                                        borderRadius={1}
+                                        bgcolor={
+                                            isSelected
+                                                ? `rgba(var(--mui-palette-${color}-mainChannel) / 0.06)`
+                                                : 'background.paper'
+                                        }
+                                        sx={{
+                                            cursor: isDisabled ? 'default' : 'pointer',
+                                            opacity: isDisabled && !isSelected ? 0.5 : 1,
+                                            // Keep the content in place when the border gets thicker.
+                                            m: isSelected ? 0 : '1px',
+                                            '&:has(input:focus-visible)': {
+                                                outline: `2px solid var(--mui-palette-${color}-main)`,
+                                                outlineOffset: 2,
+                                            },
+                                        }}
+                                    >
+                                        <Box display="flex" color={`${color}.main`} pt={0.5}>
+                                            {isVideo ? <VideocamOutlinedIcon /> : <PhotoCameraOutlinedIcon />}
+                                        </Box>
+                                        <Box flex={1}>
+                                            <Typography fontWeight={600}>{option.label}</Typography>
+                                            <Typography variant="body2" color="textSecondary">
+                                                {t(
+                                                    isVideo
+                                                        ? 'media_type_video_description'
+                                                        : 'media_type_image_description',
+                                                )}
+                                            </Typography>
+                                        </Box>
+                                        <Radio
                                             value={option.value}
-                                            control={<Radio />}
-                                            label={option.label}
-                                            disabled={processing}
+                                            color={color}
+                                            disabled={isDisabled}
+                                            size="small"
+                                            sx={{ m: -1 }}
                                         />
-                                    ))}
-                                </RadioGroup>
-                                {!!errors.media_type && <FormHelperText error>{errors.media_type}</FormHelperText>}
-                            </Fragment>
-                        }
-                        label={t('classification')}
-                        required
-                        labelSize={{ lg: 4 }}
-                        controlSize={{ lg: 8 }}
-                    />
+                                    </Stack>
+                                );
+                            })}
+                        </RadioGroup>
+                        {errors.media_type ? (
+                            <FormHelperText error>{errors.media_type}</FormHelperText>
+                        ) : (
+                            isMediaTypeLocked && (
+                                <Stack direction="row" alignItems="center" gap={1.5} mt={2} color="text.secondary">
+                                    <LockOutlinedIcon sx={{ fontSize: 16 }} />
+                                    <Typography variant="body2" color="inherit">
+                                        {t('media_type_locked_hint', { count: category.projects_count })}
+                                    </Typography>
+                                </Stack>
+                            )
+                        )}
+                    </Box>
                 </Stack>
             </Modal>
         </Fragment>

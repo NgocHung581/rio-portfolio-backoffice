@@ -1,6 +1,7 @@
 import { useForm, usePage } from '@inertiajs/react';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -15,6 +16,7 @@ import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import ListItemButton from '@mui/material/ListItemButton';
 import Modal from '@/Components/Modal';
 import FormField from '@/Components/FormField';
+import PasswordRequirements from '@/Components/PasswordRequirements';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
@@ -76,7 +78,12 @@ const UserDropdown = () => {
     const renderTogglePassword = () => {
         return (
             <InputAdornment position="end">
-                <IconButton disabled={profileForm.processing} onClick={handleTogglePassword} edge="end">
+                <IconButton
+                    disabled={profileForm.processing}
+                    onClick={handleTogglePassword}
+                    edge="end"
+                    aria-label={t(showPassword ? 'hide_password' : 'show_password')}
+                >
                     {showPassword ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
                 </IconButton>
             </InputAdornment>
@@ -144,20 +151,34 @@ const UserDropdown = () => {
                 </ListItem>
             </Menu>
             <Modal
+                asForm
                 open={openModal}
                 onClose={handleCloseModal}
                 title={t('edit_profile')}
                 isLoading={profileForm.processing}
                 closeText={t('cancel')}
                 okText={t('save')}
-                maxWidth="xs"
+                maxWidth="sm"
                 onOk={handleSaveProfile}
             >
-                <Stack spacing={4}>
+                <Stack gap={5}>
+                    {/* Who is being edited; the email is the login and cannot be changed here. */}
+                    <Stack direction="row" alignItems="center" gap={3}>
+                        <Avatar sx={{ width: 48, height: 48 }}>{auth.user.name.charAt(0).toUpperCase()}</Avatar>
+                        <Box minWidth={0}>
+                            <Typography fontWeight={600} noWrap>
+                                {auth.user.name}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary" noWrap>
+                                {auth.user.email}
+                            </Typography>
+                        </Box>
+                    </Stack>
                     <FormField
                         control={
                             <TextField
-                                fullWidth
+                                name="name"
+                                autoComplete="name"
                                 value={profileForm.data.name}
                                 onChange={(e) => profileForm.setData('name', e.target.value)}
                                 error={!!profileForm.errors.name}
@@ -169,38 +190,63 @@ const UserDropdown = () => {
                         required
                         direction="column"
                     />
-                    <FormField
-                        control={
-                            <TextField
-                                type={showPassword ? 'text' : 'password'}
-                                name="password"
-                                value={profileForm.data.password}
-                                onChange={(e) => profileForm.setData('password', e.target.value)}
-                                error={!!profileForm.errors.password}
-                                helperText={profileForm.errors.password}
-                                disabled={profileForm.processing}
-                                slotProps={{ input: { endAdornment: renderTogglePassword() } }}
+                    <Divider />
+                    <Stack component="fieldset" gap={4} m={0} p={0} border={0}>
+                        <Box component="legend" p={0} mb={4}>
+                            <Typography variant="h6" component="span" display="block">
+                                {t('change_password')}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                                {t('change_password_hint')}
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <FormField
+                                control={
+                                    <TextField
+                                        type={showPassword ? 'text' : 'password'}
+                                        name="password"
+                                        autoComplete="new-password"
+                                        value={profileForm.data.password}
+                                        onChange={(e) =>
+                                            profileForm.setData((current) => ({
+                                                ...current,
+                                                password: e.target.value,
+                                                // Nothing to confirm once the new password is cleared.
+                                                ...(!e.target.value && { password_confirmation: '' }),
+                                            }))
+                                        }
+                                        error={!!profileForm.errors.password}
+                                        helperText={profileForm.errors.password}
+                                        disabled={profileForm.processing}
+                                        slotProps={{ input: { endAdornment: renderTogglePassword() } }}
+                                    />
+                                }
+                                label={t('new_password')}
+                                direction="column"
                             />
-                        }
-                        label={t('password')}
-                        direction="column"
-                    />
-                    <FormField
-                        control={
-                            <TextField
-                                type={showPassword ? 'text' : 'password'}
-                                name="password_confirmation"
-                                value={profileForm.data.password_confirmation}
-                                onChange={(e) => profileForm.setData('password_confirmation', e.target.value)}
-                                error={!!profileForm.errors.password_confirmation}
-                                helperText={profileForm.errors.password_confirmation}
-                                disabled={profileForm.processing}
-                                slotProps={{ input: { endAdornment: renderTogglePassword() } }}
-                            />
-                        }
-                        label={t('password_confirmation')}
-                        direction="column"
-                    />
+                            {!!profileForm.data.password && (
+                                <PasswordRequirements password={profileForm.data.password} />
+                            )}
+                        </Box>
+                        <FormField
+                            control={
+                                <TextField
+                                    type={showPassword ? 'text' : 'password'}
+                                    name="password_confirmation"
+                                    autoComplete="new-password"
+                                    value={profileForm.data.password_confirmation}
+                                    onChange={(e) => profileForm.setData('password_confirmation', e.target.value)}
+                                    error={!!profileForm.errors.password_confirmation}
+                                    helperText={profileForm.errors.password_confirmation}
+                                    disabled={profileForm.processing || !profileForm.data.password}
+                                    slotProps={{ input: { endAdornment: renderTogglePassword() } }}
+                                />
+                            }
+                            label={t('confirm_new_password')}
+                            direction="column"
+                        />
+                    </Stack>
                 </Stack>
             </Modal>
         </Fragment>
