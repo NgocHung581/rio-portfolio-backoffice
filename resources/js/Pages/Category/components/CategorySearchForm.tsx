@@ -50,6 +50,7 @@ const CategorySearchForm = () => {
             <TextField
                 type="search"
                 name="keyword"
+                label={t('name')}
                 value={data.keyword}
                 onChange={(e) => setData('keyword', e.target.value)}
                 disabled={processing}
@@ -58,6 +59,8 @@ const CategorySearchForm = () => {
                 placeholder={t('search_categories_placeholder')}
                 slotProps={{
                     htmlInput: { 'aria-label': t('search') },
+                    // The placeholder stays visible, so the label always sits on the border.
+                    inputLabel: { shrink: true },
                     input: {
                         startAdornment: (
                             <InputAdornment position="start">
@@ -66,6 +69,7 @@ const CategorySearchForm = () => {
                         ),
                     },
                 }}
+                sx={{ flex: 1, minWidth: 0 }}
             />
             <Button type="submit" variant="outlined" loading={processing} sx={{ flexShrink: 0 }}>
                 {t('search')}

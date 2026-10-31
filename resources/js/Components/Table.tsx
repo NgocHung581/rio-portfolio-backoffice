@@ -91,7 +91,13 @@ const Table = <TData extends MRT_RowData>({
             ),
         displayColumnDefOptions: {
             ...rest.displayColumnDefOptions,
+            // Wide enough for their content: with the grid layout, a narrower cell clips its checkbox or buttons.
+            'mrt-row-actions': {
+                size: 112,
+                ...rest.displayColumnDefOptions?.['mrt-row-actions'],
+            },
             'mrt-row-numbers': {
+                size: 64,
                 muiTableHeadCellProps: {
                     align: 'center',
                     sx: { pb: 3 },
@@ -102,6 +108,7 @@ const Table = <TData extends MRT_RowData>({
                 ...rest.displayColumnDefOptions?.['mrt-row-numbers'],
             },
             'mrt-row-select': {
+                size: 64,
                 muiTableHeadCellProps: {
                     align: 'center',
                     sx: { pb: 3 },

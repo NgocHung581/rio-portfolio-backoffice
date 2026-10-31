@@ -1,5 +1,6 @@
 import ConfirmationModal, { ConfirmationModalProps } from '@/Components/ConfirmationModal';
 import Pagination from '@/Components/Pagination';
+import SelectionActionBar from '@/Components/SelectionActionBar';
 import Table from '@/Components/Table';
 import { router, usePage } from '@inertiajs/react';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
@@ -12,7 +13,7 @@ import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { MRT_RowSelectionState, MRT_SelectCheckbox } from 'material-react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import useCategoryColumns from '../hooks/useCategoryColumns';
@@ -30,6 +31,9 @@ const CategoryTable = () => {
 
     const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // The selection belongs to the rows on screen, so it is dropped whenever another page or result set is loaded.
+    useEffect(() => setRowSelection({}), [categories.data]);
 
     const selectedCategoryIds = Object.keys(rowSelection).map(Number);
     const queryParams = route().queryParams;
@@ -70,37 +74,40 @@ const CategoryTable = () => {
 
     const renderTopToolbar = () => {
         return (
-            <Stack direction="row" alignItems="flex-start" justifyContent="space-between" gap={4} flexWrap="wrap">
+            <Stack gap={3}>
                 <CategorySearchForm />
-                <ConfirmationModal
-                    renderTrigger={({ openModal }) =>
-                        !!selectedCategoryIds.length && (
-                            <Button
-                                variant="outlined"
-                                color="error"
-                                startIcon={<DeleteOutlinedIcon />}
-                                onClick={openModal}
-                                disabled={isSearching}
-                            >
-                                {t('delete_selected', { count: selectedCategoryIds.length })}
-                            </Button>
-                        )
-                    }
-                    content={
-                        <DialogContentText>
-                            <Trans
-                                i18nKey="deletion_confirmation"
-                                count={selectedCategoryIds.length}
-                                values={{ count: selectedCategoryIds.length }}
-                                components={{
-                                    warning: <Typography component="span" fontWeight={500} color="error" />,
-                                }}
-                            />
-                        </DialogContentText>
-                    }
-                    onConfirm={handleDelete}
-                    isLoading={isDeleting}
-                />
+                <SelectionActionBar count={selectedCategoryIds.length} onClear={() => setRowSelection({})}>
+                    <ConfirmationModal
+                        renderTrigger={({ openModal }) =>
+                            !!selectedCategoryIds.length && (
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    color="error"
+                                    startIcon={<DeleteOutlinedIcon />}
+                                    onClick={openModal}
+                                    disabled={isSearching}
+                                >
+                                    {t('delete_selected', { count: selectedCategoryIds.length })}
+                                </Button>
+                            )
+                        }
+                        content={
+                            <DialogContentText>
+                                <Trans
+                                    i18nKey="deletion_confirmation"
+                                    count={selectedCategoryIds.length}
+                                    values={{ count: selectedCategoryIds.length }}
+                                    components={{
+                                        warning: <Typography component="span" fontWeight={500} color="error" />,
+                                    }}
+                                />
+                            </DialogContentText>
+                        }
+                        onConfirm={handleDelete}
+                        isLoading={isDeleting}
+                    />
+                </SelectionActionBar>
             </Stack>
         );
     };
