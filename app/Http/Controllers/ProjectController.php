@@ -6,12 +6,14 @@ namespace App\Http\Controllers;
 
 use App\Constants\MediaSetting;
 use App\Enums\PerPage;
+use App\Http\Requests\Project\BulkUnhighlightProjectsRequest;
 use App\Http\Requests\Project\PaginateProjectsRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Models\Project;
 use App\UseCases\Category\GetAllCategoryOptionsUseCase;
 use App\UseCases\Project\BulkDeleteProjectsUseCase as ProjectBulkDeleteProjectsUseCase;
+use App\UseCases\Project\BulkUnhighlightProjectsUseCase;
 use App\UseCases\Project\PaginateProjectsUseCase;
 use App\UseCases\Project\StoreProjectUseCase;
 use App\UseCases\Project\UpdateProjectUseCase;
@@ -35,7 +37,12 @@ class ProjectController extends Controller
         GetAllCategoryOptionsUseCase $getAllCategoryOptionsUseCase,
         PaginateProjectsUseCase $useCase
     ): Response|ResponseFactory {
-        $projects = $useCase(PerPage::from($request->per_page), $request->category_ids, $request->keyword);
+        $projects = $useCase(
+            PerPage::from($request->per_page),
+            $request->category_ids,
+            $request->keyword,
+            $request->is_highlight
+        );
         $categoryOptions = $getAllCategoryOptionsUseCase();
         $webVisibilityOptions = WebVisibility::toOptions(['color', 'icon']);
         $perPageOptions = PerPage::toOptions();
@@ -78,6 +85,7 @@ class ProjectController extends Controller
             $request->is_highlight,
             WebVisibility::from($request->web_visibility),
             $request->thumbnail_file_url,
+            MediaFrame::from($request->thumbnail_frame),
             $request->galleries
         );
 
@@ -124,6 +132,7 @@ class ProjectController extends Controller
             $request->is_highlight,
             WebVisibility::from($request->web_visibility),
             $request->thumbnail_file_url,
+            MediaFrame::from($request->thumbnail_frame),
             $request->galleries
         );
 
@@ -138,6 +147,20 @@ class ProjectController extends Controller
      * Bulk delete projects.
      */
     public function bulkDelete(Request $request, ProjectBulkDeleteProjectsUseCase $useCase): RedirectResponse
+    {
+        $result = $useCase($request->ids);
+
+        if (!$result['success']) {
+            return back()->withErrors(['message' => $result['message']]);
+        }
+
+        return back()->with('message', $result['message']);
+    }
+
+    /**
+     * Remove the highlight of many projects.
+     */
+    public function bulkUnhighlight(BulkUnhighlightProjectsRequest $request, BulkUnhighlightProjectsUseCase $useCase): RedirectResponse
     {
         $result = $useCase($request->ids);
 

@@ -70,6 +70,11 @@ class ProjectFormRequest extends FormRequest
                 'required',
                 'boolean',
             ],
+            'thumbnail_frame' => [
+                'required',
+                'string',
+                Rule::enum(MediaFrame::class),
+            ],
             'title_en' => [
                 'required',
                 'string',

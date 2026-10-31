@@ -40,6 +40,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 import { GalleryData, GalleryMediaItemData } from '../types';
+import FrameAutocomplete from './FrameAutocomplete';
 import GalleryBlock from './GalleryBlock';
 import ProjectViewModal from './ProjectViewModal';
 
@@ -69,6 +70,7 @@ type ProjectFormData = {
     is_highlight: boolean;
     web_visibility: string;
     thumbnail_file_url: string;
+    thumbnail_frame: string;
     galleries: GalleryData[];
 } & Partial<Record<ProjectFormErrorKeys, string>>;
 
@@ -97,6 +99,7 @@ const ProjectForm = ({
         is_highlight: project?.is_highlight ?? false,
         web_visibility: (project?.web_visibility ?? webVisibilityOptions[0].value).toString(),
         thumbnail_file_url: project?.thumbnail_file_url ?? '',
+        thumbnail_frame: project?.thumbnail_frame ?? mediaFrameOptions[0].value,
         galleries: project
             ? project.galleries.map<GalleryData>((gallery) => ({
                   id: gallery.id,
@@ -505,7 +508,7 @@ const ProjectForm = ({
                             </CardContent>
                         </Card>
 
-                        {/* Thumbnail: previewed in the same 4:5 frame it is shown in on the website. */}
+                        {/* Thumbnail: previewed in the same frame it is shown in on the website. */}
                         <Card>
                             <CardHeader
                                 title={
@@ -521,6 +524,17 @@ const ProjectForm = ({
                             />
                             <CardContent>
                                 <Box maxWidth={{ xs: 320, lg: 1 }} mx="auto">
+                                    <FrameAutocomplete
+                                        value={data.thumbnail_frame}
+                                        options={mediaFrameOptions}
+                                        onChange={(frame) => setData('thumbnail_frame', frame)}
+                                        disabled={processing}
+                                        error={!!errors.thumbnail_frame}
+                                        sx={{ mb: 3 }}
+                                    />
+                                    {errors.thumbnail_frame && (
+                                        <FormHelperText error>{errors.thumbnail_frame}</FormHelperText>
+                                    )}
                                     {data.thumbnail_file_url ? (
                                         <Box
                                             position="relative"
@@ -532,7 +546,7 @@ const ProjectForm = ({
                                             <Image
                                                 src={data.thumbnail_file_url}
                                                 alt={t('thumbnail')}
-                                                containerSx={{ aspectRatio: '4/5' }}
+                                                containerSx={{ aspectRatio: data.thumbnail_frame }}
                                                 imageSx={{ width: 1, height: 1, objectFit: 'cover', display: 'block' }}
                                             />
                                             <Tooltip title={t('delete')}>
@@ -555,7 +569,7 @@ const ProjectForm = ({
                                             </Tooltip>
                                         </Box>
                                     ) : (
-                                        <Box sx={{ aspectRatio: '4/5' }}>
+                                        <Box sx={{ aspectRatio: data.thumbnail_frame }}>
                                             <FileDropzone
                                                 compact
                                                 height="100%"

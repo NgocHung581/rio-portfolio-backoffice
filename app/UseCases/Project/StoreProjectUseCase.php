@@ -38,6 +38,7 @@ class StoreProjectUseCase
         bool $isHighlight,
         WebVisibility $webVisibility,
         string $thumbnailFileUrl,
+        MediaFrame $thumbnailFrame,
         array $galleries
     ): array {
         try {
@@ -58,6 +59,7 @@ class StoreProjectUseCase
                 $summaryVi,
                 $isHighlight,
                 $thumbnailFilePath,
+                $thumbnailFrame,
                 $webVisibility
             );
 

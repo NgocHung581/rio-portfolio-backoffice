@@ -8,13 +8,11 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import { useTranslation } from 'react-i18next';
 import { GalleryMediaItemData } from '../types';
-import FrameGlyph from './FrameGlyph';
+import FrameAutocomplete from './FrameAutocomplete';
 
 type Props = {
     mediaItem: GalleryMediaItemData;
@@ -47,7 +45,6 @@ const MediaItemTile = ({
 }: Props) => {
     const { t } = useTranslation();
     const errorMessages = [errors.fileUrl, errors.frame, errors.isBanner].filter(Boolean);
-    const frameLabel = frameOptions.find((option) => option.value === mediaItem.frame)?.label ?? mediaItem.frame;
 
     return (
         <SortableItem group={sortableGroup} index={index} onSort={onSort} disabled={disabled || !isSortable} height={1}>
@@ -128,35 +125,14 @@ const MediaItemTile = ({
                 </Box>
                 <Stack direction="row" alignItems="center" gap={1} mt="auto">
                     {isSortable && <SortableHandle group={sortableGroup} disabled={disabled} />}
-                    <Select
+                    <FrameAutocomplete
                         value={mediaItem.frame}
-                        onChange={(e) => onChangeFrame(e.target.value)}
+                        options={frameOptions}
+                        onChange={onChangeFrame}
                         disabled={disabled}
                         error={!!errors.frame}
-                        inputProps={{ 'aria-label': t('frame') }}
-                        renderValue={() => (
-                            <Stack direction="row" alignItems="center" gap={1.5} whiteSpace="nowrap">
-                                <FrameGlyph frame={mediaItem.frame} size={14} />
-                                {frameLabel}
-                            </Stack>
-                        )}
-                        sx={{
-                            flex: 1,
-                            minWidth: 0,
-                            // Tighter than the default padding, so the label fits in narrow tiles.
-                            '& .MuiSelect-select.MuiOutlinedInput-input': { pl: 2.5, pr: 7 },
-                            '& .MuiSelect-icon': { right: 4 },
-                        }}
-                    >
-                        {frameOptions.map((option) => (
-                            <MenuItem key={option.value} value={option.value} sx={{ gap: 2.5 }}>
-                                <Box width={16} display="flex" justifyContent="center">
-                                    <FrameGlyph frame={option.value} />
-                                </Box>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                        sx={{ flex: 1, minWidth: 0 }}
+                    />
                 </Stack>
                 {errorMessages.map((message) => (
                     <FormHelperText key={message} error sx={{ m: 0 }}>

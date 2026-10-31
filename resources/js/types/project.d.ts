@@ -21,6 +21,7 @@ export type Project = {
     is_highlight: boolean;
     web_visibility: number;
     thumbnail_file_url: string;
+    thumbnail_frame: string;
     created_at: string;
     updated_at: string;
     category: Category;

@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Enums\PerPage;
 use App\Models\Project;
+use Common\App\Enums\MediaFrame;
 use Common\App\Enums\WebVisibility;
 use Common\App\Repositories\ProjectRepository as CommonProjectRepository;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,7 +23,8 @@ class ProjectRepository extends CommonProjectRepository
     public function paginate(
         PerPage $perPage,
         ?array $categoryIds = null,
-        ?string $keyword = null
+        ?string $keyword = null,
+        ?bool $isHighlight = null
     ): LengthAwarePaginator {
         return Project::query()
             ->when(
@@ -31,8 +33,11 @@ class ProjectRepository extends CommonProjectRepository
             )
             ->when(
                 isset($keyword),
-                fn ($query) => $query->whereLike('title_en', "%{$keyword}%")->orWhereLike('title_vi', "%{$keyword}%")
+                fn ($query) => $query->where(
+                    fn ($query) => $query->whereLike('title_en', "%{$keyword}%")->orWhereLike('title_vi', "%{$keyword}%")
+                )
             )
+            ->when(isset($isHighlight), fn ($query) => $query->where('is_highlight', $isHighlight))
             ->orderBy('id', 'desc')
             ->paginate($perPage->value);
     }
@@ -92,6 +97,7 @@ class ProjectRepository extends CommonProjectRepository
         string $summaryVi,
         bool $isHighlight,
         string $thumbnailFilePath,
+        MediaFrame $thumbnailFrame,
         WebVisibility $webVisibility
     ): Project {
         return Project::query()->create([
@@ -104,6 +110,7 @@ class ProjectRepository extends CommonProjectRepository
             'summary_vi' => $summaryVi,
             'is_highlight' => $isHighlight,
             'thumbnail_file_path' => $thumbnailFilePath,
+            'thumbnail_frame' => $thumbnailFrame,
             'web_visibility' => $webVisibility,
         ]);
     }
@@ -122,6 +129,7 @@ class ProjectRepository extends CommonProjectRepository
         string $summaryVi,
         bool $isHighlight,
         string $thumbnailFilePath,
+        MediaFrame $thumbnailFrame,
         WebVisibility $webVisibility
     ): int {
         return Project::query()->where('id', $id)->update([
@@ -134,8 +142,17 @@ class ProjectRepository extends CommonProjectRepository
             'summary_vi' => $summaryVi,
             'is_highlight' => $isHighlight,
             'thumbnail_file_path' => $thumbnailFilePath,
+            'thumbnail_frame' => $thumbnailFrame,
             'web_visibility' => $webVisibility,
         ]);
+    }
+
+    /**
+     * Remove the highlight of many projects by IDs.
+     */
+    public function bulkUnhighlight(array $ids): int
+    {
+        return Project::query()->whereIn('id', $ids)->update(['is_highlight' => false]);
     }
 
     /**

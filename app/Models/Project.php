@@ -21,6 +21,7 @@ class Project extends CommonProject
         'summary_vi',
         'is_highlight',
         'thumbnail_file_path',
+        'thumbnail_frame',
         'web_visibility',
     ];
 }

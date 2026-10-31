@@ -48,7 +48,7 @@ const useProjectColumns = (): MRT_ColumnDef<Project>[] => {
                         containerSx={{
                             flexShrink: 0,
                             width: 44,
-                            aspectRatio: '4/5',
+                            aspectRatio: row.original.thumbnail_frame,
                             overflow: 'hidden',
                             borderRadius: 0.75,
                             border: 1,
@@ -167,7 +167,7 @@ const useProjectColumns = (): MRT_ColumnDef<Project>[] => {
             },
         },
         {
-            header: t('updated'),
+            header: t('last_updated'),
             accessorKey: 'updated_at',
             Cell: ({ row }) => (
                 <Tooltip title={dateTimeFormat.format(new Date(row.original.updated_at))} placement="bottom-start">

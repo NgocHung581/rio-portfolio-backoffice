@@ -40,6 +40,7 @@ class UpdateProjectUseCase
         bool $isHighlight,
         WebVisibility $webVisibility,
         string $thumbnailFileUrl,
+        MediaFrame $thumbnailFrame,
         array $galleries
     ): array {
         try {
@@ -74,6 +75,7 @@ class UpdateProjectUseCase
                 $summaryVi,
                 $isHighlight,
                 $newThumbnailFilePath,
+                $thumbnailFrame,
                 $webVisibility
             );
 
