@@ -38,6 +38,10 @@ class PaginateProjectsRequest extends FormRequest
                 'integer',
                 Rule::exists(Category::class, 'id'),
             ],
+            'is_highlight' => [
+                'nullable',
+                'boolean',
+            ],
             'keyword' => [
                 'nullable',
                 'string',
@@ -64,6 +68,7 @@ class PaginateProjectsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
+            'is_highlight' => $this->filled('is_highlight') ? $this->boolean('is_highlight') : null,
             'page' => filter_var($this->page, FILTER_VALIDATE_INT, ['options' => ['default' => 1]]),
             'per_page' => PerPage::resolve($this->per_page)->value,
         ]);

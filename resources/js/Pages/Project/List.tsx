@@ -12,6 +12,7 @@ import { ProjectListPageProvider } from './contexts/projectListPageContext';
 export type ProjectListPageQuery = {
     category_ids?: number[];
     keyword?: string;
+    is_highlight?: string;
     page: number;
     per_page: number;
 };

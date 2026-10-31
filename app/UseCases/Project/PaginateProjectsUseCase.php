@@ -17,8 +17,12 @@ class PaginateProjectsUseCase
     {
     }
 
-    public function __invoke(PerPage $perPage, ?array $categoryIds = null, ?string $keyword = null): LengthAwarePaginator
-    {
-        return $this->projectRepository->paginate($perPage, $categoryIds, $keyword);
+    public function __invoke(
+        PerPage $perPage,
+        ?array $categoryIds = null,
+        ?string $keyword = null,
+        ?bool $isHighlight = null
+    ): LengthAwarePaginator {
+        return $this->projectRepository->paginate($perPage, $categoryIds, $keyword, $isHighlight);
     }
 }
