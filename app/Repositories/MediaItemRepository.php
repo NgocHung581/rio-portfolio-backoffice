@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Models\MediaItem;
 use Common\App\Enums\MediaFrame;
 use Common\App\Repositories\MediaItemRepository as CommonMediaItemRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * The repository class for the media item.
@@ -14,10 +15,26 @@ use Common\App\Repositories\MediaItemRepository as CommonMediaItemRepository;
 class MediaItemRepository extends CommonMediaItemRepository
 {
     /**
+     * Get the media items that belong to no project, newest first.
+     */
+    public function getBehindTheScenes(): Collection
+    {
+        return MediaItem::query()->whereNull('gallery_id')->orderByDesc('id')->get();
+    }
+
+    /**
+     * Find many media items that belong to no project by IDs.
+     */
+    public function findBehindTheScenesByIds(array $ids): Collection
+    {
+        return MediaItem::query()->whereNull('gallery_id')->whereIn('id', $ids)->get();
+    }
+
+    /**
      * Create a new media item.
      */
     public function create(
-        int $galleryId,
+        ?int $galleryId,
         string $filePath,
         MediaFrame $frame,
         bool $isBanner,

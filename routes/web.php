@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BehindTheSceneController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
@@ -54,6 +55,15 @@ Route::middleware('auth')->group(function(): void {
         Route::post('/store', 'store')->name('store');
         Route::get('/edit/{project}', 'edit')->name('edit');
         Route::post('/update/{project}', 'update')->name('update');
+        Route::post('/bulk-delete', 'bulkDelete')->name('bulkDelete');
+        Route::post('/bulk-unhighlight', 'bulkUnhighlight')->name('bulkUnhighlight');
+    });
+
+    // Behind the scene.
+    Route::prefix('/behind-the-scenes')->name('behindTheScenes.')->controller(BehindTheSceneController::class)->group(function(): void {
+        Route::get('/', 'index')->name('index');
+        Route::post('/store', 'store')->name('store');
+        Route::post('/update/{mediaItem}', 'update')->name('update');
         Route::post('/bulk-delete', 'bulkDelete')->name('bulkDelete');
     });
 
