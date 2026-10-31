@@ -131,11 +131,21 @@ const Tile = ({
     );
 };
 
+// As many columns as fit, each at least 220px wide: one column on a phone, more as the screen grows.
 const GRID_SX = {
     display: 'grid',
-    gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)', xl: 'repeat(5, 1fr)' },
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 220px), 1fr))',
     gap: 3,
     alignItems: 'start',
+};
+
+// Let the actions wrap below the title and fill the width on a phone, instead of squeezing the title.
+const CARD_HEADER_SX = {
+    flexWrap: 'wrap',
+    gap: 2,
+    '& .MuiCardHeader-content': { flex: '1 1 auto', minWidth: 0 },
+    '& .MuiCardHeader-action': { m: 0, width: { xs: 1, sm: 'auto' } },
+    '& .MuiCardHeader-action .MuiButton-root': { flex: { xs: 1, sm: 'none' } },
 };
 
 const BehindTheSceneListPage = () => {
@@ -271,6 +281,7 @@ const BehindTheSceneListPage = () => {
                 <CardHeader
                     title={t('upload_media')}
                     slotProps={{ title: { variant: 'h4', component: 'h2' } }}
+                    sx={CARD_HEADER_SX}
                     action={
                         !!pendingItems.length && (
                             <Stack direction="row" gap={2}>
@@ -347,6 +358,7 @@ const BehindTheSceneListPage = () => {
                 <CardHeader
                     title={t('uploaded_media_count', { count: mediaItems.length })}
                     slotProps={{ title: { variant: 'h4', component: 'h2' } }}
+                    sx={CARD_HEADER_SX}
                     action={
                         <ConfirmationModal
                             renderTrigger={({ openModal }) =>

@@ -216,7 +216,7 @@
     "more_private_projects": "Và {{count}} dự án đang ẩn khác",
     "more_private_projects_other": "Và {{count}} dự án đang ẩn khác",
     "all_done": "Mọi thứ đã sẵn sàng. Tất cả dự án đều công khai và nội dung website đã đầy đủ.",
-    "updated_time": "Cập nhật {{time}}",
+    "updated_time": "Cập nhật lần cuối: {{time}}",
     "categories_description": "Danh mục dùng để nhóm các dự án trên website. Mỗi danh mục chỉ chứa ảnh hoặc chỉ chứa video.",
     "search_categories_placeholder": "Tìm theo tên danh mục",
     "projects": "Dự án",

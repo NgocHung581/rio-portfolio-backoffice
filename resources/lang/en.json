@@ -218,7 +218,7 @@
     "more_private_projects_one": "And {{count}} more hidden project",
     "more_private_projects_other": "And {{count}} more hidden projects",
     "all_done": "Everything is ready. All projects are public and the website content is complete.",
-    "updated_time": "Updated {{time}}",
+    "updated_time": "Last updated: {{time}}",
     "categories_description": "Categories group your projects on the website. Each category holds either photos or videos.",
     "search_categories_placeholder": "Search by name",
     "projects": "Projects",
